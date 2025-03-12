@@ -23,7 +23,7 @@ namespace SmartPhotShop.ViewModels
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private string baseImage;
-        private volatile bool continueRunning = true;
+        private volatile bool continueRunning = false;
 
         private BackgroundWorker bgWorker;
         private string actionSet;
@@ -58,44 +58,73 @@ namespace SmartPhotShop.ViewModels
             bgWorker = new BackgroundWorker();
             bgWorker.DoWork += BgWorker_DoWork;
             bgWorker.RunWorkerAsync();
+
+            continueRunning = true;
+
+            NotifyOfPropertyChange(nameof(CanStart));
+            NotifyOfPropertyChange(nameof(CanStop));
         }
 
         private void BgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var photoshop = new Photoshop.Application();
-            photoshop.Visible = true;
-            var fs = new FileSystemWatcher(Properties.Settings.Default.WorkingDirectory, "*.*");
-            fs.NotifyFilter = NotifyFilters.FileName;
-            fs.Created += Fs_Created;
-            fs.EnableRaisingEvents = true;
-
-            while (continueRunning)
+            try
             {
-                if (_filesQueue.TryDequeue(out var item))
+                var fileWatcher = new FileSystemWatcher(Properties.Settings.Default.WorkingDirectory, "*.*")
                 {
-                    if (IsFileReady(item))
+                    NotifyFilter = NotifyFilters.FileName,
+                    EnableRaisingEvents = true
+                };
+                fileWatcher.Created += Fs_Created;
+
+                AutoResetEvent fileEvent = new AutoResetEvent(false);
+                Photoshop.Application photoshop = null;
+
+                while (continueRunning)
+                {
+                    if (_filesQueue.TryDequeue(out var item))
                     {
-                        var uiItem = Items.FirstOrDefault(i => i.OriginalFileName == item);
-                        if (uiItem != null)
+                        if (IsFileReady(item))
                         {
-                            OnUIThread(() =>
+                            var uiItem = Items.FirstOrDefault(i => i.OriginalFileName == item);
+                            if (uiItem != null)
                             {
-                                uiItem.Status = "Processing";
-                            });
+                                OnUIThread(() => uiItem.Status = "Processing");
 
-
-                            ProcessImage(photoshop, item);
+                                if (photoshop == null)
+                                {
+                                    photoshop = new Photoshop.Application { Visible = true };
+                                }
+                                ProcessImage(photoshop, item);
+                            }
+                        }
+                        else
+                        {
+                            _filesQueue.Enqueue(item);
                         }
                     }
                     else
                     {
-                        _filesQueue.Enqueue(item);
+                        fileEvent.WaitOne(100); // Avoid CPU-intensive loop
                     }
                 }
 
-                Thread.Sleep(100);
+                photoshop?.Quit();
+                fileWatcher.Created -= Fs_Created;
+                fileWatcher.EnableRaisingEvents = false;
+                fileWatcher.Dispose();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, ex.Message);
+            }
+            finally
+            {
+                continueRunning = false;
+                NotifyOfPropertyChange(nameof(CanStart));
+                NotifyOfPropertyChange(nameof(CanStop));
             }
         }
+
 
         private void ProcessImage(Photoshop.Application photoshop, string imageItemPath)
         {
@@ -211,6 +240,13 @@ namespace SmartPhotShop.ViewModels
         }
         private void Fs_Created(object sender, FileSystemEventArgs e)
         {
+            var ext = Path.GetExtension(e.FullPath)?.ToLower();
+            var supportedExtensions = new HashSet<string> { ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif", ".webp", ".heic" };
+
+            if (string.IsNullOrEmpty(ext) || !supportedExtensions.Contains(ext))
+                return;
+
+
             var processItem = new ProcessItem
             {
                 OriginalFileName = e.FullPath,
@@ -225,7 +261,13 @@ namespace SmartPhotShop.ViewModels
 
         public void Stop()
         {
+            continueRunning = false;
 
+            NotifyOfPropertyChange(nameof(CanStart));
+            NotifyOfPropertyChange(nameof(CanStop));
         }
+
+        public bool CanStart => !continueRunning;
+        public bool CanStop => continueRunning;
     }
 }
