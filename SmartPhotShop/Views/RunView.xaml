@@ -56,7 +56,7 @@
 
         <!-- DataGrid -->
         <DataGrid x:Name="Items"
-                  FontSize="18"
+                  FontSize="16"
               Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
               AutoGenerateColumns="False"
                   RowHeight="64"
