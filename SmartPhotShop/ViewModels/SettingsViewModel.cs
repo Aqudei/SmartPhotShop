@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace SmartPhotShop.ViewModels
         private string outputDirectory;
         private string flatFile;
         private readonly IMapper mapper;
+        private readonly IDialogCoordinator dialogCoordinator;
 
         public string WorkingDirectory { get => workingDirectory; set => Set(ref workingDirectory, value); }
         public string ErrorDirectory { get => errorDirectory; set => Set(ref errorDirectory, value); }
@@ -25,11 +27,11 @@ namespace SmartPhotShop.ViewModels
         public string OutputDirectory { get => outputDirectory; set => Set(ref outputDirectory, value); }
         public string FlatFile { get => flatFile; set => Set(ref flatFile, value); }
 
-        public SettingsViewModel(IMapper mapper)
+        public SettingsViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator)
         {
             DisplayName = "Settings";
             this.mapper = mapper;
-
+            this.dialogCoordinator = dialogCoordinator;
             mapper.Map(Properties.Settings.Default, this);
         }
         public void BrowseFlatFile()
@@ -45,15 +47,26 @@ namespace SmartPhotShop.ViewModels
 
             FlatFile = dialog.FileName;
         }
-        public void Save()
+        public IEnumerable<IResult> Save()
         {
-            mapper.Map(this, Properties.Settings.Default);
-            Properties.Settings.Default.Save();
+            yield return Task.Run(async () =>
+            {
+                OnUIThread(() =>
+                {
+                    mapper.Map(this, Properties.Settings.Default);
+                    Properties.Settings.Default.Save();
+                });
 
-            Directory.CreateDirectory(WorkingDirectory);
-            Directory.CreateDirectory(DoneDirectory);
-            Directory.CreateDirectory(ErrorDirectory);
-            Directory.CreateDirectory(OutputDirectory);
+                Directory.CreateDirectory(WorkingDirectory);
+                Directory.CreateDirectory(DoneDirectory);
+                Directory.CreateDirectory(ErrorDirectory);
+                Directory.CreateDirectory(OutputDirectory);
+
+                await dialogCoordinator.ShowMessageAsync(this, "Success", "Your settings were successfully saved!");
+            }).AsResult();
+
+
+
         }
 
         public void BrowseWorkingDirectory()

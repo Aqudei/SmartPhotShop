@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ico="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:local="clr-namespace:SmartPhotShop.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -24,7 +25,7 @@
             <RowDefinition Height="Auto"/>
             <!-- For Action Set -->
             <RowDefinition Height="Auto"/>
-            
+
 
             <!-- For Action Name -->
             <RowDefinition Height="*"/>
@@ -36,7 +37,12 @@
         <!-- Base Image Selection -->
         <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Base Image:</Label>
         <TextBox x:Name="BaseImage" Grid.Row="0" Grid.Column="1" Margin="5,2,5,2"/>
-        <Button x:Name="BrowseBaseImage" Grid.Row="0" Grid.Column="2" Margin="5,2,5,2" Padding="5,2">Browse...</Button>
+        <Button x:Name="BrowseBaseImage" Grid.Row="0" Grid.Column="2" Margin="5,2,5,2" Padding="5,2">
+            <StackPanel Orientation="Horizontal">
+                <ico:PackIconBootstrapIcons Kind="Folder" VerticalAlignment="Center"/>
+                <Label>Browse...</Label>
+            </StackPanel>
+        </Button>
 
         <!-- Action Set -->
         <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Action Set:</Label>
@@ -46,7 +52,7 @@
         <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Action Name:</Label>
         <TextBox x:Name="ActionName" Grid.Row="2" Grid.Column="1" Margin="5,2,5,2"/>
 
-        
+
 
         <!-- DataGrid -->
         <DataGrid x:Name="Items"
@@ -88,9 +94,26 @@
         </DataGrid>
 
         <!-- Control Buttons -->
-        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-            <Button x:Name="Start" Margin="5,0" Padding="10,5">Start</Button>
-            <Button x:Name="Stop" Margin="5,0" Padding="10,5">Stop</Button>
+        <StackPanel Grid.Row="4" Grid.Column="0" 
+                    Grid.ColumnSpan="3" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Center" 
+                    Margin="0,10,0,0">
+
+            <Button x:Name="Stop" Margin="5,0" Padding="10,5">
+                <StackPanel Orientation="Horizontal">
+                    <ico:PackIconBootstrapIcons Kind="Stop" VerticalAlignment="Center"/>
+                    <Label>Stop</Label>
+                </StackPanel>
+            </Button>
+            
+            <Button x:Name="Start" Margin="5,0" Padding="10,5">
+                <StackPanel Orientation="Horizontal">
+                    <ico:PackIconBootstrapIcons Kind="Play" VerticalAlignment="Center"/>
+                    <Label>Start</Label>
+                </StackPanel>
+            </Button>
+           
         </StackPanel>
     </Grid>
 

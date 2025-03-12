@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
+using MahApps.Metro.Controls.Dialogs;
 using NLog;
 using SmartPhotShop.ViewModels;
 using SmartPhotShop.Views;
@@ -38,6 +39,7 @@ namespace SmartPhotShop
             container.PerRequest<MainViewModel>();
             container.PerRequest<SettingsViewModel>();
             container.PerRequest<RunViewModel>();
+            container.Instance(DialogCoordinator.Instance);
 
             var config = new MapperConfiguration(cfg =>
             {

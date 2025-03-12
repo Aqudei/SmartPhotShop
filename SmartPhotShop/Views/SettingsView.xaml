@@ -3,9 +3,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ico="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             mah:DialogParticipation.Register="{Binding}"
              xmlns:local="clr-namespace:SmartPhotShop.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="Padding" Value="8,0,0,0"/>
+            
+        </Style>
+
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+        </Style>
+    </UserControl.Resources>
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -25,28 +43,44 @@
 
         <!-- Working Directory -->
         <TextBlock Text="Working Directory:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"/>
-        <TextBox x:Name="WorkingDirectory" Margin="4,4,4,4" Grid.Row="0" Grid.Column="1"/>
-        <Button Content="Browse..." Width="75" Margin="4,4,4,4" x:Name="BrowseWorkingDirectory" Grid.Row="0" Grid.Column="2"/>
+        <TextBox x:Name="WorkingDirectory" Margin="4,4,4,4" Grid.Row="0" Grid.Column="1" Height="40" VerticalContentAlignment="Center"/>
+        <Button Width="75" Margin="4,4,4,4" x:Name="BrowseWorkingDirectory" Grid.Row="0" Grid.Column="2">
+            <StackPanel Orientation="Horizontal">
+                <ico:PackIconBootstrapIcons Kind="Folder" VerticalAlignment="Center"/>
+                <Label>Browse...</Label>
+            </StackPanel>
+        </Button>
 
         <!-- Error Directory -->
         <TextBlock Text="Error Directory:" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0"/>
-        <TextBox x:Name="ErrorDirectory" IsReadOnly="True" Grid.Row="1" Grid.Column="1" Margin="4,4,4,4"/>
+        <TextBox x:Name="ErrorDirectory" IsReadOnly="True" Grid.Row="1" Grid.Column="1" Margin="4,4,4,4" Height="40" VerticalContentAlignment="Center"/>
 
         <!-- Done Directory -->
         <TextBlock Text="Done Directory:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0"/>
-        <TextBox x:Name="DoneDirectory" IsReadOnly="True" Grid.Row="2" Grid.Column="1" Margin="4,4,4,4"/>
+        <TextBox x:Name="DoneDirectory" IsReadOnly="True" Grid.Row="2" Grid.Column="1" Margin="4,4,4,4" Height="40" VerticalContentAlignment="Center"/>
 
         <!-- Output Directory -->
         <TextBlock Text="Output Directory:" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0"/>
-        <TextBox x:Name="OutputDirectory" IsReadOnly="True" Grid.Row="3" Grid.Column="1" Margin="4,4,4,4"/>
+        <TextBox x:Name="OutputDirectory" IsReadOnly="True" Grid.Row="3" Grid.Column="1" Margin="4,4,4,4" Height="40" VerticalContentAlignment="Center"/>
 
         <!-- Flat File -->
         <TextBlock Text="Flat File:" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0"/>
-        <TextBox x:Name="FlatFile" IsReadOnly="True" Grid.Row="4" Grid.Column="1" Margin="4,4,4,4"/>
-        <Button Content="Browse..." Width="75" Margin="4,4,4,4" x:Name="BrowseFlatFile" Grid.Row="4" Grid.Column="2"/>
+        <TextBox x:Name="FlatFile" IsReadOnly="True" Grid.Row="4" Grid.Column="1" Margin="4,4,4,4" Height="40" VerticalContentAlignment="Center"/>
+        <Button Margin="4" x:Name="BrowseFlatFile" Grid.Row="4" Grid.Column="2">
+            <StackPanel Orientation="Horizontal">
+                <ico:PackIconBootstrapIcons Kind="FileSpreadsheet" 
+                                            VerticalAlignment="Center"/>
+                <Label>Browse...</Label>
+            </StackPanel>
+        </Button>
 
         <!-- Save Button -->
-        <Button Content="Save" x:Name="Save" Width="80" Grid.Row="5" Grid.Column="1" Margin="0,20,0,0" HorizontalAlignment="Center"/>
+        <Button x:Name="Save" Width="80" Grid.Row="5" Grid.Column="1" Margin="0,20,0,0" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+                <ico:PackIconBootstrapIcons Kind="Floppy" VerticalAlignment="Center"/>
+                <Label>Save</Label>
+            </StackPanel>
+        </Button>
     </Grid>
 
 </UserControl>
