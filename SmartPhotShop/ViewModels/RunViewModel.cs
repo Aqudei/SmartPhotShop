@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
+using DocumentFormat.OpenXml.Vml;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using NLog;
 using Photoshop;
@@ -141,6 +142,23 @@ namespace SmartPhotShop.ViewModels
             }
         }
 
+        private bool MoveFile(string source, string dest)
+        {
+            try
+            {
+                // Move the original image to the Done directory
+                File.Copy(source, dest, true);
+                File.Delete(source);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Unable to move file from '{source}' to '{dest}'");
+                logger.Error(ex.Message, ex);
+                return false;
+            }
+        }
+
 
         private void ProcessImage(Photoshop.Application photoshop, string imageItemPath)
         {
@@ -170,9 +188,9 @@ namespace SmartPhotShop.ViewModels
                 photoshop.DoAction(actionName, actionSet);
 
                 // Define the file path to save the PNG
-                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(imageItemPath);
+                string fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(imageItemPath);
                 string pngFileName = $"{fileNameWithoutExtension}.png";
-                string pngFilePath = Path.Combine(outputDirectory, pngFileName);
+                string pngFilePath = System.IO.Path.Combine(outputDirectory, pngFileName);
 
                 // Create an instance of PNG save options
                 PNGSaveOptions pngOptions = new PNGSaveOptions();
@@ -181,11 +199,10 @@ namespace SmartPhotShop.ViewModels
                 imageDoc.SaveAs(pngFilePath, pngOptions, true);
 
                 // Define the destination path in the Done directory
-                string destFileName = Path.GetFileName(imageItemPath);
-                string destPath = Path.Combine(doneDirectory, destFileName);
+                string destFileName = System.IO.Path.GetFileName(imageItemPath);
+                string destPath = System.IO.Path.Combine(doneDirectory, destFileName);
 
-                // Move the original image to the Done directory
-                File.Move(imageItemPath, destPath);
+                MoveFile(imageItemPath, destPath);
 
                 // Update UI item status
                 if (uiItem != null)
@@ -200,19 +217,11 @@ namespace SmartPhotShop.ViewModels
             catch (Exception ex)
             {
                 // Define the destination path in the Error directory
-                string errorFileName = Path.GetFileName(imageItemPath);
-                string errorPath = Path.Combine(errorDirectory, errorFileName);
+                string errorFileName = System.IO.Path.GetFileName(imageItemPath);
+                string errorPath = System.IO.Path.Combine(errorDirectory, errorFileName);
 
                 // Move the original image to the Error directory
-                try
-                {
-                    File.Move(imageItemPath, errorPath);
-                }
-                catch (Exception moveEx)
-                {
-                    // Log the error if the move operation fails
-                    logger.Error($"Failed to move file to error directory: {moveEx.Message}");
-                }
+                MoveFile(imageItemPath, errorPath);
 
                 // Update UI item status
                 if (uiItem != null)
@@ -256,7 +265,7 @@ namespace SmartPhotShop.ViewModels
         }
         private void Fs_Created(object sender, FileSystemEventArgs e)
         {
-            var ext = Path.GetExtension(e.FullPath)?.ToLower();
+            var ext = System.IO.Path.GetExtension(e.FullPath)?.ToLower();
             var supportedExtensions = new HashSet<string> { ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif", ".webp", ".heic" };
 
             if (string.IsNullOrEmpty(ext) || !supportedExtensions.Contains(ext))

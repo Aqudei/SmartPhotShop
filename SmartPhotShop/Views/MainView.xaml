@@ -8,8 +8,8 @@
         mc:Ignorable="d"
         Title="Wayne Smart PhotShop" 
                   WindowStartupLocation="CenterScreen"
-                  Height="450" 
-                  Width="800">
+                  Height="600" 
+                  Width="900">
     <Grid Margin="20">
         <mah:MetroAnimatedTabControl x:Name="Items"/>
     </Grid>
