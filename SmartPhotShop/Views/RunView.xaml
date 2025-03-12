@@ -24,6 +24,8 @@
             <RowDefinition Height="Auto"/>
             <!-- For Action Set -->
             <RowDefinition Height="Auto"/>
+            
+
             <!-- For Action Name -->
             <RowDefinition Height="*"/>
             <!-- For DataGrid -->
@@ -43,6 +45,8 @@
         <!-- Action Name -->
         <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Action Name:</Label>
         <TextBox x:Name="ActionName" Grid.Row="2" Grid.Column="1" Margin="5,2,5,2"/>
+
+        
 
         <!-- DataGrid -->
         <DataGrid x:Name="Items"

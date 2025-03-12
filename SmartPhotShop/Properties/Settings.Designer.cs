@@ -106,5 +106,17 @@ namespace SmartPhotShop.Properties {
                 this["ActionName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FlatFile {
+            get {
+                return ((string)(this["FlatFile"]));
+            }
+            set {
+                this["FlatFile"] = value;
+            }
+        }
     }
 }

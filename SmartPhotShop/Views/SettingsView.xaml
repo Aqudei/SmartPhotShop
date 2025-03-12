@@ -6,36 +6,47 @@
              xmlns:local="clr-namespace:SmartPhotShop.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <StackPanel Margin="10">
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBlock Text="Working Directory:" VerticalAlignment="Center" Width="120"/>
-                <TextBox x:Name="WorkingDirectory" 
-                         Width="350" Margin="5,0,0,0"/>
-                <Button Content="Browse..." Width="75" Margin="5,0,0,0" x:Name="BrowseWorkingDirectory"/>
-            </StackPanel>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal" Margin="32,0,0,10">
-                <TextBlock Text="Error Directory:" VerticalAlignment="Center" Width="120"/>
-                <TextBox x:Name="ErrorDirectory" Width="400" Margin="5,0,0,0" IsReadOnly="True"/>
-            </StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" Margin="32,0,0,10">
-                <TextBlock Text="Done Directory:" VerticalAlignment="Center" Width="120"/>
-                <TextBox x:Name="DoneDirectory" Width="400" Margin="5,0,0,0" IsReadOnly="True"/>
-            </StackPanel>
+        <!-- Working Directory -->
+        <TextBlock Text="Working Directory:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"/>
+        <TextBox x:Name="WorkingDirectory" Margin="4,4,4,4" Grid.Row="0" Grid.Column="1"/>
+        <Button Content="Browse..." Width="75" Margin="4,4,4,4" x:Name="BrowseWorkingDirectory" Grid.Row="0" Grid.Column="2"/>
 
-            <StackPanel Orientation="Horizontal" Margin="32,0,0,10">
-                <TextBlock Text="Output Directory:" VerticalAlignment="Center" Width="120"/>
-                <TextBox x:Name="OutputDirectory" Width="400" Margin="5,0,0,0" IsReadOnly="True"/>
-            </StackPanel>
+        <!-- Error Directory -->
+        <TextBlock Text="Error Directory:" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0"/>
+        <TextBox x:Name="ErrorDirectory" IsReadOnly="True" Grid.Row="1" Grid.Column="1" Margin="4,4,4,4"/>
 
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center" Margin="0,32,0,0">
-                <Button Content="Save" 
-                        x:Name="Save"
-                        Width="80"/>
-            </StackPanel>
-        </StackPanel>
+        <!-- Done Directory -->
+        <TextBlock Text="Done Directory:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0"/>
+        <TextBox x:Name="DoneDirectory" IsReadOnly="True" Grid.Row="2" Grid.Column="1" Margin="4,4,4,4"/>
+
+        <!-- Output Directory -->
+        <TextBlock Text="Output Directory:" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0"/>
+        <TextBox x:Name="OutputDirectory" IsReadOnly="True" Grid.Row="3" Grid.Column="1" Margin="4,4,4,4"/>
+
+        <!-- Flat File -->
+        <TextBlock Text="Flat File:" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0"/>
+        <TextBox x:Name="FlatFile" IsReadOnly="True" Grid.Row="4" Grid.Column="1" Margin="4,4,4,4"/>
+        <Button Content="Browse..." Width="75" Margin="4,4,4,4" x:Name="BrowseFlatFile" Grid.Row="4" Grid.Column="2"/>
+
+        <!-- Save Button -->
+        <Button Content="Save" x:Name="Save" Width="80" Grid.Row="5" Grid.Column="1" Margin="0,20,0,0" HorizontalAlignment="Center"/>
     </Grid>
+
 </UserControl>

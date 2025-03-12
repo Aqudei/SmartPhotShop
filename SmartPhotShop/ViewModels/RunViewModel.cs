@@ -67,6 +67,8 @@ namespace SmartPhotShop.ViewModels
 
         }
 
+       
+
         public void Start()
         {
             mapper.Map(this, Properties.Settings.Default);
