@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using NLog;
 using Photoshop;
@@ -29,14 +30,26 @@ namespace SmartPhotShop.ViewModels
         private string actionSet;
         private string actionName;
         private readonly ConcurrentQueue<string> _filesQueue = new ConcurrentQueue<string>();
+        private readonly IMapper mapper;
 
         public string BaseImage { get => baseImage; set => Set(ref baseImage, value); }
         public string ActionSet { get => actionSet; set => Set(ref actionSet, value); }
         public string ActionName { get => actionName; set => Set(ref actionName, value); }
         public BindableCollection<ProcessItem> Items { get; set; } = new BindableCollection<ProcessItem>();
-        public RunViewModel()
+        public RunViewModel(IMapper mapper)
         {
             DisplayName = "Run";
+            this.mapper = mapper;
+        }
+
+        protected override Task OnActivateAsync(CancellationToken cancellationToken)
+        {
+            OnUIThread(() =>
+            {
+                mapper.Map(Properties.Settings.Default, this);
+            });
+
+            return base.OnActivateAsync(cancellationToken);
         }
 
         public void BrowseBaseImage()
@@ -55,6 +68,9 @@ namespace SmartPhotShop.ViewModels
 
         public void Start()
         {
+            mapper.Map(this, Properties.Settings.Default);
+            Properties.Settings.Default.Save();
+
             bgWorker = new BackgroundWorker();
             bgWorker.DoWork += BgWorker_DoWork;
             bgWorker.RunWorkerAsync();

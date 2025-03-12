@@ -70,5 +70,41 @@ namespace SmartPhotShop.Properties {
                 this["OutputDirectory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string BaseImage {
+            get {
+                return ((string)(this["BaseImage"]));
+            }
+            set {
+                this["BaseImage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ActionSet {
+            get {
+                return ((string)(this["ActionSet"]));
+            }
+            set {
+                this["ActionSet"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ActionName {
+            get {
+                return ((string)(this["ActionName"]));
+            }
+            set {
+                this["ActionName"] = value;
+            }
+        }
     }
 }
