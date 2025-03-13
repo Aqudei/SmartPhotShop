@@ -14,12 +14,82 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using LogManager = NLog.LogManager;
 
 namespace SmartPhotShop.ViewModels
 {
+    public class BusyIndicator : IResult
+    {
+        private readonly bool _hidden;
+
+
+        public event EventHandler<ResultCompletionEventArgs> Completed;
+
+        public BusyIndicator(bool hide)
+        {
+            _hidden = hide;
+        }
+
+        public void Execute(CoroutineExecutionContext context)
+        {
+            var view = context.View as FrameworkElement;
+
+
+            if (view == null)
+            {
+                Completed(this, new ResultCompletionEventArgs());
+                return;
+            }
+
+            // Search downward for ProgressBar
+            var busyIndicator = view.FindName("IsBusyIndicator") as StackPanel;
+
+            if (busyIndicator != null)
+            {
+                busyIndicator.Visibility = _hidden ? Visibility.Collapsed : Visibility.Visible;
+            }
+
+            Completed(this, new ResultCompletionEventArgs());
+        }
+
+        // Recursive method to search down the visual tree
+        private System.Windows.Controls.ProgressBar FindProgressBarDownward(FrameworkElement element)
+        {
+            if (element == null)
+                return null;
+
+            foreach (var child in LogicalTreeHelper.GetChildren(element))
+            {
+                if (child is System.Windows.Controls.ProgressBar progressBar)
+                {
+                    return progressBar;
+                }
+                if (child is FrameworkElement childElement)
+                {
+                    var found = FindProgressBarDownward(childElement);
+                    if (found != null)
+                    {
+                        return found;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static BusyIndicator Show()
+        {
+            return new BusyIndicator(false);
+        }
+
+        public static BusyIndicator Hide()
+        {
+            return new BusyIndicator(true);
+        }
+    }
     class RunViewModel : Caliburn.Micro.Screen
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
@@ -32,6 +102,13 @@ namespace SmartPhotShop.ViewModels
         private string actionName;
         private readonly ConcurrentQueue<string> _filesQueue = new ConcurrentQueue<string>();
         private readonly IMapper mapper;
+        private string _workingDirectory;
+
+        public string WorkingDirectory
+        {
+            get { return _workingDirectory; }
+            set { Set(ref _workingDirectory, value); }
+        }
 
         public string BaseImage { get => baseImage; set => Set(ref baseImage, value); }
         public string ActionSet { get => actionSet; set => Set(ref actionSet, value); }
@@ -67,10 +144,12 @@ namespace SmartPhotShop.ViewModels
 
         }
 
-       
-
-        public void Start()
+        public IEnumerable<IResult> Start()
         {
+            WorkingDirectory = Properties.Settings.Default.WorkingDirectory;
+
+            yield return BusyIndicator.Show();
+
             mapper.Map(this, Properties.Settings.Default);
             Properties.Settings.Default.Save();
 
@@ -286,8 +365,10 @@ namespace SmartPhotShop.ViewModels
             _filesQueue.Enqueue(e.FullPath);
         }
 
-        public void Stop()
+        public IEnumerable<IResult> Stop()
         {
+            yield return BusyIndicator.Hide();
+
             continueRunning = false;
 
             NotifyOfPropertyChange(nameof(CanStart));

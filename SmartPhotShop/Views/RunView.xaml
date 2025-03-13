@@ -51,47 +51,62 @@
         <!-- Action Name -->
         <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Action Name:</Label>
         <TextBox x:Name="ActionName" Grid.Row="2" Grid.Column="1" Margin="5,2,5,2"/>
+        <Grid Grid.ColumnSpan="3" Margin="0,10,0,10" Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <DataGrid x:Name="Items"
+                FontSize="16"
+                Grid.Column="0"
+                AutoGenerateColumns="False"
+                RowHeight="64"
+                IsReadOnly="True"
+                CanUserAddRows="False"
+              >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="2*" 
+                        Header="Original FileName" 
+                        Binding="{Binding OriginalFileName}" >
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+
+                    <DataGridTextColumn Width="2*"
+                        Header="Moved FileName" 
+                        Binding="{Binding MovedFileName}">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="*" 
+                        Header="Status" 
+                        Binding="{Binding Status}"/>
+                    <DataGridTextColumn Width="*" 
+                        Header="Date Added"
+                        Binding="{Binding DateAdded}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <StackPanel Grid.Row="1" Visibility="Collapsed"
+                        x:Name="IsBusyIndicator">
+                <ProgressBar IsIndeterminate="True"/>
+                <TextBlock>
+                    <Run Text="Waiting for files at: "/>
+                    <Run Text="{Binding WorkingDirectory, Mode=OneWay}"/>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
 
 
 
         <!-- DataGrid -->
-        <DataGrid x:Name="Items"
-                  FontSize="16"
-              Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
-              AutoGenerateColumns="False"
-                  RowHeight="64"
-              IsReadOnly="True"
-              CanUserAddRows="False"
-              Margin="0,10,0,10">
-            <DataGrid.Columns>
-                <DataGridTextColumn Width="2*" 
-                                    Header="Original FileName" 
-                                    Binding="{Binding OriginalFileName}" >
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="TextWrapping" Value="Wrap"/>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
-
-
-                <DataGridTextColumn Width="2*"
-                                    Header="Moved FileName" 
-                                    Binding="{Binding MovedFileName}">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="TextWrapping" Value="Wrap"/>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
-                <DataGridTextColumn Width="*" 
-                                    Header="Status" 
-                                    Binding="{Binding Status}"/>
-                <DataGridTextColumn Width="*" 
-                                    Header="Date Added"
-                                    Binding="{Binding DateAdded}"/>
-            </DataGrid.Columns>
-        </DataGrid>
 
         <!-- Control Buttons -->
         <StackPanel Grid.Row="4" Grid.Column="0" 
@@ -106,14 +121,14 @@
                     <Label>Stop</Label>
                 </StackPanel>
             </Button>
-            
+
             <Button x:Name="Start" Margin="5,0" Padding="10,5">
                 <StackPanel Orientation="Horizontal">
                     <ico:PackIconBootstrapIcons Kind="Play" VerticalAlignment="Center"/>
                     <Label>Start</Label>
                 </StackPanel>
             </Button>
-           
+
         </StackPanel>
     </Grid>
 
