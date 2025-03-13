@@ -57,16 +57,20 @@ namespace SmartPhotShop.ViewModels
                     Properties.Settings.Default.Save();
                 });
 
-                Directory.CreateDirectory(WorkingDirectory);
-                Directory.CreateDirectory(DoneDirectory);
-                Directory.CreateDirectory(ErrorDirectory);
-                Directory.CreateDirectory(OutputDirectory);
+                if (!string.IsNullOrWhiteSpace(WorkingDirectory) && !Directory.Exists(WorkingDirectory))
+                    Directory.CreateDirectory(WorkingDirectory);
+
+                if (!string.IsNullOrWhiteSpace(DoneDirectory) && !Directory.Exists(DoneDirectory))
+                    Directory.CreateDirectory(DoneDirectory);
+
+                if (!string.IsNullOrWhiteSpace(ErrorDirectory) && !Directory.Exists(ErrorDirectory))
+                    Directory.CreateDirectory(ErrorDirectory);
+
+                if (!string.IsNullOrWhiteSpace(OutputDirectory) && !Directory.Exists(OutputDirectory))
+                    Directory.CreateDirectory(OutputDirectory);
 
                 await dialogCoordinator.ShowMessageAsync(this, "Success", "Your settings were successfully saved!");
             }).AsResult();
-
-
-
         }
 
         public void BrowseWorkingDirectory()

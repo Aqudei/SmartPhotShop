@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
 using DocumentFormat.OpenXml.Vml;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using NLog;
 using Photoshop;
@@ -101,7 +102,8 @@ namespace SmartPhotShop.ViewModels
         private string actionSet;
         private string actionName;
         private readonly ConcurrentQueue<string> _filesQueue = new ConcurrentQueue<string>();
-        private readonly IMapper mapper;
+        private readonly IMapper _mapper;
+        private readonly IDialogCoordinator _dialogCoordinator;
         private string _workingDirectory;
 
         public string WorkingDirectory
@@ -114,17 +116,18 @@ namespace SmartPhotShop.ViewModels
         public string ActionSet { get => actionSet; set => Set(ref actionSet, value); }
         public string ActionName { get => actionName; set => Set(ref actionName, value); }
         public BindableCollection<ProcessItem> Items { get; set; } = new BindableCollection<ProcessItem>();
-        public RunViewModel(IMapper mapper)
+        public RunViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator)
         {
             DisplayName = "Run";
-            this.mapper = mapper;
+            _mapper = mapper;
+            _dialogCoordinator = dialogCoordinator;
         }
 
         protected override Task OnActivateAsync(CancellationToken cancellationToken)
         {
             OnUIThread(() =>
             {
-                mapper.Map(Properties.Settings.Default, this);
+                _mapper.Map(Properties.Settings.Default, this);
             });
 
             return base.OnActivateAsync(cancellationToken);
@@ -146,11 +149,17 @@ namespace SmartPhotShop.ViewModels
 
         public IEnumerable<IResult> Start()
         {
+            if (CanRun() == false)
+            {
+                yield return _dialogCoordinator.ShowMessageAsync(this, "Error", "Please fill in all the required fields\nYou might be missing some Settings!").AsResult();
+                yield break;
+            }
+
             WorkingDirectory = Properties.Settings.Default.WorkingDirectory;
 
             yield return BusyIndicator.Show();
 
-            mapper.Map(this, Properties.Settings.Default);
+            _mapper.Map(this, Properties.Settings.Default);
             Properties.Settings.Default.Save();
 
             bgWorker = new BackgroundWorker();
@@ -161,6 +170,12 @@ namespace SmartPhotShop.ViewModels
 
             NotifyOfPropertyChange(nameof(CanStart));
             NotifyOfPropertyChange(nameof(CanStop));
+        }
+
+        private bool CanRun()
+        {
+            return !string.IsNullOrEmpty(BaseImage) && !string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ActionSet)
+                && !string.IsNullOrEmpty(Properties.Settings.Default.FlatFile) && !string.IsNullOrEmpty(Properties.Settings.Default.WorkingDirectory);
         }
 
         private void BgWorker_DoWork(object sender, DoWorkEventArgs e)
