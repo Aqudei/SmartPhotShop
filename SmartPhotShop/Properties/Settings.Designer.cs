@@ -118,5 +118,17 @@ namespace SmartPhotShop.Properties {
                 this["FlatFile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ProductsDirectory {
+            get {
+                return ((string)(this["ProductsDirectory"]));
+            }
+            set {
+                this["ProductsDirectory"] = value;
+            }
+        }
     }
 }

@@ -39,21 +39,12 @@ namespace SmartPhotShop
             container.PerRequest<MainViewModel>();
             container.PerRequest<SettingsViewModel>();
             container.PerRequest<RunViewModel>();
+            container.PerRequest<ProductsViewModel>();
             container.Instance(DialogCoordinator.Instance);
 
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Properties.Settings, SettingsViewModel>().ReverseMap();
-                cfg.CreateMap<Properties.Settings, RunViewModel>()
-                .ForMember(dest => dest.BaseImage, opt => opt.MapFrom(src => src.BaseImage))
-                .ForMember(dest => dest.ActionSet, opt => opt.MapFrom(src => src.ActionSet))
-                .ForMember(dest => dest.ActionName, opt => opt.MapFrom(src => src.ActionName))
-                .ForAllOtherMembers(opt => opt.Ignore());
-                cfg.CreateMap<RunViewModel, Properties.Settings>()
-                .ForMember(dest => dest.BaseImage, opt => opt.MapFrom(src => src.BaseImage))
-                .ForMember(dest => dest.ActionSet, opt => opt.MapFrom(src => src.ActionSet))
-                .ForMember(dest => dest.ActionName, opt => opt.MapFrom(src => src.ActionName))
-                .ForAllOtherMembers(opt => opt.Ignore());
             });
 
             container.Instance(config.CreateMapper());

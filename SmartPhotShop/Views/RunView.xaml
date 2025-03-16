@@ -22,38 +22,14 @@
 
         <!-- Define Rows -->
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- For Base Image selection -->
-            <RowDefinition Height="Auto"/>
-            <!-- For Action Set -->
-            <RowDefinition Height="Auto"/>
-
-
-            <!-- For Action Name -->
-            <RowDefinition Height="*"/>
             <!-- For DataGrid -->
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <!-- For Start and Stop Buttons -->
         </Grid.RowDefinitions>
-
-        <!-- Base Image Selection -->
-        <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Base Image:</Label>
-        <TextBox x:Name="BaseImage" Grid.Row="0" Grid.Column="1" Margin="5,2,5,2"/>
-        <Button x:Name="BrowseBaseImage" Grid.Row="0" Grid.Column="2" Margin="5,2,5,2" Padding="5,2">
-            <StackPanel Orientation="Horizontal">
-                <ico:PackIconBootstrapIcons Kind="Folder" VerticalAlignment="Center"/>
-                <Label>Browse...</Label>
-            </StackPanel>
-        </Button>
-
-        <!-- Action Set -->
-        <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Action Set:</Label>
-        <TextBox x:Name="ActionSet" Grid.Row="1" Grid.Column="1" Margin="5,2,5,2"/>
-
-        <!-- Action Name -->
-        <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Action Name:</Label>
-        <TextBox x:Name="ActionName" Grid.Row="2" Grid.Column="1" Margin="5,2,5,2"/>
-        <Grid Grid.ColumnSpan="3" Margin="0,10,0,10" Grid.Row="3">
+        
+        
+        <Grid Grid.ColumnSpan="3" Margin="0,10,0,10" Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="Auto"/>
@@ -106,12 +82,8 @@
             </StackPanel>
         </Grid>
 
-
-
-        <!-- DataGrid -->
-
         <!-- Control Buttons -->
-        <StackPanel Grid.Row="4" Grid.Column="0" 
+        <StackPanel Grid.Row="1" Grid.Column="0" 
                     Grid.ColumnSpan="3" 
                     Orientation="Horizontal" 
                     HorizontalAlignment="Center" 

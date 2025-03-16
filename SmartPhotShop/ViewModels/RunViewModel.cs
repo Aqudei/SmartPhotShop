@@ -99,8 +99,6 @@ namespace SmartPhotShop.ViewModels
         private volatile bool continueRunning = false;
 
         private BackgroundWorker bgWorker;
-        private string actionSet;
-        private string actionName;
         private readonly ConcurrentQueue<string> _filesQueue = new ConcurrentQueue<string>();
         private readonly IMapper _mapper;
         private readonly IDialogCoordinator _dialogCoordinator;
@@ -111,10 +109,7 @@ namespace SmartPhotShop.ViewModels
             get { return _workingDirectory; }
             set { Set(ref _workingDirectory, value); }
         }
-
-        public string BaseImage { get => baseImage; set => Set(ref baseImage, value); }
-        public string ActionSet { get => actionSet; set => Set(ref actionSet, value); }
-        public string ActionName { get => actionName; set => Set(ref actionName, value); }
+                
         public BindableCollection<ProcessItem> Items { get; set; } = new BindableCollection<ProcessItem>();
         public RunViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator)
         {
@@ -133,19 +128,7 @@ namespace SmartPhotShop.ViewModels
             return base.OnActivateAsync(cancellationToken);
         }
 
-        public void BrowseBaseImage()
-        {
-            var dialog = new CommonOpenFileDialog
-            {
-                Title = "Select Base Image"
-            };
 
-            if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
-                return;
-
-            BaseImage = dialog.FileName;
-
-        }
 
         public IEnumerable<IResult> Start()
         {
@@ -174,12 +157,13 @@ namespace SmartPhotShop.ViewModels
 
         private bool CanRun()
         {
-            return !string.IsNullOrEmpty(BaseImage) && !string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ActionSet)
-                && !string.IsNullOrEmpty(Properties.Settings.Default.FlatFile) && !string.IsNullOrEmpty(Properties.Settings.Default.WorkingDirectory);
+            return !string.IsNullOrEmpty(Properties.Settings.Default.FlatFile) && !string.IsNullOrEmpty(Properties.Settings.Default.WorkingDirectory);
         }
 
         private void BgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            var supportedFiles = new HashSet<string> { ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif", ".webp", ".heic" };
+
             try
             {
                 var fileWatcher = new FileSystemWatcher(Properties.Settings.Default.WorkingDirectory, "*.*")
@@ -207,7 +191,32 @@ namespace SmartPhotShop.ViewModels
                                 {
                                     photoshop = new Photoshop.Application { Visible = true };
                                 }
-                                ProcessImage(photoshop, item);
+
+                                var products = Directory.EnumerateDirectories(Properties.Settings.Default.ProductsDirectory)
+                                    .Select(d => new ProductInfo(d))
+                                    .ToList();
+
+                                foreach (var product in products)
+                                {
+                                    var designs = Directory.EnumerateFiles(product.ProductDirectory, "*.*")
+                                           .Where(d => supportedFiles.Contains(System.IO.Path.GetExtension(d).ToLower()))
+                                           .Select(d => new DesignInfo(d))
+                                           .ToList();
+
+
+                                    foreach (var design in designs)
+                                    {
+                                        var outputFileName = $"{product.ProductName}+{design.DesignName}.png";
+                                        var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, outputFileName);
+                                        if (File.Exists(outputFilePath))
+                                        {
+                                            continue;
+                                        }
+
+                                        ProcessImage(photoshop, item, design, outputFilePath);
+                                    }
+
+                                }
                             }
                         }
                         else
@@ -256,15 +265,16 @@ namespace SmartPhotShop.ViewModels
         }
 
 
-        private void ProcessImage(Photoshop.Application photoshop, string imageItemPath)
+        private void ProcessImage(Photoshop.Application photoshop, string imageItemPath, DesignInfo designInfo, string outputFilePath)
         {
             var uiItem = Items.FirstOrDefault(i => i.OriginalFileName == imageItemPath);
-            string baseImagePath = BaseImage;
-            string actionName = ActionName;
-            string actionSet = ActionSet;
-            string outputDirectory = Properties.Settings.Default.OutputDirectory;
-            string doneDirectory = Properties.Settings.Default.DoneDirectory;
-            string errorDirectory = Properties.Settings.Default.ErrorDirectory;
+            var actionSet = Properties.Settings.Default.ActionSet;
+            var outputDirectory = Properties.Settings.Default.OutputDirectory;
+            var doneDirectory = Properties.Settings.Default.DoneDirectory;
+            var errorDirectory = Properties.Settings.Default.ErrorDirectory;
+            var productsDirectory = Properties.Settings.Default.ProductsDirectory;
+            var baseImagePath = designInfo.DesignPath;
+            var actionName = designInfo.DesignName;
 
             Document baseImageDoc = null;
             Document imageDoc = null;
@@ -283,16 +293,12 @@ namespace SmartPhotShop.ViewModels
                 // Perform the action
                 photoshop.DoAction(actionName, actionSet);
 
-                // Define the file path to save the PNG
-                string fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(imageItemPath);
-                string pngFileName = $"{fileNameWithoutExtension}.png";
-                string pngFilePath = System.IO.Path.Combine(outputDirectory, pngFileName);
-
+                
                 // Create an instance of PNG save options
                 PNGSaveOptions pngOptions = new PNGSaveOptions();
 
                 // Save the active document as PNG
-                imageDoc.SaveAs(pngFilePath, pngOptions, true);
+                imageDoc.SaveAs(outputFilePath, pngOptions, true);
 
                 // Define the destination path in the Done directory
                 string destFileName = System.IO.Path.GetFileName(imageItemPath);

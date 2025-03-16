@@ -33,6 +33,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -74,8 +77,23 @@
             </StackPanel>
         </Button>
 
+        <!-- Products Directory -->
+        <TextBlock Text="Products Directory" VerticalAlignment="Center" Grid.Row="5" Grid.Column="0"/>
+        <TextBox x:Name="ProductsDirectory" IsReadOnly="True" Grid.Row="5" Grid.Column="1" Margin="4,4,4,4" Height="40" VerticalContentAlignment="Center"/>
+        <Button Margin="4" x:Name="BrowseProductsDirectory" Grid.Row="5" Grid.Column="2">
+            <StackPanel Orientation="Horizontal">
+                <ico:PackIconBootstrapIcons Kind="FileSpreadsheet" 
+                                    VerticalAlignment="Center"/>
+                <Label>Browse...</Label>
+            </StackPanel>
+        </Button>
+
+        <!-- Action Set -->
+        <TextBlock Text="Action Set:" VerticalAlignment="Center" Grid.Row="6" Grid.Column="0"/>
+        <TextBox x:Name="ActionSet" IsReadOnly="True" Grid.Row="6" Grid.Column="1" Margin="4,4,4,4" Height="40" VerticalContentAlignment="Center"/>
+
         <!-- Save Button -->
-        <Button x:Name="Save" Width="80" Grid.Row="5" Grid.Column="1" Margin="0,20,0,0" HorizontalAlignment="Center">
+        <Button x:Name="Save" Width="80" Grid.Row="7" Grid.Column="1" Margin="0,20,0,0" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal">
                 <ico:PackIconBootstrapIcons Kind="Floppy" VerticalAlignment="Center"/>
                 <Label>Save</Label>
