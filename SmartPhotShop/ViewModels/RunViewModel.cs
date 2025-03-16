@@ -178,16 +178,19 @@ namespace SmartPhotShop.ViewModels
                             if (uiItem != null)
                             {
                                 OnUIThread(() => uiItem.Status = "Processing");
+                            }
 
-                                if (photoshop == null)
-                                {
-                                    photoshop = new Photoshop.Application { Visible = true };
-                                }
+                            if (photoshop == null)
+                            {
+                                photoshop = new Photoshop.Application { Visible = true };
+                            }
 
-                                var products = Directory.EnumerateDirectories(Properties.Settings.Default.ProductsDirectory)
-                                    .Select(d => new ProductInfo(d))
-                                    .ToList();
+                            var products = Directory.EnumerateDirectories(Properties.Settings.Default.ProductsDirectory)
+                                .Select(d => new ProductInfo(d))
+                                .ToList();
 
+                            try
+                            {
                                 foreach (var product in products)
                                 {
                                     var designs = Directory.EnumerateFiles(product.ProductDirectory, "*.*")
@@ -210,6 +213,16 @@ namespace SmartPhotShop.ViewModels
                                     }
 
                                 }
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.Error(ex, ex.Message);
+                            }
+                            finally
+                            {
+
+                                MoveFile(item, Properties.Settings.Default.DoneDirectory);
+                                OnUIThread(() => uiItem.Status = "Done");
                             }
                         }
                         else
