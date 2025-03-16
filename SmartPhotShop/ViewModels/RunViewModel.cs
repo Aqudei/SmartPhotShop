@@ -109,7 +109,7 @@ namespace SmartPhotShop.ViewModels
             get { return _workingDirectory; }
             set { Set(ref _workingDirectory, value); }
         }
-                
+
         public BindableCollection<ProcessItem> Items { get; set; } = new BindableCollection<ProcessItem>();
         public RunViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator)
         {
@@ -286,50 +286,16 @@ namespace SmartPhotShop.ViewModels
                 // Perform the action
                 photoshop.DoAction(actionName, actionSet);
 
-                
+
                 // Create an instance of PNG save options
                 PNGSaveOptions pngOptions = new PNGSaveOptions();
 
                 // Save the active document as PNG
                 imageDoc.SaveAs(outputFilePath, pngOptions, true);
-
-                // Define the destination path in the Done directory
-                string destFileName = System.IO.Path.GetFileName(imageItemPath);
-                string destPath = System.IO.Path.Combine(doneDirectory, destFileName);
-
-                MoveFile(imageItemPath, destPath);
-
-                // Update UI item status
-                if (uiItem != null)
-                {
-                    OnUIThread(() =>
-                    {
-                        uiItem.Status = "Success";
-                        uiItem.MovedFileName = destPath;
-                    });
-                }
             }
             catch (Exception ex)
             {
-                // Define the destination path in the Error directory
-                string errorFileName = System.IO.Path.GetFileName(imageItemPath);
-                string errorPath = System.IO.Path.Combine(errorDirectory, errorFileName);
-
-                // Move the original image to the Error directory
-                MoveFile(imageItemPath, errorPath);
-
-                // Update UI item status
-                if (uiItem != null)
-                {
-                    OnUIThread(() =>
-                    {
-                        uiItem.Status = "Error";
-                        uiItem.MovedFileName = errorPath;
-                    });
-                }
-
-                // Log the original error
-                logger.Error($"Error processing image '{imageItemPath}': {ex.Message}");
+                logger.Error($"Error processing image '{imageItemPath}' using Action: {actionName}: {ex.Message}");
             }
             finally
             {
