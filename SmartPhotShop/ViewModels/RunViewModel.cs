@@ -120,11 +120,6 @@ namespace SmartPhotShop.ViewModels
 
         protected override Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            OnUIThread(() =>
-            {
-                _mapper.Map(Properties.Settings.Default, this);
-            });
-
             return base.OnActivateAsync(cancellationToken);
         }
 
@@ -141,9 +136,6 @@ namespace SmartPhotShop.ViewModels
             WorkingDirectory = Properties.Settings.Default.WorkingDirectory;
 
             yield return BusyIndicator.Show();
-
-            _mapper.Map(this, Properties.Settings.Default);
-            Properties.Settings.Default.Save();
 
             bgWorker = new BackgroundWorker();
             bgWorker.DoWork += BgWorker_DoWork;
@@ -210,6 +202,7 @@ namespace SmartPhotShop.ViewModels
                                         var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, outputFileName);
                                         if (File.Exists(outputFilePath))
                                         {
+                                            logger.Info($"Output file already exists <{outputFilePath}>, skipping...");
                                             continue;
                                         }
 
