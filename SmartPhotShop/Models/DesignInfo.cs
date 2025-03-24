@@ -12,7 +12,6 @@ namespace SmartPhotShop.Models
         public string DesignPath { get; set; }
         public string DesignName { get; set; }
 
-        public int DesignCount { get; set; }
 
         public DesignInfo(string designPath)
         {

@@ -99,10 +99,12 @@ namespace SmartPhotShop.ViewModels
         private volatile bool continueRunning = false;
 
         private BackgroundWorker bgWorker;
-        private readonly ConcurrentQueue<string> _filesQueue = new ConcurrentQueue<string>();
         private readonly IMapper _mapper;
         private readonly IDialogCoordinator _dialogCoordinator;
         private string _workingDirectory;
+
+        private HashSet<string> _supportedFiles = new HashSet<string> { ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif", ".webp", ".heic" };
+        private List<ProductInfo> _products;
 
         public string WorkingDirectory
         {
@@ -122,8 +124,6 @@ namespace SmartPhotShop.ViewModels
         {
             return base.OnActivateAsync(cancellationToken);
         }
-
-
 
         public IEnumerable<IResult> Start()
         {
@@ -154,7 +154,6 @@ namespace SmartPhotShop.ViewModels
 
         private void BgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var supportedFiles = new HashSet<string> { ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif", ".webp", ".heic" };
 
             try
             {
@@ -170,64 +169,51 @@ namespace SmartPhotShop.ViewModels
 
                 while (continueRunning)
                 {
-                    if (_filesQueue.TryDequeue(out var item))
+                    var uiItem = Items.FirstOrDefault(i => i.Status == "Pending");
+
+                    if (uiItem != null)
                     {
-                        if (IsFileReady(item))
+                        WaitUntilFileIsReady(uiItem.Path);
+
+                        OnUIThread(() => uiItem.Status = "Processing");
+
+
+                        if (photoshop == null)
                         {
-                            var uiItem = Items.FirstOrDefault(i => i.OriginalFileName == item);
-                            if (uiItem != null)
-                            {
-                                OnUIThread(() => uiItem.Status = "Processing");
-                            }
+                            photoshop = new Photoshop.Application { Visible = true };
+                        }
 
-                            if (photoshop == null)
-                            {
-                                photoshop = new Photoshop.Application { Visible = true };
-                            }
 
-                            var products = Directory.EnumerateDirectories(Properties.Settings.Default.ProductsDirectory)
-                                .Select(d => new ProductInfo(d))
-                                .ToList();
+                        try
+                        {
+                            var designs = Directory.EnumerateFiles(uiItem.Product.ProductDirectory, "*.*")
+                                        .Where(d => _supportedFiles.Contains(System.IO.Path.GetExtension(d).ToLower()))
+                                        .Select(d => new DesignInfo(d))
+                                        .ToList();
 
-                            try
+
+                            foreach (var design in designs)
                             {
-                                foreach (var product in products)
+                                var outputFileName = $"{uiItem.Product.ProductName}+{design.DesignName}.png";
+                                var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, outputFileName);
+                                if (File.Exists(outputFilePath))
                                 {
-                                    var designs = Directory.EnumerateFiles(product.ProductDirectory, "*.*")
-                                           .Where(d => supportedFiles.Contains(System.IO.Path.GetExtension(d).ToLower()))
-                                           .Select(d => new DesignInfo(d))
-                                           .ToList();
-
-
-                                    foreach (var design in designs)
-                                    {
-                                        var outputFileName = $"{product.ProductName}+{design.DesignName}.png";
-                                        var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, outputFileName);
-                                        if (File.Exists(outputFilePath))
-                                        {
-                                            logger.Info($"Output file already exists <{outputFilePath}>, skipping...");
-                                            continue;
-                                        }
-
-                                        ProcessImage(photoshop, item, design, outputFilePath);
-                                    }
-
+                                    logger.Info($"Output file already exists <{outputFilePath}>, skipping...");
+                                    continue;
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                logger.Error(ex, ex.Message);
-                            }
-                            finally
-                            {
 
-                                MoveFile(item, Properties.Settings.Default.DoneDirectory);
-                                OnUIThread(() => uiItem.Status = "Done");
+                                ProcessImage(photoshop, uiItem, design, outputFilePath);
                             }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            _filesQueue.Enqueue(item);
+                            logger.Error(ex, ex.Message);
+                        }
+                        finally
+                        {
+
+                            // MoveFile(uiItem, Properties.Settings.Default.DoneDirectory);
+                            OnUIThread(() => uiItem.Status = "Done");
                         }
                     }
                     else
@@ -271,30 +257,26 @@ namespace SmartPhotShop.ViewModels
         }
 
 
-        private void ProcessImage(Photoshop.Application photoshop, string imageItemPath, DesignInfo designInfo, string outputFilePath)
+        private void ProcessImage(Photoshop.Application photoshop, ProcessItem uiItem, string outputFilePath)
         {
-            var uiItem = Items.FirstOrDefault(i => i.OriginalFileName == imageItemPath);
             var actionSet = Properties.Settings.Default.ActionSet;
             var outputDirectory = Properties.Settings.Default.OutputDirectory;
             var doneDirectory = Properties.Settings.Default.DoneDirectory;
             var errorDirectory = Properties.Settings.Default.ErrorDirectory;
             var productsDirectory = Properties.Settings.Default.ProductsDirectory;
-            var baseImagePath = designInfo.DesignPath;
-            var actionName = designInfo.DesignName;
+            var baseImagePath = uiItem.Design.DesignPath;
+            var actionName = uiItem.Design.DesignName;
 
             Document baseImageDoc = null;
             Document imageDoc = null;
 
             try
             {
-                // Open the base image if necessary
-                if (!string.IsNullOrEmpty(baseImagePath) && File.Exists(baseImagePath))
-                {
-                    baseImageDoc = photoshop.Open(baseImagePath);
-                }
+
+                baseImageDoc = photoshop.Open(baseImagePath);
 
                 // Open the image to process
-                imageDoc = photoshop.Open(imageItemPath);
+                imageDoc = photoshop.Open(uiItem.Path);
 
                 // Perform the action
                 photoshop.DoAction(actionName, actionSet);
@@ -308,7 +290,7 @@ namespace SmartPhotShop.ViewModels
             }
             catch (Exception ex)
             {
-                logger.Error($"Error processing image '{imageItemPath}' using Action: {actionName}: {ex.Message}");
+                logger.Error($"Error processing image '{uiItem}' using Action: {actionName}: {ex.Message}");
             }
             finally
             {
@@ -317,7 +299,20 @@ namespace SmartPhotShop.ViewModels
                 imageDoc?.Close(2);
             }
         }
+        public static void WaitUntilFileIsReady(string filePath, int retryIntervalMs = 500, int timeoutMs = 10000)
+        {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
+            while (stopwatch.ElapsedMilliseconds < timeoutMs)
+            {
+                if (IsFileReady(filePath))
+                    return; // File is ready
+
+                Thread.Sleep(retryIntervalMs); // Wait before retrying
+            }
+
+            throw new TimeoutException($"Timeout waiting for file {filePath} to become available.");
+        }
         public static bool IsFileReady(string filePath)
         {
             try
@@ -340,22 +335,31 @@ namespace SmartPhotShop.ViewModels
         private void Fs_Created(object sender, FileSystemEventArgs e)
         {
             var ext = System.IO.Path.GetExtension(e.FullPath)?.ToLower();
-            var supportedExtensions = new HashSet<string> { ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif", ".webp", ".heic" };
 
-            if (string.IsNullOrEmpty(ext) || !supportedExtensions.Contains(ext))
+            if (string.IsNullOrEmpty(ext) || !_supportedFiles.Contains(ext))
                 return;
 
+            var products = Directory.EnumerateDirectories(Properties.Settings.Default.ProductsDirectory)
+                .Select(d => new ProductInfo(d))
+                .ToList();
 
-            var processItem = new ProcessItem
+            foreach (var product in products)
             {
-                OriginalFileName = e.FullPath,
-                DateAdded = DateTime.Now,
-                Status = "Pending"
-            };
+                foreach (var design in product.Designs)
+                {
+                    var processItem = new ProcessItem
+                    {
+                        Path = e.FullPath,
+                        DateAdded = DateTime.Now,
+                        Status = "Pending",
+                        Product = product,
+                        Design = design,
+                    };
 
-            OnUIThread(() => Items.Add(processItem));
+                    OnUIThread(() => Items.Add(processItem));
+                }
 
-            _filesQueue.Enqueue(e.FullPath);
+            }
         }
 
         public IEnumerable<IResult> Stop()

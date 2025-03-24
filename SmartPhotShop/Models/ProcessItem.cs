@@ -13,11 +13,14 @@ namespace SmartPhotShop.Models
         private string movedFileName;
         private string status;
         private DateTime? dateAdded;
+        private ProductInfo product;
 
-        public string OriginalFileName { get => originalFileName; set => Set(ref originalFileName , value); }
-        public string MovedFileName { get => movedFileName; set => Set(ref movedFileName , value); }
+        public string Path { get => originalFileName; set => Set(ref originalFileName, value); }
+        public string MovedFileName { get => movedFileName; set => Set(ref movedFileName, value); }
         public string Status { get => status; set => Set(ref status, value); }
         public DateTime? DateAdded { get => dateAdded; set => Set(ref dateAdded, value); }
 
+        public ProductInfo Product { get => product; set => Set(ref product, value); }
+        internal DesignInfo Design { get; set; }
     }
 }
