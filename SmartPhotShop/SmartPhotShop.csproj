@@ -27,7 +27,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>https://raw.githubusercontent.com/Aqudei/SmartPhotShop/refs/heads/master/SmartPhotShop/publish/</InstallUrl>
     <UpdateUrl>https://raw.githubusercontent.com/Aqudei/SmartPhotShop/refs/heads/master/SmartPhotShop/publish/</UpdateUrl>
-    <ApplicationRevision>5</ApplicationRevision>
+    <ApplicationRevision>6</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -337,6 +337,7 @@
     </Compile>
     <Compile Include="Models\BaseImage.cs" />
     <Compile Include="Models\DesignInfo.cs" />
+    <Compile Include="Models\OutputItem.cs" />
     <Compile Include="Models\ProcessItem.cs" />
     <Compile Include="Models\Processor.cs" />
     <Compile Include="Models\ProductInfo.cs" />

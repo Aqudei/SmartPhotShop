@@ -45,8 +45,8 @@
               >
                 <DataGrid.Columns>
                     <DataGridTextColumn Width="2*" 
-                        Header="Original FileName" 
-                        Binding="{Binding OriginalFileName}" >
+                        Header="Path" 
+                        Binding="{Binding Path}" >
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="TextWrapping" Value="Wrap"/>

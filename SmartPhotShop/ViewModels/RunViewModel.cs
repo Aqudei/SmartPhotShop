@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
+using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Vml;
+using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using NLog;
@@ -10,6 +12,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,6 +23,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using LogManager = NLog.LogManager;
+using Path = System.IO.Path;
 
 namespace SmartPhotShop.ViewModels
 {
@@ -101,6 +105,9 @@ namespace SmartPhotShop.ViewModels
         private BackgroundWorker bgWorker;
         private readonly IMapper _mapper;
         private readonly IDialogCoordinator _dialogCoordinator;
+
+        public string DbPath { get; private set; }
+
         private string _workingDirectory;
 
         private HashSet<string> _supportedFiles = new HashSet<string> { ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif", ".webp", ".heic" };
@@ -118,6 +125,9 @@ namespace SmartPhotShop.ViewModels
             DisplayName = "Run";
             _mapper = mapper;
             _dialogCoordinator = dialogCoordinator;
+
+            DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
+            Directory.CreateDirectory(Path.GetDirectoryName(DbPath));
         }
 
         protected override Task OnActivateAsync(CancellationToken cancellationToken)
@@ -152,6 +162,49 @@ namespace SmartPhotShop.ViewModels
             return !string.IsNullOrEmpty(Properties.Settings.Default.FlatFile) && !string.IsNullOrEmpty(Properties.Settings.Default.WorkingDirectory);
         }
 
+
+        static void UpdateOrInsertRow(string filePath, string sheetName, string sku, string[] newData)
+        {
+            using (var workbook = new XLWorkbook(filePath))
+            {
+                var worksheet = workbook.Worksheet(sheetName);
+                var usedRange = worksheet.RangeUsed();
+                bool found = false;
+
+                if (usedRange != null)
+                {
+                    var rows = usedRange.RowsUsed();
+                    foreach (var row in rows)
+                    {
+                        var cell = row.Cell(1); // Assuming SKU is in Column 1 (A)
+                        if (cell.Value.ToString().Equals(sku, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // SKU exists, update the row
+                            for (int i = 0; i < newData.Length; i++)
+                            {
+                                row.Cell(i + 1).Value = newData[i];
+                            }
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!found)
+                {
+                    // SKU does not exist, add a new row
+                    var lastRow = worksheet.LastRowUsed()?.RowNumber() ?? 0;
+                    var newRow = worksheet.Row(lastRow + 1);
+                    for (int i = 0; i < newData.Length; i++)
+                    {
+                        newRow.Cell(i + 1).Value = newData[i];
+                    }
+                }
+
+                workbook.Save();
+            }
+        }
+
         private void BgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
 
@@ -173,36 +226,51 @@ namespace SmartPhotShop.ViewModels
 
                     if (uiItem != null)
                     {
-                        WaitUntilFileIsReady(uiItem.Path);
-
-                        OnUIThread(() => uiItem.Status = "Processing");
-
-
-                        if (photoshop == null)
-                        {
-                            photoshop = new Photoshop.Application { Visible = true };
-                        }
-
-
                         try
                         {
-                            var designs = Directory.EnumerateFiles(uiItem.Product.ProductDirectory, "*.*")
-                                        .Where(d => _supportedFiles.Contains(System.IO.Path.GetExtension(d).ToLower()))
-                                        .Select(d => new DesignInfo(d))
-                                        .ToList();
+                            WaitUntilFileIsReady(uiItem.Path);
+
+                            OnUIThread(() => uiItem.Status = "Processing");
 
 
-                            foreach (var design in designs)
+                            if (photoshop == null)
                             {
-                                var outputFileName = $"{uiItem.Product.ProductName}+{design.DesignName}.png";
-                                var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, outputFileName);
-                                if (File.Exists(outputFilePath))
+                                photoshop = new Photoshop.Application { Visible = true };
+
+                            }
+
+                            var outputFileName = $"{uiItem.Product.ProductName}+{uiItem.Design.DesignName}.png";
+                            var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, outputFileName);
+
+                            ProcessImage(photoshop, uiItem, outputFilePath);
+
+                            var sku = Path.GetFileNameWithoutExtension(outputFilePath);
+
+                            using (var db = new LiteDatabase(DbPath))
+                            {
+
+                                var dbItem = db.GetCollection<OutputItem>().FindOne(x => x.Sku == sku);
+
+                                int maxId = 0;
+
+
+                                try
                                 {
-                                    logger.Info($"Output file already exists <{outputFilePath}>, skipping...");
-                                    continue;
+                                    maxId = db.GetCollection<OutputItem>().FindAll().Max(o => o.ProductId);
+                                }
+                                catch (Exception)
+                                {
                                 }
 
-                                ProcessImage(photoshop, uiItem, design, outputFilePath);
+                                if (dbItem == null)
+                                {
+
+                                    db.GetCollection<OutputItem>().Insert(new OutputItem
+                                    {
+                                        Sku = sku,
+                                        ProductId = maxId + 1
+                                    });
+                                }
                             }
                         }
                         catch (Exception ex)
@@ -266,6 +334,8 @@ namespace SmartPhotShop.ViewModels
             var productsDirectory = Properties.Settings.Default.ProductsDirectory;
             var baseImagePath = uiItem.Design.DesignPath;
             var actionName = uiItem.Design.DesignName;
+
+            Debug.WriteLine($"Running ATN: {actionSet}::{actionName}");
 
             Document baseImageDoc = null;
             Document imageDoc = null;
