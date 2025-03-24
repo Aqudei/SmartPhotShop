@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartPhotShop.Models
 {
-    class DesignInfo
+    public class DesignInfo
     {
         public string DesignPath { get; set; }
         public string DesignName { get; set; }

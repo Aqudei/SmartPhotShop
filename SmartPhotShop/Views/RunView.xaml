@@ -46,7 +46,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Width="2*" 
                         Header="Path" 
-                        Binding="{Binding Path}" >
+                        Binding="{Binding Overlay}" >
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="TextWrapping" Value="Wrap"/>
@@ -56,14 +56,26 @@
 
 
                     <DataGridTextColumn Width="2*"
-                        Header="Moved FileName" 
-                        Binding="{Binding MovedFileName}">
+                        Header="Base Image" 
+                        Binding="{Binding BaseImage}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="TextWrapping" Value="Wrap"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
+                    
+                    <DataGridTextColumn Width="*"
+                        Header="Sku" 
+                        Binding="{Binding Sku}">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    
+
                     <DataGridTextColumn Width="*" 
                         Header="Status" 
                         Binding="{Binding Status}"/>

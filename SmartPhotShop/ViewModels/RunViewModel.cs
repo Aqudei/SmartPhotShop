@@ -228,7 +228,7 @@ namespace SmartPhotShop.ViewModels
                     {
                         try
                         {
-                            WaitUntilFileIsReady(uiItem.Path);
+                            WaitUntilFileIsReady(uiItem.Overlay);
 
                             OnUIThread(() => uiItem.Status = "Processing");
 
@@ -244,12 +244,11 @@ namespace SmartPhotShop.ViewModels
 
                             ProcessImage(photoshop, uiItem, outputFilePath);
 
-                            var sku = Path.GetFileNameWithoutExtension(outputFilePath);
 
                             using (var db = new LiteDatabase(DbPath))
                             {
 
-                                var dbItem = db.GetCollection<OutputItem>().FindOne(x => x.Sku == sku);
+                                var dbItem = db.GetCollection<OutputItem>().FindOne(x => x.Sku == uiItem.Sku);
 
                                 int maxId = 0;
 
@@ -267,8 +266,9 @@ namespace SmartPhotShop.ViewModels
 
                                     db.GetCollection<OutputItem>().Insert(new OutputItem
                                     {
-                                        Sku = sku,
-                                        ProductId = maxId + 1
+                                        Sku = uiItem.Sku,
+                                        ProductId = maxId + 1,
+                                        Location = outputFilePath
                                     });
                                 }
                             }
@@ -332,6 +332,7 @@ namespace SmartPhotShop.ViewModels
             var doneDirectory = Properties.Settings.Default.DoneDirectory;
             var errorDirectory = Properties.Settings.Default.ErrorDirectory;
             var productsDirectory = Properties.Settings.Default.ProductsDirectory;
+
             var baseImagePath = uiItem.Design.DesignPath;
             var actionName = uiItem.Design.DesignName;
 
@@ -346,7 +347,7 @@ namespace SmartPhotShop.ViewModels
                 baseImageDoc = photoshop.Open(baseImagePath);
 
                 // Open the image to process
-                imageDoc = photoshop.Open(uiItem.Path);
+                imageDoc = photoshop.Open(uiItem.Overlay);
 
                 // Perform the action
                 photoshop.DoAction(actionName, actionSet);
@@ -417,14 +418,7 @@ namespace SmartPhotShop.ViewModels
             {
                 foreach (var design in product.Designs)
                 {
-                    var processItem = new ProcessItem
-                    {
-                        Path = e.FullPath,
-                        DateAdded = DateTime.Now,
-                        Status = "Pending",
-                        Product = product,
-                        Design = design,
-                    };
+                    var processItem = new ProcessItem(e.FullPath, design, product);
 
                     OnUIThread(() => Items.Add(processItem));
                 }
