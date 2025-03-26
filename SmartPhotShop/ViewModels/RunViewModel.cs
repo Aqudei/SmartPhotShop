@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
-using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Vml;
 using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using NLog;
+using OfficeOpenXml;
 using Photoshop;
 using SmartPhotShop.Models;
 using System;
@@ -163,45 +163,61 @@ namespace SmartPhotShop.ViewModels
         }
 
 
-        static void UpdateOrInsertRow(string filePath, string sheetName, string sku, string[] newData)
+        static void UpdateOrInsertRow(ExcelPackage excel, string filePath, string sheetName, string sku, string[] newData)
         {
-            using (var workbook = new XLWorkbook(filePath))
+            var worksheet = excel.Workbook.Worksheets[sheetName];
+            if (worksheet == null)
             {
-                var worksheet = workbook.Worksheet(sheetName);
-                var usedRange = worksheet.RangeUsed();
-                bool found = false;
+                Console.WriteLine($"Sheet '{sheetName}' not found.");
+                return;
+            }
 
-                if (usedRange != null)
-                {
-                    var rows = usedRange.RowsUsed();
-                    foreach (var row in rows)
-                    {
-                        var cell = row.Cell(1); // Assuming SKU is in Column 1 (A)
-                        if (cell.Value.ToString().Equals(sku, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // SKU exists, update the row
-                            for (int i = 0; i < newData.Length; i++)
-                            {
-                                row.Cell(i + 1).Value = newData[i];
-                            }
-                            found = true;
-                            break;
-                        }
-                    }
-                }
+            var rowCount = worksheet.Dimension?.Rows ?? 0;
+            bool found = false;
 
-                if (!found)
+            // Search for SKU in Column A (Column 1)
+            for (int row = 2; row <= rowCount; row++) // Skipping header row
+            {
+                if (worksheet.Cells[row, 1].Text.Equals(sku, StringComparison.OrdinalIgnoreCase))
                 {
-                    // SKU does not exist, add a new row
-                    var lastRow = worksheet.LastRowUsed()?.RowNumber() ?? 0;
-                    var newRow = worksheet.Row(lastRow + 1);
+                    // SKU exists, update row
                     for (int i = 0; i < newData.Length; i++)
                     {
-                        newRow.Cell(i + 1).Value = newData[i];
+                        worksheet.Cells[row, i + 1].Value = newData[i];
                     }
+                    found = true;
+                    break;
                 }
+            }
 
-                workbook.Save();
+            if (!found)
+            {
+                // SKU not found, insert new row
+                int newRow = rowCount + 1;
+                for (int i = 0; i < newData.Length; i++)
+                {
+                    worksheet.Cells[newRow, i + 1].Value = newData[i];
+                }
+            }
+
+            excel.Save();
+            Debug.WriteLine($"Excel file <{filePath}> updated successfully.");
+        }
+
+        public void UpdateFlatFile()
+        {
+            using (var excel = new ExcelPackage(Properties.Settings.Default.FlatFile))
+            using (var db = new LiteDatabase(DbPath))
+            {
+                var flatFile = Properties.Settings.Default.FlatFile;
+                var sheetName = "Template";
+                var products = db.GetCollection<OutputItem>().FindAll();
+
+                foreach (var product in products)
+                {
+                    var data = new[] { product.Sku, "" };
+                    UpdateOrInsertRow(excel, flatFile, sheetName, product.Sku, data);
+                }
             }
         }
 
@@ -263,15 +279,20 @@ namespace SmartPhotShop.ViewModels
 
                                 if (dbItem == null)
                                 {
-
-                                    db.GetCollection<OutputItem>().Insert(new OutputItem
+                                    var outputItem = new OutputItem
                                     {
                                         Sku = uiItem.Sku,
                                         ProductId = maxId + 1,
                                         Location = outputFilePath
-                                    });
+                                    };
+
+                                    var inserted = db.GetCollection<OutputItem>().Insert(outputItem);
+
+                                    // var data = new[] { uiItem.Sku, outputItem.ProductId.ToString() };
+                                    // UpdateOrInsertRow(Properties.Settings.Default.FlatFile, "Template", uiItem.Sku, data);
                                 }
                             }
+
                         }
                         catch (Exception ex)
                         {
@@ -307,18 +328,19 @@ namespace SmartPhotShop.ViewModels
             }
         }
 
-        private bool MoveFile(string source, string dest)
+
+        private bool MoveFile(string source, string destination)
         {
             try
             {
                 // Move the original image to the Done directory
-                File.Copy(source, dest, true);
+                File.Copy(source, destination, true);
                 File.Delete(source);
                 return true;
             }
             catch (Exception ex)
             {
-                logger.Error($"Unable to move file from '{source}' to '{dest}'");
+                logger.Error($"Unable to move file from '{source}' to '{destination}'");
                 logger.Error(ex.Message, ex);
                 return false;
             }

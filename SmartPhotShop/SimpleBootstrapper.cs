@@ -2,6 +2,7 @@
 using Caliburn.Micro;
 using MahApps.Metro.Controls.Dialogs;
 using NLog;
+using OfficeOpenXml;
 using SmartPhotShop.ViewModels;
 using SmartPhotShop.Views;
 using System;
@@ -65,6 +66,8 @@ namespace SmartPhotShop
             await DisplayRootViewForAsync<MainViewModel>();
 
             logger.Info("Application Started!");
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
 
         protected override IEnumerable<Assembly> SelectAssemblies() => new List<Assembly> { Assembly.GetExecutingAssembly() };

@@ -36,7 +36,7 @@ namespace SmartPhotShop.Models
 
             var overlayName = Path.GetFileNameWithoutExtension(overlay);
 
-            Sku = (product.ProductName + "-" + baseDesign.DesignName + overlayName).Replace(" ", "-").ToUpper();
+            Sku = (product.ProductName + "-" + baseDesign.DesignName + "-" + overlayName).Replace(" ", "-").ToUpper();
         }
     }
 }

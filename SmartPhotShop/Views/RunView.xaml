@@ -115,6 +115,12 @@
                 </StackPanel>
             </Button>
 
+            <Button x:Name="UpdateFlatFile" Margin="5,0" Padding="10,5">
+                <StackPanel Orientation="Horizontal">
+                    <ico:PackIconBootstrapIcons Kind="CardList" VerticalAlignment="Center"/>
+                    <Label>Update FlatFile</Label>
+                </StackPanel>
+            </Button>
         </StackPanel>
     </Grid>
 
