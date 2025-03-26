@@ -41,6 +41,7 @@ namespace SmartPhotShop
             container.PerRequest<SettingsViewModel>();
             container.PerRequest<RunViewModel>();
             container.PerRequest<ProductsViewModel>();
+            container.PerRequest<InventoryViewModel>();
             container.Instance(DialogCoordinator.Instance);
 
             var config = new MapperConfiguration(cfg =>

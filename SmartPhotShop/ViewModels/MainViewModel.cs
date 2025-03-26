@@ -16,6 +16,7 @@ namespace SmartPhotShop.ViewModels
             Items.Add(IoC.Get<RunViewModel>());
             Items.Add(IoC.Get<SettingsViewModel>());
             Items.Add(IoC.Get<ProductsViewModel>());
+            Items.Add(IoC.Get<InventoryViewModel>());
 
             ActiveItem = Items.First();
 
