@@ -22,6 +22,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using Application = Photoshop.Application;
 using LogManager = NLog.LogManager;
 using Path = System.IO.Path;
 
@@ -255,8 +256,9 @@ namespace SmartPhotShop.ViewModels
 
                             }
 
-                            var outputFileName = $"{uiItem.Product.ProductName}+{uiItem.Design.DesignName}.png";
-                            var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, outputFileName);
+                            var outputFileName = $"{uiItem.Design.DesignName.ToUpper()}-WITH-{Path.GetFileNameWithoutExtension(uiItem.Overlay).ToUpper()}.png".Replace(" ", "-");
+                            var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, uiItem.Product.ProductName, outputFileName);
+                            Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 
                             ProcessImage(photoshop, uiItem, outputFilePath);
 
