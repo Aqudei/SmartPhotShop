@@ -22,13 +22,13 @@ namespace SmartPhotShop.Models
         public DateTime? DateAdded { get => dateAdded; set => Set(ref dateAdded, value); }
 
         public ProductInfo Product { get => product; set => Set(ref product, value); }
-        internal DesignInfo Design { get; set; }
-        public string BaseImage => Design.DesignPath;
+        internal VariantTemplate Variant { get; set; }
+        public string BaseImage => Variant.VariantPath;
         public string Sku { get; set; }
 
-        public ProcessItem(string overlay, DesignInfo baseDesign, ProductInfo product)
+        public ProcessItem(string overlay, VariantTemplate variant, ProductInfo product)
         {
-            Design = baseDesign;
+            Variant = variant;
             Overlay = overlay;
             Product = product;
             DateAdded = DateTime.Now;
@@ -36,7 +36,7 @@ namespace SmartPhotShop.Models
 
             var overlayName = Path.GetFileNameWithoutExtension(overlay);
 
-            Sku = (product.ProductName + "-" + baseDesign.DesignName + "-" + overlayName).Replace(" ", "-").ToUpper();
+            Sku = (product.ProductName + "-" + variant.VariantName + "-" + overlayName).Replace(" ", "-").ToUpper();
         }
     }
 }

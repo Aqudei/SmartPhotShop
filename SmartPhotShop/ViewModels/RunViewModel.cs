@@ -256,7 +256,7 @@ namespace SmartPhotShop.ViewModels
 
                             }
 
-                            var outputFileName = $"{uiItem.Design.DesignName.ToUpper()}-WITH-{Path.GetFileNameWithoutExtension(uiItem.Overlay).ToUpper()}.png".Replace(" ", "-");
+                            var outputFileName = $"{uiItem.Variant.VariantName.ToUpper()}-WITH-{Path.GetFileNameWithoutExtension(uiItem.Overlay).ToUpper()}.png".Replace(" ", "-");
                             var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, uiItem.Product.ProductName, outputFileName);
                             Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 
@@ -357,8 +357,8 @@ namespace SmartPhotShop.ViewModels
             var errorDirectory = Properties.Settings.Default.ErrorDirectory;
             var productsDirectory = Properties.Settings.Default.ProductsDirectory;
 
-            var baseImagePath = uiItem.Design.DesignPath;
-            var actionName = uiItem.Design.DesignName;
+            var baseImagePath = uiItem.Variant.VariantPath;
+            var actionName = uiItem.Variant.VariantName;
 
             Debug.WriteLine($"Running ATN: {actionSet}::{actionName}");
 
@@ -440,7 +440,7 @@ namespace SmartPhotShop.ViewModels
 
             foreach (var product in products)
             {
-                foreach (var design in product.Designs)
+                foreach (var design in product.Variants)
                 {
                     var processItem = new ProcessItem(e.FullPath, design, product);
 

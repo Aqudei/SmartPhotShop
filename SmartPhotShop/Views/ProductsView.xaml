@@ -7,6 +7,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
         <DataGrid x:Name="Products"
                   FontSize="20"
                   RowHeight="60"
@@ -16,6 +20,62 @@
                 <DataGridTextColumn Header="Product Name" 
                                     Width="*"
                                     Binding="{Binding ProductName}" />   
+            </DataGrid.Columns>
+        </DataGrid>
+        <DataGrid x:Name="Variants"
+                  FontSize="20"
+                  RowHeight="60"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Variant Name" 
+                         Binding="{Binding VariantName}" />
+                <DataGridTextColumn Header="Product ID" Binding="{Binding ProductId}" />
+                <DataGridTextColumn Header="Product ID Type" Binding="{Binding ProductIdType}" />
+                <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=C}" />
+                <DataGridTextColumn Header="Min Allowed Price" Binding="{Binding MinimumSellerAllowedPrice, StringFormat=C}" />
+                <DataGridTextColumn Header="Max Allowed Price" Binding="{Binding MaximumSellerAllowedPrice, StringFormat=C}" />
+                <DataGridTextColumn Header="Item Condition" Binding="{Binding ItemCondition}" />
+                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" />
+                <DataGridTextColumn Header="Add/Delete" Binding="{Binding AddDelete}" />
+                <DataGridCheckBoxColumn Header="Ship Internationally" Binding="{Binding WillShipInternationally}" />
+                <DataGridCheckBoxColumn Header="Expedited Shipping" Binding="{Binding ExpeditedShipping}" />
+                <DataGridTextColumn Header="Item Note" Binding="{Binding ItemNote}" />
+                <DataGridTextColumn Header="Fulfillment Center ID" Binding="{Binding FulfillmentCenterId}" />
+                <DataGridTextColumn Header="Merchant Shipping Group" Binding="{Binding MerchantShippingGroupName}" />
+                <DataGridTextColumn Header="Product Tax Code" Binding="{Binding ProductTaxCode}" />
+                <DataGridTextColumn Header="Handling Time" Binding="{Binding HandlingTime}" />
+                <DataGridCheckBoxColumn Header="Batteries Required" Binding="{Binding BatteriesRequired}" />
+                <DataGridCheckBoxColumn Header="Batteries Included" Binding="{Binding AreBatteriesIncluded}" />
+                <DataGridTextColumn Header="Battery Cell Composition" Binding="{Binding BatteryCellComposition}" />
+                <DataGridTextColumn Header="Battery Type" Binding="{Binding BatteryType}" />
+                <DataGridTextColumn Header="Number of Batteries" Binding="{Binding NumberOfBatteries}" />
+                <DataGridTextColumn Header="Battery Weight" Binding="{Binding BatteryWeight}" />
+                <DataGridTextColumn Header="Battery Weight Unit" Binding="{Binding BatteryWeightUnitOfMeasure}" />
+                <DataGridTextColumn Header="Lithium Ion Cells" Binding="{Binding NumberOfLithiumIonCells}" />
+                <DataGridTextColumn Header="Lithium Metal Cells" Binding="{Binding NumberOfLithiumMetalCells}" />
+                <DataGridTextColumn Header="Lithium Battery Packaging" Binding="{Binding LithiumBatteryPackaging}" />
+                <DataGridTextColumn Header="Lithium Energy Content" Binding="{Binding LithiumBatteryEnergyContent}" />
+                <DataGridTextColumn Header="Lithium Energy Unit" Binding="{Binding LithiumBatteryEnergyContentUnitOfMeasure}" />
+                <DataGridTextColumn Header="Lithium Battery Weight" Binding="{Binding LithiumBatteryWeight}" />
+                <DataGridTextColumn Header="Lithium Battery Weight Unit" Binding="{Binding LithiumBatteryWeightUnitOfMeasure}" />
+                <DataGridTextColumn Header="DG Regulation 1" Binding="{Binding SupplierDeclaredDgHzRegulation1}" />
+                <DataGridTextColumn Header="DG Regulation 2" Binding="{Binding SupplierDeclaredDgHzRegulation2}" />
+                <DataGridTextColumn Header="DG Regulation 3" Binding="{Binding SupplierDeclaredDgHzRegulation3}" />
+                <DataGridTextColumn Header="DG Regulation 4" Binding="{Binding SupplierDeclaredDgHzRegulation4}" />
+                <DataGridTextColumn Header="DG Regulation 5" Binding="{Binding SupplierDeclaredDgHzRegulation5}" />
+                <DataGridTextColumn Header="Hazmat UN ID" Binding="{Binding HazmatUnitedNationsRegulatoryId}" />
+                <DataGridTextColumn Header="Safety Data Sheet URL" Binding="{Binding SafetyDataSheetUrl}" />
+                <DataGridTextColumn Header="Item Weight" Binding="{Binding ItemWeight}" />
+                <DataGridTextColumn Header="Item Weight Unit" Binding="{Binding ItemWeightUnitOfMeasure}" />
+                <DataGridTextColumn Header="Item Volume" Binding="{Binding ItemVolume}" />
+                <DataGridTextColumn Header="Item Volume Unit" Binding="{Binding ItemVolumeUnitOfMeasure}" />
+                <DataGridTextColumn Header="Flash Point" Binding="{Binding FlashPoint}" />
+                <DataGridTextColumn Header="GHS Class 1" Binding="{Binding GhsClassificationClass1}" />
+                <DataGridTextColumn Header="GHS Class 2" Binding="{Binding GhsClassificationClass2}" />
+                <DataGridTextColumn Header="GHS Class 3" Binding="{Binding GhsClassificationClass3}" />
+                <DataGridTextColumn Header="List Price" Binding="{Binding ListPriceWithTax, StringFormat=C}" />
+                <DataGridTextColumn Header="UVP List Price" Binding="{Binding UvpListPrice, StringFormat=C}" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
