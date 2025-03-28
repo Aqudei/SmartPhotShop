@@ -1,8 +1,10 @@
 ﻿using Caliburn.Micro;
 using LiteDB;
+using MahApps.Metro.Controls.Dialogs;
 using SmartPhotShop.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,13 +17,14 @@ namespace SmartPhotShop.ViewModels
         public string DbPath { get; }
 
         public BindableCollection<OutputItem> Items { get; set; } = new BindableCollection<OutputItem>();
-        public InventoryViewModel()
+        public InventoryViewModel(IDialogCoordinator dialogCoordinator)
         {
             DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
             Directory.CreateDirectory(Path.GetDirectoryName(DbPath));
-            DisplayName = "Inventory";
+            DisplayName = "Output";
 
-            this.PropertyChanged += InventoryViewModel_PropertyChanged;
+            PropertyChanged += InventoryViewModel_PropertyChanged;
+            _dialogCoordinator = dialogCoordinator;
         }
 
         private void InventoryViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -36,6 +39,7 @@ namespace SmartPhotShop.ViewModels
         }
 
         private bool _isAllSelected;
+        private readonly IDialogCoordinator _dialogCoordinator;
 
         public bool IsAllSelected
         {
@@ -61,6 +65,38 @@ namespace SmartPhotShop.ViewModels
             }
         }
 
+        public async void Delete()
+        {
+            var progress = await _dialogCoordinator.ShowProgressAsync(this, "Deleting Items", "Please wait...");
 
+            try
+            {
+                using (var db = new LiteDatabase(DbPath))
+                {
+                    var itemsCollection = db.GetCollection<OutputItem>();
+                    var selected = Items.Where(i => i.IsSelected).ToList();
+
+
+                    for (int i = selected.Count - 1; i >= 0; i--)
+                    {
+                        progress.SetMessage($"Deleting {selected[i].Location}...");
+                        progress.SetProgress((double)(selected.Count - i - 1) / selected.Count);
+
+                        File.Delete(selected[i].Location);
+                        OutputItem item = selected[i];
+                        itemsCollection.Delete(item.Id);
+                        Items.Remove(item);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            finally
+            {
+                await progress.CloseAsync();
+            }
+        }
     }
 }

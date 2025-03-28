@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
+﻿using Caliburn.Micro;
+using DocumentFormat.OpenXml.Bibliography;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SmartPhotShop.Models
 {
-    public class VariantTemplate
+    public class VariantTemplate : PropertyChangedBase
     {
         public int Id { get; set; }
         public string VariantName { get; set; }

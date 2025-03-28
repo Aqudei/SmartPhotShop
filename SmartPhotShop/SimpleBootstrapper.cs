@@ -3,10 +3,12 @@ using Caliburn.Micro;
 using MahApps.Metro.Controls.Dialogs;
 using NLog;
 using OfficeOpenXml;
+using SmartPhotShop.Models;
 using SmartPhotShop.ViewModels;
 using SmartPhotShop.Views;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -31,6 +33,8 @@ namespace SmartPhotShop
             container.BuildUp(instance);
         }
 
+
+
         protected override void Configure()
         {
             container = new SimpleContainer();
@@ -47,9 +51,15 @@ namespace SmartPhotShop
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Properties.Settings, SettingsViewModel>().ReverseMap();
+                cfg.CreateMap<VariantTemplate, VariantTemplate>()
+                .ForMember(v => v.VariantName, opts => opts.Ignore())
+                .ForMember(v => v.VariantPath, opts => opts.Ignore());
             });
 
             container.Instance(config.CreateMapper());
+
+
+
         }
 
         protected override IEnumerable<object> GetAllInstances(Type service)
@@ -64,6 +74,16 @@ namespace SmartPhotShop
 
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
+            var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
+            if (File.Exists(dbPath))
+            {
+                var result = MessageBox.Show("Database already exists. Do you want to delete the existing database?", "Confirm", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+                if (result == MessageBoxResult.OK)
+                {
+                    File.Delete(dbPath);
+                }
+            }
+
             await DisplayRootViewForAsync<MainViewModel>();
 
             logger.Info("Application Started!");

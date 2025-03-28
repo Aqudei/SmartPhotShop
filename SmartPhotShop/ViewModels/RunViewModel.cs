@@ -164,64 +164,6 @@ namespace SmartPhotShop.ViewModels
         }
 
 
-        static void UpdateOrInsertRow(ExcelPackage excel, string filePath, string sheetName, string sku, string[] newData)
-        {
-            var worksheet = excel.Workbook.Worksheets[sheetName];
-            if (worksheet == null)
-            {
-                Console.WriteLine($"Sheet '{sheetName}' not found.");
-                return;
-            }
-
-            var rowCount = worksheet.Dimension?.Rows ?? 0;
-            bool found = false;
-
-            // Search for SKU in Column A (Column 1)
-            for (int row = 2; row <= rowCount; row++) // Skipping header row
-            {
-                if (worksheet.Cells[row, 1].Text.Equals(sku, StringComparison.OrdinalIgnoreCase))
-                {
-                    // SKU exists, update row
-                    for (int i = 0; i < newData.Length; i++)
-                    {
-                        worksheet.Cells[row, i + 1].Value = newData[i];
-                    }
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found)
-            {
-                // SKU not found, insert new row
-                int newRow = rowCount + 1;
-                for (int i = 0; i < newData.Length; i++)
-                {
-                    worksheet.Cells[newRow, i + 1].Value = newData[i];
-                }
-            }
-
-            excel.Save();
-            Debug.WriteLine($"Excel file <{filePath}> updated successfully.");
-        }
-
-        public void UpdateFlatFile()
-        {
-            using (var excel = new ExcelPackage(Properties.Settings.Default.FlatFile))
-            using (var db = new LiteDatabase(DbPath))
-            {
-                var flatFile = Properties.Settings.Default.FlatFile;
-                var sheetName = "Template";
-                var products = db.GetCollection<OutputItem>().FindAll();
-
-                foreach (var product in products)
-                {
-                    var data = new[] { product.Sku, "" };
-                    UpdateOrInsertRow(excel, flatFile, sheetName, product.Sku, data);
-                }
-            }
-        }
-
         private void BgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
 
@@ -281,11 +223,13 @@ namespace SmartPhotShop.ViewModels
 
                                 if (dbItem == null)
                                 {
+                                    
                                     var outputItem = new OutputItem
                                     {
                                         Sku = uiItem.Sku,
                                         ProductId = maxId + 1,
-                                        Location = outputFilePath
+                                        Location = outputFilePath,
+                                        VariantId = uiItem.Variant.Id
                                     };
 
                                     var inserted = db.GetCollection<OutputItem>().Insert(outputItem);
