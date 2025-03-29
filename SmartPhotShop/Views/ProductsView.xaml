@@ -28,6 +28,7 @@
         </DataGrid>
         <DataGrid x:Name="Variants"
                   FontSize="20"
+                  RowEditEnding="Variants_RowEditEnding"
                   RowHeight="60"
                   Grid.Row="1"
                   AutoGenerateColumns="False">
@@ -42,8 +43,8 @@
                 <DataGridTextColumn Header="Item Condition" Binding="{Binding ItemCondition}" />
                 <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" />
                 <DataGridTextColumn Header="Add/Delete" Binding="{Binding AddDelete}" />
-                <DataGridCheckBoxColumn Header="Ship Internationally" Binding="{Binding WillShipInternationally}" />
-                <DataGridCheckBoxColumn Header="Expedited Shipping" Binding="{Binding ExpeditedShipping}" />
+                <DataGridTextColumn Header="Ship Internationally" Binding="{Binding WillShipInternationally}" />
+                <DataGridTextColumn Header="Expedited Shipping" Binding="{Binding ExpeditedShipping}" />
                 <DataGridTextColumn Header="Item Note" Binding="{Binding ItemNote}" />
                 <DataGridTextColumn Header="Fulfillment Center ID" Binding="{Binding FulfillmentCenterId}" />
                 <DataGridTextColumn Header="Merchant Shipping Group" Binding="{Binding MerchantShippingGroupName}" />
@@ -87,14 +88,14 @@
             <Button x:Name="Save" Margin="5" Padding="10,5">
                 <StackPanel Orientation="Horizontal">
                     <ico:PackIconBootstrapIcons Kind="Floppy" VerticalAlignment="Center"/>
-                    <Label>Save</Label>
+                    <Label>SAVE CHANGES</Label>
                 </StackPanel>
             </Button>
             
             <Button x:Name="UpdateFlatFile" Margin="5" Padding="10,5">
                 <StackPanel Orientation="Horizontal">
                     <ico:PackIconBootstrapIcons Kind="CardList" VerticalAlignment="Center"/>
-                    <Label>Update FlatFile</Label>
+                    <Label Content="UPDATE FLAT FILE"/>
                 </StackPanel>
             </Button>
         </StackPanel>

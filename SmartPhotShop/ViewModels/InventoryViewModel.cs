@@ -21,7 +21,7 @@ namespace SmartPhotShop.ViewModels
         {
             DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
             Directory.CreateDirectory(Path.GetDirectoryName(DbPath));
-            DisplayName = "Output";
+            DisplayName = "Files";
 
             PropertyChanged += InventoryViewModel_PropertyChanged;
             _dialogCoordinator = dialogCoordinator;

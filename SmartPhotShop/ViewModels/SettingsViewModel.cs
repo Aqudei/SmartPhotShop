@@ -19,8 +19,8 @@ namespace SmartPhotShop.ViewModels
         private string outputDirectory;
         private string flatFile;
         private string productsDirectory;
-        private readonly IMapper mapper;
-        private readonly IDialogCoordinator dialogCoordinator;
+        private readonly IMapper _mapper;
+        private readonly IDialogCoordinator _dialogCoordinator;
 
         private string _actionSet = "Test ATN";
 
@@ -36,14 +36,29 @@ namespace SmartPhotShop.ViewModels
         public string DoneDirectory { get => doneDirectory; set => Set(ref doneDirectory, value); }
         public string OutputDirectory { get => outputDirectory; set => Set(ref outputDirectory, value); }
         public string FlatFile { get => flatFile; set => Set(ref flatFile, value); }
+        public string DbPath { get; }
 
         public SettingsViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator)
         {
+            DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
+
             DisplayName = "Settings";
-            this.mapper = mapper;
-            this.dialogCoordinator = dialogCoordinator;
+            _mapper = mapper;
+            _dialogCoordinator = dialogCoordinator;
+
             mapper.Map(Properties.Settings.Default, this);
         }
+
+        public async void ClearDatabase()
+        {
+            var prompt = await _dialogCoordinator.ShowMessageAsync(this, "Confirm", "Are you sure you want to clear database?", MessageDialogStyle.AffirmativeAndNegative);
+            if (prompt == MessageDialogResult.Affirmative)
+            {
+                if (File.Exists(DbPath))
+                    File.Delete(DbPath);
+            }
+        }
+
         public void BrowseFlatFile()
         {
             var dialog = new CommonOpenFileDialog
@@ -63,7 +78,7 @@ namespace SmartPhotShop.ViewModels
             {
                 OnUIThread(() =>
                 {
-                    mapper.Map(this, Properties.Settings.Default);
+                    _mapper.Map(this, Properties.Settings.Default);
                     Properties.Settings.Default.Save();
                 });
 
@@ -79,7 +94,7 @@ namespace SmartPhotShop.ViewModels
                 if (!string.IsNullOrWhiteSpace(OutputDirectory) && !Directory.Exists(OutputDirectory))
                     Directory.CreateDirectory(OutputDirectory);
 
-                await dialogCoordinator.ShowMessageAsync(this, "Success", "Your settings were successfully saved!");
+                await _dialogCoordinator.ShowMessageAsync(this, "Success", "Your settings were successfully saved!");
             }).AsResult();
         }
         public void BrowseProductsDirectory()

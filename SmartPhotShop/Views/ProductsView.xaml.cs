@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SmartPhotShop.Models;
+using SmartPhotShop.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,15 @@ namespace SmartPhotShop.Views
         public ProductsView()
         {
             InitializeComponent();
+        }
+
+        private void Variants_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                var item = e.Row.Item as VariantTemplate; // Get the updated row item
+                (DataContext as ProductsViewModel)?.SaveItem(item);
+            }
         }
     }
 }

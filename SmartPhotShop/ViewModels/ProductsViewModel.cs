@@ -53,13 +53,13 @@ namespace SmartPhotShop.ViewModels
                     using (var db = new LiteDatabase(DbPath))
                     {
                         var variantsCollection = db.GetCollection<VariantTemplate>();
-                        var variants = variantsCollection.FindAll();
+                        var variants = variantsCollection.FindAll().ToList();
 
                         foreach (var variant in Variants)
                         {
-                            if (!string.IsNullOrWhiteSpace(variant.Sku))
+                            if (!string.IsNullOrWhiteSpace(variant.VariantSku))
                             {
-                                var v = variants.FirstOrDefault(vv => vv.Sku == variant.Sku);
+                                var v = variants.FirstOrDefault(vv => vv.VariantSku == variant.VariantSku);
                                 if (v != null)
                                 {
                                     _mapper.Map(v, variant);
@@ -134,10 +134,54 @@ namespace SmartPhotShop.ViewModels
                         if (variant != null)
                         {
                             data = new[] {
-                            item.Sku,
-                            variant.ProductId,
-                            variant.ProductIdType,
-                            variant.Price.ToString()
+                                $"{item.Sku}",
+                                $"{variant.ProductId}",
+                                $"{variant.ProductIdType}",
+                                $"{variant.Price}",
+                                $"{variant.MinimumSellerAllowedPrice}",
+                                $"{variant.MinimumSellerAllowedPrice}",
+                                $"{variant.MaximumSellerAllowedPrice}",
+                                $"{variant.ItemCondition}",
+                                $"{variant.Quantity}",
+                                $"{variant.AddDelete}",
+                                $"{variant.WillShipInternationally}",
+                                $"{variant.ExpeditedShipping}",
+                                $"{variant.ItemNote}",
+                                $"{variant.FulfillmentCenterId}",
+                                $"{variant.MerchantShippingGroupName}",
+                                $"{variant.ProductTaxCode}",
+                                $"{variant.HandlingTime}",
+                                $"{variant.BatteriesRequired}",
+                                $"{variant.AreBatteriesIncluded}",
+                                $"{variant.BatteryCellComposition}",
+                                $"{variant.BatteryType}",
+                                $"{variant.NumberOfBatteries}",
+                                $"{variant.BatteryWeight}",
+                                $"{variant.BatteryWeightUnitOfMeasure}",
+                                $"{variant.NumberOfLithiumIonCells}",
+                                $"{variant.NumberOfLithiumMetalCells}",
+                                $"{variant.LithiumBatteryPackaging}",
+                                $"{variant.LithiumBatteryEnergyContent}",
+                                $"{variant.LithiumBatteryEnergyContentUnitOfMeasure}",
+                                $"{variant.LithiumBatteryWeight}",
+                                $"{variant.LithiumBatteryWeightUnitOfMeasure}",
+                                $"{variant.SupplierDeclaredDgHzRegulation1}",
+                                $"{variant.SupplierDeclaredDgHzRegulation2}",
+                                $"{variant.SupplierDeclaredDgHzRegulation3}",
+                                $"{variant.SupplierDeclaredDgHzRegulation4}",
+                                $"{variant.SupplierDeclaredDgHzRegulation5}",
+                                $"{variant.HazmatUnitedNationsRegulatoryId}",
+                                $"{variant.SafetyDataSheetUrl}",
+                                $"{variant.ItemWeight}",
+                                $"{variant.ItemWeightUnitOfMeasure}",
+                                $"{variant.ItemVolume}",
+                                $"{variant.ItemVolumeUnitOfMeasure}",
+                                $"{variant.FlashPoint}",
+                                $"{variant.GhsClassificationClass1}",
+                                $"{variant.GhsClassificationClass2}",
+                                $"{variant.GhsClassificationClass3}",
+                                $"{variant.ListPriceWithTax}",
+                                $"{variant.UvpListPrice}",
                         };
 
                             UpdateOrInsertRow(excel, flatFile, sheetName, item.Sku, data);
@@ -180,6 +224,7 @@ namespace SmartPhotShop.ViewModels
 
         protected override void OnViewLoaded(object view)
         {
+
             Products.Clear();
 
             if (string.IsNullOrWhiteSpace(Properties.Settings.Default.ProductsDirectory))
@@ -191,9 +236,58 @@ namespace SmartPhotShop.ViewModels
             {
                 Directory.CreateDirectory(Properties.Settings.Default.ProductsDirectory);
             }
+
+            Task.Run(ImportProducts);
+
+        }
+
+        private async void ImportProducts()
+        {
+            var progress = await _dialogCoordinator.ShowProgressAsync(this, "Please wait", "Importing items...");
+            progress.SetIndeterminate();
+
             var products = Directory.GetDirectories(Properties.Settings.Default.ProductsDirectory)
                 .Select(d => new ProductInfo(d));
-            Products.AddRange(products);
+
+            using (var db = new LiteDatabase(DbPath))
+            {
+                var variantsCol = db.GetCollection<VariantTemplate>();
+                foreach (var product in products)
+                {
+                    foreach (var variant in product.Variants)
+                    {
+                        var dbVariant = variantsCol.FindOne(v => v.VariantSku == variant.VariantSku);
+                        if (dbVariant == null)
+                        {
+                            variantsCol.Insert(variant);
+                        }
+                    }
+                }
+            }
+
+            OnUIThread(() =>
+            {
+                Products.AddRange(products);
+                SelectedProduct = Products.FirstOrDefault();
+            });
+
+            await progress.CloseAsync();
+        }
+
+        internal void SaveItem(VariantTemplate item)
+        {
+            using (var db = new LiteDatabase(DbPath))
+            {
+                var variantsCol = db.GetCollection<VariantTemplate>();
+                if (item.Id == 0)
+                {
+                    variantsCol.Insert(item);
+                }
+                else
+                {
+                    variantsCol.Update(item.Id, item);
+                }
+            }
         }
     }
 }

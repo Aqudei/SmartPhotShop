@@ -15,7 +15,7 @@
             <Setter Property="FontSize" Value="18"/>
             <Setter Property="FontFamily" Value="Arial"/>
             <Setter Property="Padding" Value="8,0,0,0"/>
-            
+
         </Style>
 
         <Style TargetType="{x:Type TextBlock}">
@@ -91,14 +91,24 @@
         <!-- Action Set -->
         <TextBlock Text="Action Set:" VerticalAlignment="Center" Grid.Row="6" Grid.Column="0"/>
         <TextBox x:Name="ActionSet" IsReadOnly="True" Grid.Row="6" Grid.Column="1" Margin="4,4,4,4" Height="40" VerticalContentAlignment="Center"/>
+        
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0,20,0,0" Orientation="Horizontal" Grid.Row="7">
+            <Button x:Name="Save" Width="80" Height="37" Margin="8">
+                <StackPanel Orientation="Horizontal">
+                    <ico:PackIconBootstrapIcons Kind="Floppy" VerticalAlignment="Center"/>
+                    <Label Content="Save"/>
+                </StackPanel>
+            </Button>
+
+            <Button x:Name="ClearDatabase" Width="80" Height="37" Margin="8">
+                <StackPanel Orientation="Horizontal">
+                    <ico:PackIconBootstrapIcons Kind="TrashFill" VerticalAlignment="Center"/>
+                    <Label Content="Clear DB"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
 
         <!-- Save Button -->
-        <Button x:Name="Save" Width="80" Grid.Row="7" Grid.Column="1" Margin="0,20,0,0" HorizontalAlignment="Center">
-            <StackPanel Orientation="Horizontal">
-                <ico:PackIconBootstrapIcons Kind="Floppy" VerticalAlignment="Center"/>
-                <Label>Save</Label>
-            </StackPanel>
-        </Button>
     </Grid>
 
 </UserControl>

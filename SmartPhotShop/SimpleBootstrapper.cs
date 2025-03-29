@@ -74,15 +74,15 @@ namespace SmartPhotShop
 
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
-            var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
-            if (File.Exists(dbPath))
-            {
-                var result = MessageBox.Show("Database already exists. Do you want to delete the existing database?", "Confirm", MessageBoxButton.OKCancel, MessageBoxImage.Question);
-                if (result == MessageBoxResult.OK)
-                {
-                    File.Delete(dbPath);
-                }
-            }
+            //var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
+            //if (File.Exists(dbPath))
+            //{
+            //    var result = MessageBox.Show("Database already exists. Do you want to delete the existing database?", "Confirm", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+            //    if (result == MessageBoxResult.OK)
+            //    {
+            //        File.Delete(dbPath);
+            //    }
+            //}
 
             await DisplayRootViewForAsync<MainViewModel>();
 
