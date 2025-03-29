@@ -17,6 +17,7 @@ namespace SmartPhotShop.ViewModels
         public string DbPath { get; }
 
         public BindableCollection<OutputItem> Items { get; set; } = new BindableCollection<OutputItem>();
+        public OutputItem SelectedItem { get => _selectedItem; set => Set(ref _selectedItem, value); }
         public InventoryViewModel(IDialogCoordinator dialogCoordinator)
         {
             DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
@@ -25,6 +26,19 @@ namespace SmartPhotShop.ViewModels
 
             PropertyChanged += InventoryViewModel_PropertyChanged;
             _dialogCoordinator = dialogCoordinator;
+
+            PropertyChanged += InventoryViewModel_PropertyChanged1;
+        }
+
+        private void InventoryViewModel_PropertyChanged1(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(SelectedItem))
+            {
+                if (SelectedItem != null)
+                {
+
+                }
+            }
         }
 
         private void InventoryViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -39,6 +53,7 @@ namespace SmartPhotShop.ViewModels
         }
 
         private bool _isAllSelected;
+        private OutputItem _selectedItem;
         private readonly IDialogCoordinator _dialogCoordinator;
 
         public bool IsAllSelected
