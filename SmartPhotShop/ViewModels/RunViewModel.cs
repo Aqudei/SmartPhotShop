@@ -223,7 +223,7 @@ namespace SmartPhotShop.ViewModels
 
                                 if (dbItem == null)
                                 {
-                                    
+
                                     var outputItem = new OutputItem
                                     {
                                         Sku = uiItem.Sku,
@@ -382,16 +382,28 @@ namespace SmartPhotShop.ViewModels
                 .Select(d => new ProductInfo(d))
                 .ToList();
 
-            foreach (var product in products)
+            using (var db = new LiteDatabase(DbPath))
             {
-                foreach (var design in product.Variants)
+                var variantsCol = db.GetCollection<VariantTemplate>();
+
+                foreach (var product in products)
                 {
-                    var processItem = new ProcessItem(e.FullPath, design, product);
+                    foreach (var variant in product.Variants)
+                    {
+                        var dbVariant = variantsCol.FindOne(v => v.VariantSku == variant.VariantSku);
+                        if (dbVariant != null)
+                        {
+                            _mapper.Map(dbVariant, variant);
 
-                    OnUIThread(() => Items.Add(processItem));
+                            var processItem = new ProcessItem(e.FullPath, variant, product);
+
+                            OnUIThread(() => Items.Add(processItem));
+                        }
+                    }
                 }
-
             }
+
+
         }
 
         public IEnumerable<IResult> Stop()
