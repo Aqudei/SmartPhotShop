@@ -70,7 +70,12 @@ namespace SmartPhotShop.ViewModels
             excel.Save();
             Debug.WriteLine($"Excel file <{filePath}> updated successfully.");
         }
+
         public async void UpdateFlatFile()
+        {
+            await Task.Run(UpdateFlatFileTask);
+        }
+        public async Task UpdateFlatFileTask()
         {
             var progress = await _dialogCoordinator.ShowProgressAsync(this, "Updating Flat File", "Please wait...");
             progress.SetIndeterminate();
@@ -155,7 +160,6 @@ namespace SmartPhotShop.ViewModels
             { }
             finally
             {
-
                 await progress.CloseAsync();
             }
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SmartPhotShop.Models
@@ -36,7 +37,7 @@ namespace SmartPhotShop.Models
 
             var overlayName = Path.GetFileNameWithoutExtension(overlay);
 
-            Sku = (product.ProductName + "-" + variant.VariantName + "-" + overlayName).Replace(" ", "-").ToUpper();
+            Sku = Regex.Replace($"{variant.VariantSku}-{overlayName}".ToUpper(), @"\s+", "-");
         }
     }
 }
