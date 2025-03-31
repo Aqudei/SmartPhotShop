@@ -109,42 +109,17 @@ namespace SmartPhotShop.ViewModels
                 Directory.CreateDirectory(Properties.Settings.Default.ProductsDirectory);
             }
 
-            Task.Run(ImportProducts);
-
-        }
-
-        private async void ImportProducts()
-        {
-            var progress = await _dialogCoordinator.ShowProgressAsync(this, "Please wait", "Importing items...");
-            progress.SetIndeterminate();
-
             var products = Directory.GetDirectories(Properties.Settings.Default.ProductsDirectory)
-                .Select(d => new ProductInfo(d));
-
-            using (var db = new LiteDatabase(DbPath))
-            {
-                var variantsCol = db.GetCollection<VariantTemplate>();
-                foreach (var product in products)
-                {
-                    foreach (var variant in product.Variants)
-                    {
-                        var dbVariant = variantsCol.FindOne(v => v.VariantSku == variant.VariantSku);
-                        if (dbVariant == null)
-                        {
-                            variantsCol.Insert(variant);
-                        }
-                    }
-                }
-            }
+               .Select(d => new ProductInfo(d));
 
             OnUIThread(() =>
             {
                 Products.AddRange(products);
                 SelectedProduct = Products.FirstOrDefault();
             });
-
-            await progress.CloseAsync();
         }
+
+        
 
         internal void SaveItem(VariantTemplate item)
         {

@@ -41,6 +41,7 @@ namespace SmartPhotShop
             container.Singleton<IEventAggregator, EventAggregator>();
             container.Singleton<IWindowManager, WindowManager>();
 
+            container.PerRequest<SplashViewModel>();
             container.PerRequest<MainViewModel>();
             container.PerRequest<SettingsViewModel>();
             container.PerRequest<RunViewModel>();
@@ -84,11 +85,9 @@ namespace SmartPhotShop
             //    }
             //}
 
-            await DisplayRootViewForAsync<MainViewModel>();
-
             logger.Info("Application Started!");
-
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            await DisplayRootViewForAsync<SplashViewModel>();
         }
 
         protected override IEnumerable<Assembly> SelectAssemblies() => new List<Assembly> { Assembly.GetExecutingAssembly() };
