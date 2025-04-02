@@ -28,6 +28,11 @@ namespace SmartPhotShop.ViewModels
         {
             return Task.Run(() =>
             {
+                if (string.IsNullOrWhiteSpace(Properties.Settings.Default.ProductsDirectory) || !Directory.Exists(Properties.Settings.Default.ProductsDirectory))
+                {
+                    return;
+                }
+
                 var products = Directory.GetDirectories(Properties.Settings.Default.ProductsDirectory)
                     .Select(d => new ProductInfo(d));
 
