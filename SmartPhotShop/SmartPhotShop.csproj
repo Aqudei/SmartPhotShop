@@ -350,10 +350,9 @@
     </Compile>
     <Compile Include="Models\BaseImage.cs" />
     <Compile Include="Models\ProductImage.cs" />
-    <Compile Include="Models\OutputItem.cs" />
     <Compile Include="Models\ProcessingItem.cs" />
     <Compile Include="Models\Processor.cs" />
-    <Compile Include="Models\Product.cs" />
+    <Compile Include="Models\ProductItem.cs" />
     <Compile Include="Models\ProductTemplate.cs" />
     <Compile Include="SimpleBootstrapper.cs" />
     <Compile Include="ViewModels\InventoryViewModel.cs" />

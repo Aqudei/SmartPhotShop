@@ -25,6 +25,7 @@
                 <DataGridTextColumn Header="Product Name" 
                          Binding="{Binding ProductName}" />
                 <DataGridTextColumn Header="Product ID" Binding="{Binding ProductId}" />
+                <DataGridTextColumn Header="Sku" Binding="{Binding Sku}" />
                 <DataGridTextColumn Header="Product ID Type" Binding="{Binding ProductIdType}" />
                 <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=C}" />
                 <DataGridTextColumn Header="Min Allowed Price" Binding="{Binding MinimumSellerAllowedPrice, StringFormat=C}" />

@@ -182,15 +182,15 @@ namespace SmartPhotShop.ViewModels
 
                 while (continueRunning)
                 {
-                    var uiItem = Items.FirstOrDefault(i => i.Status == "Pending");
+                    var processingItem = Items.FirstOrDefault(i => i.Status == "Pending");
 
-                    if (uiItem != null)
+                    if (processingItem != null)
                     {
                         try
                         {
-                            WaitUntilFileIsReady(uiItem.Overlay);
+                            WaitUntilFileIsReady(processingItem.Overlay);
 
-                            OnUIThread(() => uiItem.Status = "Processing");
+                            OnUIThread(() => processingItem.Status = "Processing");
 
 
                             if (photoshop == null)
@@ -199,41 +199,44 @@ namespace SmartPhotShop.ViewModels
 
                             }
 
-                            var outputFileName = $"{uiItem.ProductTemplate.ProductName.ToUpper()}-WITH-{Path.GetFileNameWithoutExtension(uiItem.Overlay).ToUpper()}.png".Replace(" ", "-");
-                            var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, uiItem.ProductTemplate.ProductName, outputFileName);
-                            Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
-
-                            ProcessImage(photoshop, uiItem, outputFilePath);
-
-
                             using (var db = new LiteDatabase(DbPath))
                             {
+                                var productImages = new List<ProductImage>();
 
-                                var dbItem = db.GetCollection<OutputItem>().FindOne(x => x.Sku == uiItem.Sku);
-
-                                int maxId = 0;
-
-
-                                try
+                                foreach (var baseImage in processingItem.ProductTemplate.Images)
                                 {
-                                    maxId = db.GetCollection<OutputItem>().FindAll().Max(o => o.ProductId);
+                                    try
+                                    {
+                                        var outputFileName = $"{processingItem.ProductTemplate.Sku.ToUpper()}-{baseImage.Name}-{Path.GetFileNameWithoutExtension(processingItem.Overlay)}.png".Replace(" ", "-");
+                                        var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, processingItem.ProductTemplate.ProductName, outputFileName).ToUpper();
+                                        Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
+
+                                        ProcessImage(photoshop, processingItem, baseImage.Path, outputFilePath);
+                                        productImages.Add(new ProductImage
+                                        {
+                                            Name = baseImage.Name,
+                                            Path = outputFilePath
+                                        });
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        logger.Error($"Error processing image '{baseImage.Name}' for SKU '{processingItem.ProductTemplate.Sku}'");
+                                        logger.Error(ex, ex.Message);
+                                    }
+
                                 }
-                                catch (Exception)
-                                {
-                                }
+
+                                var dbItem = db.GetCollection<ProductItem>().FindOne(x => x.Sku == processingItem.Sku);
 
                                 if (dbItem == null)
                                 {
+                                    var outputItem = new ProductItem();
+                                    _mapper.Map(processingItem.ProductTemplate, outputItem);
+                                    outputItem.Sku = processingItem.Sku;
+                                    outputItem.ProductTemplateId = processingItem.ProductTemplate.Id;
+                                    outputItem.Images = productImages;
 
-                                    var outputItem = new OutputItem
-                                    {
-                                        Sku = uiItem.Sku,
-                                        ProductId = maxId + 1,
-                                        Location = outputFilePath,
-                                        VariantId = uiItem.ProductTemplate.Id
-                                    };
-
-                                    var inserted = db.GetCollection<OutputItem>().Insert(outputItem);
+                                    var inserted = db.GetCollection<ProductItem>().Insert(outputItem);
 
                                     // var data = new[] { uiItem.Sku, outputItem.ProductId.ToString() };
                                     // UpdateOrInsertRow(Properties.Settings.Default.FlatFile, "Template", uiItem.Sku, data);
@@ -249,7 +252,7 @@ namespace SmartPhotShop.ViewModels
                         {
 
                             // MoveFile(uiItem, Properties.Settings.Default.DoneDirectory);
-                            OnUIThread(() => uiItem.Status = "Done");
+                            OnUIThread(() => processingItem.Status = "Done");
                         }
                     }
                     else
@@ -294,7 +297,7 @@ namespace SmartPhotShop.ViewModels
         }
 
 
-        private void ProcessImage(Photoshop.Application photoshop, ProcessingItem uiItem, string outputFilePath)
+        private void ProcessImage(Photoshop.Application photoshop, ProcessingItem uiItem, string baseImagePath, string outputFilePath)
         {
             var actionSet = Properties.Settings.Default.ActionSet;
             var outputDirectory = Properties.Settings.Default.OutputDirectory;
@@ -302,8 +305,7 @@ namespace SmartPhotShop.ViewModels
             var errorDirectory = Properties.Settings.Default.ErrorDirectory;
             var productsDirectory = Properties.Settings.Default.ProductsDirectory;
 
-            var baseImagePath = uiItem.ProductTemplate.Path;
-            var actionName = uiItem.ProductTemplate.ProductName;
+            var actionName = Path.GetFileNameWithoutExtension(baseImagePath);
 
             Debug.WriteLine($"Running ATN: {actionSet}::{actionName}");
 
@@ -388,10 +390,9 @@ namespace SmartPhotShop.ViewModels
                 foreach (var productTemplate in productTemplates)
                 {
                     var processItem = new ProcessingItem(e.FullPath, productTemplate);
+                    OnUIThread(()=>Items.Add(processItem));
                 }
             }
-
-
         }
 
         public IEnumerable<IResult> Stop()

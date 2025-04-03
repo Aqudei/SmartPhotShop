@@ -17,8 +17,8 @@ namespace SmartPhotShop.ViewModels
     {
         public string DbPath { get; }
 
-        public BindableCollection<OutputItem> Items { get; set; } = new BindableCollection<OutputItem>();
-        public OutputItem SelectedItem { get => _selectedItem; set => Set(ref _selectedItem, value); }
+        public BindableCollection<ProductItem> Items { get; set; } = new BindableCollection<ProductItem>();
+        public ProductItem SelectedItem { get => _selectedItem; set => Set(ref _selectedItem, value); }
         public InventoryViewModel(IDialogCoordinator dialogCoordinator)
         {
             DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
@@ -85,70 +85,69 @@ namespace SmartPhotShop.ViewModels
                 using (var excel = new ExcelPackage(Properties.Settings.Default.FlatFile))
                 using (var db = new LiteDatabase(DbPath))
                 {
-                    var variantsCollection = db.GetCollection<ProductTemplate>().FindAll();
+                    var productTemplatesCollection = db.GetCollection<ProductTemplate>().FindAll();
                     var flatFile = Properties.Settings.Default.FlatFile;
                     var sheetName = "Template";
-                    var concreteItems = db.GetCollection<OutputItem>().FindAll().ToList();
+                    var productItems = db.GetCollection<ProductItem>().FindAll().ToList();
 
 
-                    foreach (var item in concreteItems)
+                    foreach (var productItem in productItems)
                     {
-                        var data = new List<object> { item.Sku };
+                        var data = new List<object> { productItem.Sku };
 
-                        var variant = variantsCollection.FirstOrDefault(v => v.Id == item.VariantId);
-                        if (variant != null)
+                        if (productItem != null)
                         {
                             data = new List<object> {
-                                $"{item.Sku}",
-                                $"{variant.ProductId}",
-                                $"{variant.ProductIdType}",
-                                variant.Price,
-                                variant.MinimumSellerAllowedPrice,
-                                variant.MaximumSellerAllowedPrice,
-                                $"{variant.ItemCondition}",
-                                variant.Quantity,
-                                $"{variant.AddDelete}",
-                                variant.WillShipInternationally,
-                                variant.ExpeditedShipping,
-                                $"{variant.ItemNote}",
-                                $"{variant.FulfillmentCenterId}",
-                                $"{variant.MerchantShippingGroupName}",
-                                $"{variant.ProductTaxCode}",
-                                variant.HandlingTime,
-                                variant.BatteriesRequired ? "True" : "False",
-                                variant.AreBatteriesIncluded ? "True" : "False",
-                                $"{variant.BatteryCellComposition}",
-                                $"{variant.BatteryType}",
-                                variant.NumberOfBatteries,
-                                variant.BatteryWeight,
-                                $"{variant.BatteryWeightUnitOfMeasure}",
-                                variant.NumberOfLithiumIonCells,
-                                variant.NumberOfLithiumMetalCells,
-                                $"{variant.LithiumBatteryPackaging}",
-                                variant.LithiumBatteryEnergyContent,
-                                $"{variant.LithiumBatteryEnergyContentUnitOfMeasure}",
-                                variant.LithiumBatteryWeight,
-                                $"{variant.LithiumBatteryWeightUnitOfMeasure}",
-                                $"{variant.SupplierDeclaredDgHzRegulation1}",
-                                $"{variant.SupplierDeclaredDgHzRegulation2}",
-                                $"{variant.SupplierDeclaredDgHzRegulation3}",
-                                $"{variant.SupplierDeclaredDgHzRegulation4}",
-                                $"{variant.SupplierDeclaredDgHzRegulation5}",
-                                $"{variant.HazmatUnitedNationsRegulatoryId}",
-                                $"{variant.SafetyDataSheetUrl}",
-                                variant.ItemWeight,
-                                $"{variant.ItemWeightUnitOfMeasure}",
-                                variant.ItemVolume,
-                                $"{variant.ItemVolumeUnitOfMeasure}",
-                                variant.FlashPoint,
-                                $"{variant.GhsClassificationClass1}",
-                                $"{variant.GhsClassificationClass2}",
-                                $"{variant.GhsClassificationClass3}",
-                                variant.ListPriceWithTax,
-                                variant.UvpListPrice,
+                                $"{productItem.Sku}",
+                                $"{productItem.ProductId}",
+                                $"{productItem.ProductIdType}",
+                                productItem.Price,
+                                productItem.MinimumSellerAllowedPrice,
+                                productItem.MaximumSellerAllowedPrice,
+                                $"{productItem.ItemCondition}",
+                                productItem.Quantity,
+                                $"{productItem.AddDelete}",
+                                productItem.WillShipInternationally,
+                                productItem.ExpeditedShipping,
+                                $"{productItem.ItemNote}",
+                                $"{productItem.FulfillmentCenterId}",
+                                $"{productItem.MerchantShippingGroupName}",
+                                $"{productItem.ProductTaxCode}",
+                                productItem.HandlingTime,
+                                productItem.BatteriesRequired ? "True" : "False",
+                                productItem.AreBatteriesIncluded ? "True" : "False",
+                                $"{productItem.BatteryCellComposition}",
+                                $"{productItem.BatteryType}",
+                                productItem.NumberOfBatteries,
+                                productItem.BatteryWeight,
+                                $"{productItem.BatteryWeightUnitOfMeasure}",
+                                productItem.NumberOfLithiumIonCells,
+                                productItem.NumberOfLithiumMetalCells,
+                                $"{productItem.LithiumBatteryPackaging}",
+                                productItem.LithiumBatteryEnergyContent,
+                                $"{productItem.LithiumBatteryEnergyContentUnitOfMeasure}",
+                                productItem.LithiumBatteryWeight,
+                                $"{productItem.LithiumBatteryWeightUnitOfMeasure}",
+                                $"{productItem.SupplierDeclaredDgHzRegulation1}",
+                                $"{productItem.SupplierDeclaredDgHzRegulation2}",
+                                $"{productItem.SupplierDeclaredDgHzRegulation3}",
+                                $"{productItem.SupplierDeclaredDgHzRegulation4}",
+                                $"{productItem.SupplierDeclaredDgHzRegulation5}",
+                                $"{productItem.HazmatUnitedNationsRegulatoryId}",
+                                $"{productItem.SafetyDataSheetUrl}",
+                                productItem.ItemWeight,
+                                $"{productItem.ItemWeightUnitOfMeasure}",
+                                productItem.ItemVolume,
+                                $"{productItem.ItemVolumeUnitOfMeasure}",
+                                productItem.FlashPoint,
+                                $"{productItem.GhsClassificationClass1}",
+                                $"{productItem.GhsClassificationClass2}",
+                                $"{productItem.GhsClassificationClass3}",
+                                productItem.ListPriceWithTax,
+                                productItem.UvpListPrice,
                         };
 
-                            UpdateOrInsertRow(excel, flatFile, sheetName, item.Sku, data);
+                            UpdateOrInsertRow(excel, flatFile, sheetName, (string)productItem.Sku, data);
                         }
 
                         Process.Start(Properties.Settings.Default.FlatFile);
@@ -187,7 +186,7 @@ namespace SmartPhotShop.ViewModels
         }
 
         private bool _isAllSelected;
-        private OutputItem _selectedItem;
+        private ProductItem _selectedItem;
         private readonly IDialogCoordinator _dialogCoordinator;
 
         public bool IsAllSelected
@@ -208,7 +207,7 @@ namespace SmartPhotShop.ViewModels
         {
             using (var db = new LiteDatabase(DbPath))
             {
-                var items = db.GetCollection<OutputItem>().FindAll();
+                var items = db.GetCollection<ProductItem>().FindAll();
                 Items.Clear();
                 OnUIThread(() => Items.AddRange(items));
             }
@@ -222,17 +221,24 @@ namespace SmartPhotShop.ViewModels
             {
                 using (var db = new LiteDatabase(DbPath))
                 {
-                    var itemsCollection = db.GetCollection<OutputItem>();
+                    var itemsCollection = db.GetCollection<ProductItem>();
                     var selected = Items.Where(i => i.IsSelected).ToList();
 
 
                     for (int i = selected.Count - 1; i >= 0; i--)
                     {
-                        progress.SetMessage($"Deleting {selected[i].Location}...");
+                        progress.SetMessage($"Deleting {selected[i].ProductName}...");
                         progress.SetProgress((double)(selected.Count - i - 1) / selected.Count);
 
-                        File.Delete(selected[i].Location);
-                        OutputItem item = selected[i];
+                        for (int j = selected[i].Images.Count - 1; j >= 0; j--)
+                        {
+                            if (File.Exists(selected[i].Images[j].Path))
+                            {
+                                File.Delete(selected[i].Images[j].Path);
+                            }
+                        }
+
+                        ProductItem item = selected[i];
                         itemsCollection.Delete(item.Id);
                         Items.Remove(item);
                     }

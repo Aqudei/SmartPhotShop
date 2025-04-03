@@ -22,7 +22,6 @@ namespace SmartPhotShop.Models
         public string Status { get => status; set => Set(ref status, value); }
         public DateTime? DateAdded { get => dateAdded; set => Set(ref dateAdded, value); }
         internal ProductTemplate ProductTemplate { get; set; }
-        public string BaseImage => ProductTemplate.Path;
         public string Sku { get; set; }
 
         public ProcessingItem(string overlay, ProductTemplate productTemplate)

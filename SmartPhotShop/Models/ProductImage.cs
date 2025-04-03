@@ -12,10 +12,5 @@ namespace SmartPhotShop.Models
         public string Path { get; set; }
         public string Name { get; set; }
 
-        public ProductImage(string path)
-        {
-            Path = path;
-            Name = System.IO.Path.GetFileNameWithoutExtension(path);
-        }
     }
 }

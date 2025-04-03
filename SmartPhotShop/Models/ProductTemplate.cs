@@ -15,7 +15,6 @@ namespace SmartPhotShop.Models
     {
         public int Id { get; set; }
         public string ProductName { get; set; }
-        public string Path { get; set; }
         public string Sku { get; set; }
         public string ProductId { get; set; }
         public string ProductIdType { get; set; }
@@ -68,14 +67,17 @@ namespace SmartPhotShop.Models
 
         public ProductTemplate(string path)
         {
-            Path = path;
             ProductName = System.IO.Path.GetFileNameWithoutExtension(path);
             Sku = Regex.Replace(ProductName.ToUpper(), @"\s+", "-");
 
 
             foreach (var image in Directory.GetFiles(path, "*.*"))
             {
-                Images.Add(new ProductImage(image));
+                Images.Add(new ProductImage
+                {
+                    Path = image,
+                    Name = System.IO.Path.GetFileNameWithoutExtension(image)
+                });
             }
         }
 

@@ -52,14 +52,12 @@ namespace SmartPhotShop
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Properties.Settings, SettingsViewModel>().ReverseMap();
-                cfg.CreateMap<ProductTemplate, ProductTemplate>()
-                .ForMember(v => v.ProductName, opts => opts.Ignore())
-                .ForMember(v => v.Path, opts => opts.Ignore());
+                cfg.CreateMap<ProductTemplate, ProductTemplate>();
+                cfg.CreateMap<ProductTemplate, ProductItem>()
+                    .ForMember(m => m.IsSelected, opts => opts.Ignore());
             });
 
             container.Instance(config.CreateMapper());
-
-
 
         }
 

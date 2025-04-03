@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using LiteDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +8,14 @@ using System.Threading.Tasks;
 
 namespace SmartPhotShop.Models
 {
-    public class Product
+    public class ProductItem : PropertyChangedBase
     {
+        private bool _isSelected;
+
+        [BsonIgnore]
+        public bool IsSelected { get => _isSelected; set => Set(ref _isSelected, value); }
         public int Id { get; set; }
         public string ProductName { get; set; }
-        public string Path { get; set; }
         public string Sku { get; set; }
         public string ProductId { get; set; }
         public string ProductIdType { get; set; }
@@ -58,5 +63,8 @@ namespace SmartPhotShop.Models
         public string GhsClassificationClass3 { get; set; }
         public decimal ListPriceWithTax { get; set; }
         public decimal UvpListPrice { get; set; }
+        public int ProductTemplateId { get; set; }
+
+        public List<ProductImage> Images { get; set; } = new List<ProductImage>();
     }
 }
