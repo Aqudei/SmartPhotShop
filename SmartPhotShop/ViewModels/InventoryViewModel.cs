@@ -186,7 +186,7 @@ namespace SmartPhotShop.ViewModels
                 using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
                 {
                     var transfer = new TransferUtility(s3Client);
-                    await transfer.UploadDirectoryAsync(Properties.Settings.Default.OutputDirectory, BucketName);
+                    await transfer.UploadDirectoryAsync(Properties.Settings.Default.OutputDirectory, BucketName, "*.*", SearchOption.AllDirectories);
                     Debug.WriteLine("Successfully uploaded directory to S3.");
                 }
             }

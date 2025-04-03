@@ -27,6 +27,7 @@
         <StackPanel Orientation="Horizontal">
             <Button Width="100"
                     Margin="5"
+                    FontSize="16"
                     x:Name="Delete">
                 <StackPanel Orientation="Horizontal">
                     <ico:PackIconMaterial Kind="Delete" VerticalAlignment="Center"/>
@@ -35,10 +36,13 @@
 
             </Button>
 
-            <Button x:Name="UpdateFlatFile" Margin="5" Padding="10,5">
+            <Button x:Name="UpdateFlatFile" 
+                    Margin="5" 
+                    FontSize="16"
+                    Padding="10,5">
                 <StackPanel Orientation="Horizontal">
                     <ico:PackIconMaterial Kind="Sync" VerticalAlignment="Center"/>
-                    <Label Content="SYNC TO S3"/>
+                    <Label  Content="SYNC TO S3"/>
                 </StackPanel>
             </Button>
         </StackPanel>
