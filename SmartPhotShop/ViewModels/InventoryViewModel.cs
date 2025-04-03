@@ -1,4 +1,9 @@
-﻿using Caliburn.Micro;
+﻿using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Model;
+using Amazon.S3.Transfer;
+using Caliburn.Micro;
 using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
 using OfficeOpenXml;
@@ -151,10 +156,14 @@ namespace SmartPhotShop.ViewModels
                             UpdateOrInsertRow(excel, flatFile, sheetName, (string)productItem.Sku, data);
                         }
 
-                        Process.Start(Properties.Settings.Default.FlatFile);
+                        // Process.Start(Properties.Settings.Default.FlatFile);
 
                     }
                 }
+
+
+                await UploadFlatFileAsync(Properties.Settings.Default.FlatFile);
+
             }
             catch (Exception)
             { }
@@ -162,6 +171,79 @@ namespace SmartPhotShop.ViewModels
             {
                 await progress.CloseAsync();
             }
+        }
+
+
+
+        /// <summary>
+        /// Shows how to upload a file from the local computer to an Amazon S3
+        /// bucket.
+        /// </summary>
+        /// <param name="client">An initialized Amazon S3 client object.</param>
+        /// <param name="bucketName">The Amazon S3 bucket to which the object
+        /// will be uploaded.</param>
+        /// <param name="objectName">The object to upload.</param>
+        /// <param name="filePath">The path, including file name, of the object
+        /// on the local computer to upload.</param>
+        /// <returns>A boolean value indicating the success or failure of the
+        /// upload procedure.</returns>
+        public static async Task<bool> UploadFileAsync(
+            IAmazonS3 client,
+            string bucketName,
+            string objectName,
+            string filePath)
+        {
+            try
+            {
+                var request = new PutObjectRequest
+                {
+                    BucketName = bucketName,
+                    Key = objectName,
+                    FilePath = filePath,
+                };
+
+                await client.PutObjectAsync(request);
+                Debug.WriteLine($"Successfully uploaded {objectName} to {bucketName}.");
+                return true;
+            }
+            catch (AmazonS3Exception ex)
+            {
+                Debug.WriteLine($"Could not upload {objectName} to {bucketName}: '{ex.Message}'");
+                return false;
+            }
+            catch (AmazonClientException ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Could not upload {objectName} to {bucketName}: '{ex.Message}'");
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+
+
+
+        private async Task UploadFlatFileAsync(string flatFile)
+        {
+            var config = new AmazonS3Config
+            {
+                SignatureVersion = "3",
+                RegionEndpoint = RegionEndpoint.USEast1
+            };
+            // var bucketName = "arn:aws:s3:::thesoleengraver";
+            var bucketName = "thesoleengraver";
+            var accessId = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
+            var accessSecret = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+            Debug.WriteLine($"Access: {accessId}");
+            Debug.WriteLine($"Secret: {accessSecret}");
+
+            var s3Client = new AmazonS3Client(accessId, accessSecret, config);
+
+            var result = await UploadFileAsync(s3Client, bucketName, Path.GetFileName(flatFile), flatFile);
         }
 
         private void InventoryViewModel_PropertyChanged1(object sender, System.ComponentModel.PropertyChangedEventArgs e)

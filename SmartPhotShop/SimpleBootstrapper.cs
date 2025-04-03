@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
+using dotenv.net;
 using MahApps.Metro.Controls.Dialogs;
 using NLog;
 using OfficeOpenXml;
@@ -37,6 +38,8 @@ namespace SmartPhotShop
 
         protected override void Configure()
         {
+            DotEnv.Load();
+
             container = new SimpleContainer();
             container.Singleton<IEventAggregator, EventAggregator>();
             container.Singleton<IWindowManager, WindowManager>();
