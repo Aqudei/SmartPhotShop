@@ -17,6 +17,7 @@ namespace SmartPhotShop.ViewModels
     {
         public string DbPath { get; }
 
+        public BindableCollection<ProductImage> Images { get; set; } = new BindableCollection<ProductImage>();
         public BindableCollection<ProductItem> Items { get; set; } = new BindableCollection<ProductItem>();
         public ProductItem SelectedItem { get => _selectedItem; set => Set(ref _selectedItem, value); }
         public InventoryViewModel(IDialogCoordinator dialogCoordinator)
@@ -167,9 +168,11 @@ namespace SmartPhotShop.ViewModels
         {
             if (e.PropertyName == nameof(SelectedItem))
             {
+                Images.Clear();
                 if (SelectedItem != null)
                 {
-
+                    if (SelectedItem.Images.Any())
+                        Images.AddRange(SelectedItem.Images);
                 }
             }
         }
