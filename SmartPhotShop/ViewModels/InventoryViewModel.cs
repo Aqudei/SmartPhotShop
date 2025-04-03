@@ -20,6 +20,10 @@ namespace SmartPhotShop.ViewModels
 {
     internal class InventoryViewModel : Screen
     {
+        private const string BucketName = "thesoleengraver";
+        private string AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
+        private string AWS_SECRET_ACCESS_KEY = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+
         public string DbPath { get; }
 
         public BindableCollection<ProductImage> Images { get; set; } = new BindableCollection<ProductImage>();
@@ -34,7 +38,6 @@ namespace SmartPhotShop.ViewModels
             PropertyChanged += InventoryViewModel_PropertyChanged;
             _dialogCoordinator = dialogCoordinator;
 
-            PropertyChanged += InventoryViewModel_PropertyChanged1;
         }
         static void UpdateOrInsertRow(ExcelPackage excel, string filePath, string sheetName, string sku, List<object> newData)
         {
@@ -83,7 +86,7 @@ namespace SmartPhotShop.ViewModels
         }
         public async Task UpdateFlatFileTask()
         {
-            var progress = await _dialogCoordinator.ShowProgressAsync(this, "Updating Flat File", "Please wait...");
+            var progress = await _dialogCoordinator.ShowProgressAsync(this, "Please wait", "Updating Flat File...");
             progress.SetIndeterminate();
 
             try
@@ -164,12 +167,36 @@ namespace SmartPhotShop.ViewModels
 
                 await UploadFlatFileAsync(Properties.Settings.Default.FlatFile);
 
+                progress.SetMessage("Uploading output files to S3...");
+                await SyncProductItems();
+
             }
             catch (Exception)
             { }
             finally
             {
                 await progress.CloseAsync();
+            }
+        }
+
+        private async Task SyncProductItems()
+        {
+            try
+            {
+                using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
+                {
+                    var transfer = new TransferUtility(s3Client);
+                    await transfer.UploadDirectoryAsync(Properties.Settings.Default.OutputDirectory, BucketName);
+                    Debug.WriteLine("Successfully uploaded directory to S3.");
+                }
+            }
+            catch (AmazonS3Exception e)
+            {
+                Console.WriteLine($"Error encountered on server. Message:'{e.Message}' when writing an object");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Unknown encountered on server. Message:'{e.Message}' when writing an object");
             }
         }
 
@@ -224,40 +251,14 @@ namespace SmartPhotShop.ViewModels
             }
         }
 
-
-
-
         private async Task UploadFlatFileAsync(string flatFile)
         {
-            var config = new AmazonS3Config
+            using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
             {
-                SignatureVersion = "3",
-                RegionEndpoint = RegionEndpoint.USEast1
-            };
-            // var bucketName = "arn:aws:s3:::thesoleengraver";
-            var bucketName = "thesoleengraver";
-            var accessId = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
-            var accessSecret = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
-            Debug.WriteLine($"Access: {accessId}");
-            Debug.WriteLine($"Secret: {accessSecret}");
-
-            var s3Client = new AmazonS3Client(accessId, accessSecret, config);
-
-            var result = await UploadFileAsync(s3Client, bucketName, Path.GetFileName(flatFile), flatFile);
-        }
-
-        private void InventoryViewModel_PropertyChanged1(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(SelectedItem))
-            {
-                Images.Clear();
-                if (SelectedItem != null)
-                {
-                    if (SelectedItem.Images.Any())
-                        Images.AddRange(SelectedItem.Images);
-                }
+                var result = await UploadFileAsync(s3Client, BucketName, Path.GetFileName(flatFile), flatFile);
             }
         }
+
 
         private void InventoryViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -266,6 +267,16 @@ namespace SmartPhotShop.ViewModels
                 foreach (var item in Items)
                 {
                     item.IsSelected = IsAllSelected;
+                }
+            }
+
+            if (e.PropertyName == nameof(SelectedItem))
+            {
+                Images.Clear();
+                if (SelectedItem != null)
+                {
+                    if (SelectedItem.Images.Any())
+                        Images.AddRange(SelectedItem.Images);
                 }
             }
         }

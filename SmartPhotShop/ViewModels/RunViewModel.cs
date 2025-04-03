@@ -1,4 +1,7 @@
-﻿using AutoMapper;
+﻿using Amazon;
+using Amazon.S3;
+using Amazon.S3.Transfer;
+using AutoMapper;
 using Caliburn.Micro;
 using DocumentFormat.OpenXml.VariantTypes;
 using DocumentFormat.OpenXml.Vml;
@@ -230,16 +233,15 @@ namespace SmartPhotShop.ViewModels
 
                                 if (dbItem == null)
                                 {
-                                    var outputItem = new ProductItem();
-                                    _mapper.Map(processingItem.ProductTemplate, outputItem);
-                                    outputItem.Sku = processingItem.Sku;
-                                    outputItem.ProductTemplateId = processingItem.ProductTemplate.Id;
-                                    outputItem.Images = productImages;
+                                    var productItem = new ProductItem();
+                                    _mapper.Map(processingItem.ProductTemplate, productItem);
+                                    productItem.Sku = processingItem.Sku;
+                                    productItem.ProductTemplateId = processingItem.ProductTemplate.Id;
+                                    productItem.Images = productImages;
 
-                                    var inserted = db.GetCollection<ProductItem>().Insert(outputItem);
+                                    var inserted = db.GetCollection<ProductItem>().Insert(productItem);
 
-                                    // var data = new[] { uiItem.Sku, outputItem.ProductId.ToString() };
-                                    // UpdateOrInsertRow(Properties.Settings.Default.FlatFile, "Template", uiItem.Sku, data);
+                                    //Task.Run(() => UploadToS3(productItem));
                                 }
                             }
 
@@ -278,6 +280,22 @@ namespace SmartPhotShop.ViewModels
             }
         }
 
+        //private async Task UploadToS3(ProductItem productItem)
+        //{
+        //    var bucketName = "thesoleengraver";
+        //    var accessId = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
+        //    var accessSecret = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+
+        //    using (var s3Client = new AmazonS3Client(accessId, accessSecret, RegionEndpoint.SAEast1))
+        //    {
+        //        var fileTransferUtility = new TransferUtility(s3Client);
+        //        foreach (var image in productItem.Images)
+        //        {
+                    
+        //        }
+        //    }
+          
+        //}
 
         private bool MoveFile(string source, string destination)
         {

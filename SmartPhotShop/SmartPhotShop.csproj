@@ -27,7 +27,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>https://raw.githubusercontent.com/Aqudei/SmartPhotShop/refs/heads/master/SmartPhotShop/publish/</InstallUrl>
     <UpdateUrl>https://raw.githubusercontent.com/Aqudei/SmartPhotShop/refs/heads/master/SmartPhotShop/publish/</UpdateUrl>
-    <ApplicationRevision>15</ApplicationRevision>
+    <ApplicationRevision>16</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -357,6 +357,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\StringToBitmapImageConverter.cs" />
     <Compile Include="Models\BaseImage.cs" />
     <Compile Include="Models\ProductImage.cs" />
     <Compile Include="Models\ProcessingItem.cs" />
