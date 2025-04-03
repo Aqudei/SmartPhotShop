@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using DocumentFormat.OpenXml.VariantTypes;
 using LiteDB;
 using SmartPhotShop.Models;
 using System;
@@ -28,27 +29,19 @@ namespace SmartPhotShop.ViewModels
         {
             return Task.Run(() =>
             {
-                if (string.IsNullOrWhiteSpace(Properties.Settings.Default.ProductsDirectory) || !Directory.Exists(Properties.Settings.Default.ProductsDirectory))
-                {
-                    return;
-                }
-
                 var products = Directory.GetDirectories(Properties.Settings.Default.ProductsDirectory)
-                    .Select(d => new ProductInfo(d));
+                    .Select(d => new ProductTemplate(d));
 
                 using (var db = new LiteDatabase(DbPath))
                 {
-                    var variantsCol = db.GetCollection<VariantTemplate>();
+                    var productTemplateCollection = db.GetCollection<ProductTemplate>();
                     foreach (var product in products)
                     {
-                        foreach (var variant in product.Variants)
-                        {
-                            var dbVariant = variantsCol.FindOne(v => v.VariantSku == variant.VariantSku);
-                            if (dbVariant == null)
-                            {
-                                variantsCol.Insert(variant);
-                            }
-                        }
+                        var dbProduct = productTemplateCollection.FindOne(v => v.Sku == product.Sku);
+                        if (dbProduct == null)
+                            productTemplateCollection.Insert(product);
+                        else
+                            productTemplateCollection.Update(dbProduct.Id, product);
                     }
                 }
 

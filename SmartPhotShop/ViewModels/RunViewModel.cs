@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
+using DocumentFormat.OpenXml.VariantTypes;
 using DocumentFormat.OpenXml.Vml;
 using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
@@ -112,7 +113,7 @@ namespace SmartPhotShop.ViewModels
         private string _workingDirectory;
 
         private HashSet<string> _supportedFiles = new HashSet<string> { ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif", ".webp", ".heic" };
-        private List<ProductInfo> _products;
+        private List<ProductTemplate> _products;
 
         public string WorkingDirectory
         {
@@ -120,7 +121,7 @@ namespace SmartPhotShop.ViewModels
             set { Set(ref _workingDirectory, value); }
         }
 
-        public BindableCollection<ProcessItem> Items { get; set; } = new BindableCollection<ProcessItem>();
+        public BindableCollection<ProcessingItem> Items { get; set; } = new BindableCollection<ProcessingItem>();
         public RunViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator)
         {
             DisplayName = "Run";
@@ -198,8 +199,8 @@ namespace SmartPhotShop.ViewModels
 
                             }
 
-                            var outputFileName = $"{uiItem.Variant.VariantName.ToUpper()}-WITH-{Path.GetFileNameWithoutExtension(uiItem.Overlay).ToUpper()}.png".Replace(" ", "-");
-                            var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, uiItem.Product.ProductName, outputFileName);
+                            var outputFileName = $"{uiItem.ProductTemplate.ProductName.ToUpper()}-WITH-{Path.GetFileNameWithoutExtension(uiItem.Overlay).ToUpper()}.png".Replace(" ", "-");
+                            var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, uiItem.ProductTemplate.ProductName, outputFileName);
                             Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 
                             ProcessImage(photoshop, uiItem, outputFilePath);
@@ -229,7 +230,7 @@ namespace SmartPhotShop.ViewModels
                                         Sku = uiItem.Sku,
                                         ProductId = maxId + 1,
                                         Location = outputFilePath,
-                                        VariantId = uiItem.Variant.Id
+                                        VariantId = uiItem.ProductTemplate.Id
                                     };
 
                                     var inserted = db.GetCollection<OutputItem>().Insert(outputItem);
@@ -293,7 +294,7 @@ namespace SmartPhotShop.ViewModels
         }
 
 
-        private void ProcessImage(Photoshop.Application photoshop, ProcessItem uiItem, string outputFilePath)
+        private void ProcessImage(Photoshop.Application photoshop, ProcessingItem uiItem, string outputFilePath)
         {
             var actionSet = Properties.Settings.Default.ActionSet;
             var outputDirectory = Properties.Settings.Default.OutputDirectory;
@@ -301,8 +302,8 @@ namespace SmartPhotShop.ViewModels
             var errorDirectory = Properties.Settings.Default.ErrorDirectory;
             var productsDirectory = Properties.Settings.Default.ProductsDirectory;
 
-            var baseImagePath = uiItem.Variant.VariantPath;
-            var actionName = uiItem.Variant.VariantName;
+            var baseImagePath = uiItem.ProductTemplate.Path;
+            var actionName = uiItem.ProductTemplate.ProductName;
 
             Debug.WriteLine($"Running ATN: {actionSet}::{actionName}");
 
@@ -378,28 +379,15 @@ namespace SmartPhotShop.ViewModels
             if (string.IsNullOrEmpty(ext) || !_supportedFiles.Contains(ext))
                 return;
 
-            var products = Directory.EnumerateDirectories(Properties.Settings.Default.ProductsDirectory)
-                .Select(d => new ProductInfo(d))
-                .ToList();
-
             using (var db = new LiteDatabase(DbPath))
             {
-                var variantsCol = db.GetCollection<VariantTemplate>();
+                var productTemplates = db.GetCollection<ProductTemplate>().FindAll().ToList();
+                if (!productTemplates.Any())
+                    return;
 
-                foreach (var product in products)
+                foreach (var productTemplate in productTemplates)
                 {
-                    foreach (var variant in product.Variants)
-                    {
-                        var dbVariant = variantsCol.FindOne(v => v.VariantSku == variant.VariantSku);
-                        if (dbVariant != null)
-                        {
-                            _mapper.Map(dbVariant, variant);
-
-                            var processItem = new ProcessItem(e.FullPath, variant, product);
-
-                            OnUIThread(() => Items.Add(processItem));
-                        }
-                    }
+                    var processItem = new ProcessingItem(e.FullPath, productTemplate);
                 }
             }
 

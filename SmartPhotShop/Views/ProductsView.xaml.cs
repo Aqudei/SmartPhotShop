@@ -31,7 +31,7 @@ namespace SmartPhotShop.Views
         {
             if (e.EditAction == DataGridEditAction.Commit)
             {
-                var item = e.Row.Item as VariantTemplate; // Get the updated row item
+                var item = e.Row.Item as ProductTemplate; // Get the updated row item
                 (DataContext as ProductsViewModel)?.SaveItem(item);
             }
         }

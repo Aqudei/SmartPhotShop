@@ -85,7 +85,7 @@ namespace SmartPhotShop.ViewModels
                 using (var excel = new ExcelPackage(Properties.Settings.Default.FlatFile))
                 using (var db = new LiteDatabase(DbPath))
                 {
-                    var variantsCollection = db.GetCollection<VariantTemplate>().FindAll();
+                    var variantsCollection = db.GetCollection<ProductTemplate>().FindAll();
                     var flatFile = Properties.Settings.Default.FlatFile;
                     var sheetName = "Template";
                     var concreteItems = db.GetCollection<OutputItem>().FindAll().ToList();

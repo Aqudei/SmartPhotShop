@@ -19,20 +19,18 @@ namespace SmartPhotShop.ViewModels
 {
     class ProductsViewModel : Screen
     {
-        private ProductInfo selectedProduct;
+        private ProductTemplate _selectedProductTemplate;
         private readonly IMapper _mapper;
         private readonly IDialogCoordinator _dialogCoordinator;
 
-        public BindableCollection<ProductInfo> Products { get; set; } = new BindableCollection<ProductInfo>();
-        public BindableCollection<VariantTemplate> Variants { get; set; } = new BindableCollection<VariantTemplate>();
-        public ProductInfo SelectedProduct { get => selectedProduct; set => Set(ref selectedProduct, value); }
+        public BindableCollection<ProductTemplate> ProductTemplates { get; set; } = new BindableCollection<ProductTemplate>();
+        public ProductTemplate SelectedProductTemplate { get => _selectedProductTemplate; set => Set(ref _selectedProductTemplate, value); }
         public string DbPath { get; }
 
         public ProductsViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator)
         {
             DisplayName = "Products";
 
-            PropertyChanged += ProductsViewModel_PropertyChanged;
 
             DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
             Directory.CreateDirectory(Path.GetDirectoryName(DbPath));
@@ -40,46 +38,12 @@ namespace SmartPhotShop.ViewModels
             _dialogCoordinator = dialogCoordinator;
         }
 
-        private void ProductsViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(SelectedProduct))
-            {
-                Variants.Clear();
-
-                if (SelectedProduct != null && SelectedProduct.Variants.Any())
-                {
-                    Variants.AddRange(SelectedProduct.Variants);
-
-                    using (var db = new LiteDatabase(DbPath))
-                    {
-                        var variantsCollection = db.GetCollection<VariantTemplate>();
-                        var variants = variantsCollection.FindAll().ToList();
-
-                        foreach (var variant in Variants)
-                        {
-                            if (!string.IsNullOrWhiteSpace(variant.VariantSku))
-                            {
-                                var v = variants.FirstOrDefault(vv => vv.VariantSku == variant.VariantSku);
-                                if (v != null)
-                                {
-                                    _mapper.Map(v, variant);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        
-
-
         public void Save()
         {
             using (var db = new LiteDatabase(DbPath))
             {
-                var variants = db.GetCollection<VariantTemplate>();
-                foreach (var item in Variants)
+                var variants = db.GetCollection<ProductTemplate>();
+                foreach (var item in ProductTemplates)
                 {
                     if (item.Id > 0)
                     {
@@ -96,36 +60,29 @@ namespace SmartPhotShop.ViewModels
 
         protected override void OnViewLoaded(object view)
         {
-
-            Products.Clear();
-
-            if (string.IsNullOrWhiteSpace(Properties.Settings.Default.ProductsDirectory))
+            ProductTemplates.Clear();
+            using (var db = new LiteDatabase(DbPath))
             {
-                return;
+                var products = db.GetCollection<ProductTemplate>().FindAll().ToList();
+
+                if (products == null || !products.Any())
+                    return;
+
+                OnUIThread(() =>
+                {
+                    ProductTemplates.AddRange(products);
+                    SelectedProductTemplate = ProductTemplates.FirstOrDefault();
+                });
             }
-
-            if (!Directory.Exists(Properties.Settings.Default.ProductsDirectory))
-            {
-                Directory.CreateDirectory(Properties.Settings.Default.ProductsDirectory);
-            }
-
-            var products = Directory.GetDirectories(Properties.Settings.Default.ProductsDirectory)
-               .Select(d => new ProductInfo(d));
-
-            OnUIThread(() =>
-            {
-                Products.AddRange(products);
-                SelectedProduct = Products.FirstOrDefault();
-            });
         }
 
-        
 
-        internal void SaveItem(VariantTemplate item)
+
+        internal void SaveItem(ProductTemplate item)
         {
             using (var db = new LiteDatabase(DbPath))
             {
-                var variantsCol = db.GetCollection<VariantTemplate>();
+                var variantsCol = db.GetCollection<ProductTemplate>();
                 if (item.Id == 0)
                 {
                     variantsCol.Insert(item);

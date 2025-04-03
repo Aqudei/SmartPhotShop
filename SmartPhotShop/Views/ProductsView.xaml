@@ -12,29 +12,18 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <DataGrid x:Name="Products"
-                  FontSize="20"
-                  RowHeight="60"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Product Name" 
-                                    Width="*"
-                                    Binding="{Binding ProductName}" />   
-            </DataGrid.Columns>
-        </DataGrid>
-        <DataGrid x:Name="Variants"
+        
+        <DataGrid x:Name="ProductTemplates"
                   FontSize="20"
                   RowEditEnding="Variants_RowEditEnding"
                   RowHeight="60"
-                  Grid.Row="1"
+                  Grid.Row="0"
                   AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Variant Name" 
-                         Binding="{Binding VariantName}" />
+                <DataGridTextColumn Header="Product Name" 
+                         Binding="{Binding ProductName}" />
                 <DataGridTextColumn Header="Product ID" Binding="{Binding ProductId}" />
                 <DataGridTextColumn Header="Product ID Type" Binding="{Binding ProductIdType}" />
                 <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=C}" />

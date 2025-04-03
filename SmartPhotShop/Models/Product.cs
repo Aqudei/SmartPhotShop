@@ -1,22 +1,17 @@
-﻿using Caliburn.Micro;
-using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.VariantTypes;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SmartPhotShop.Models
 {
-    public class VariantTemplate : PropertyChangedBase
+    public class Product
     {
         public int Id { get; set; }
-        public string VariantName { get; set; }
-        public string VariantPath { get; set; }
-        public string VariantSku { get; set; }
+        public string ProductName { get; set; }
+        public string Path { get; set; }
+        public string Sku { get; set; }
         public string ProductId { get; set; }
         public string ProductIdType { get; set; }
         public decimal Price { get; set; }
@@ -63,39 +58,5 @@ namespace SmartPhotShop.Models
         public string GhsClassificationClass3 { get; set; }
         public decimal ListPriceWithTax { get; set; }
         public decimal UvpListPrice { get; set; }
-
-        public VariantTemplate(string path, ProductInfo product)
-        {
-            VariantPath = path;
-            VariantName = Path.GetFileNameWithoutExtension(path);
-            VariantSku = Regex.Replace((product.ProductName + " " + VariantName).ToUpper(), @"\s+", "-");
-        }
-
-        public VariantTemplate()
-        {
-
-        }
-    }
-
-    public class ProductInfo
-    {
-        public string ProductDirectory { get; set; }
-        public string ProductName { get; set; }
-
-        public List<VariantTemplate> Variants { get; set; } = new List<VariantTemplate>();
-
-        public int NumberOfVariants => Variants.Count;
-
-        public ProductInfo(string productDirectory)
-        {
-            ProductDirectory = productDirectory;
-            ProductName = Path.GetFileName(ProductDirectory);
-
-            var variants = Directory.GetFiles(productDirectory, "*.*").Select(f => new VariantTemplate(f, this));
-
-            Variants.Clear();
-            Variants.AddRange(variants);
-        }
-
     }
 }

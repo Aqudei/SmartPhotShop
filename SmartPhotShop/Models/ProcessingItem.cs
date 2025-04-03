@@ -9,35 +9,32 @@ using System.Threading.Tasks;
 
 namespace SmartPhotShop.Models
 {
-    public class ProcessItem : PropertyChangedBase
+    public class ProcessingItem : PropertyChangedBase
     {
         private string originalFileName;
         private string movedFileName;
         private string status;
         private DateTime? dateAdded;
-        private ProductInfo product;
+        private ProductTemplate product;
 
         public string Overlay { get => originalFileName; set => Set(ref originalFileName, value); }
         public string MovedFileName { get => movedFileName; set => Set(ref movedFileName, value); }
         public string Status { get => status; set => Set(ref status, value); }
         public DateTime? DateAdded { get => dateAdded; set => Set(ref dateAdded, value); }
-
-        public ProductInfo Product { get => product; set => Set(ref product, value); }
-        internal VariantTemplate Variant { get; set; }
-        public string BaseImage => Variant.VariantPath;
+        internal ProductTemplate ProductTemplate { get; set; }
+        public string BaseImage => ProductTemplate.Path;
         public string Sku { get; set; }
 
-        public ProcessItem(string overlay, VariantTemplate variant, ProductInfo product)
+        public ProcessingItem(string overlay, ProductTemplate productTemplate)
         {
-            Variant = variant;
             Overlay = overlay;
-            Product = product;
+            ProductTemplate = productTemplate;
             DateAdded = DateTime.Now;
             Status = "Pending";
 
             var overlayName = Path.GetFileNameWithoutExtension(overlay);
 
-            Sku = Regex.Replace($"{variant.VariantSku}-{overlayName}".ToUpper(), @"\s+", "-");
+            Sku = Regex.Replace($"{productTemplate.Sku}-{overlayName}".ToUpper(), @"\s+", "-");
         }
     }
 }
