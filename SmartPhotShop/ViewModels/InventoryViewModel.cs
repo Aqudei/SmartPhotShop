@@ -21,8 +21,8 @@ namespace SmartPhotShop.ViewModels
     internal class InventoryViewModel : Screen
     {
         private const string BucketName = "thesoleengraver";
-        private string AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
-        private string AWS_SECRET_ACCESS_KEY = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+        //private string AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID", EnvironmentVariableTarget.User) ?? Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID", EnvironmentVariableTarget.Machine);
+        //private string AWS_SECRET_ACCESS_KEY = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
 
         public string DbPath { get; }
 
@@ -183,7 +183,9 @@ namespace SmartPhotShop.ViewModels
         {
             try
             {
-                using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
+                //using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
+                using (var s3Client = new AmazonS3Client(RegionEndpoint.USEast1))
+
                 {
                     var transfer = new TransferUtility(s3Client);
                     await transfer.UploadDirectoryAsync(Properties.Settings.Default.OutputDirectory, BucketName, "*.*", SearchOption.AllDirectories);
@@ -253,7 +255,8 @@ namespace SmartPhotShop.ViewModels
 
         private async Task UploadFlatFileAsync(string flatFile)
         {
-            using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
+            //using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
+            using (var s3Client = new AmazonS3Client(RegionEndpoint.USEast1))
             {
                 var result = await UploadFileAsync(s3Client, BucketName, Path.GetFileName(flatFile), flatFile);
             }
