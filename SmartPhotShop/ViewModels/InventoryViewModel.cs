@@ -24,15 +24,11 @@ namespace SmartPhotShop.ViewModels
         //private string AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID", EnvironmentVariableTarget.User) ?? Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID", EnvironmentVariableTarget.Machine);
         //private string AWS_SECRET_ACCESS_KEY = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
 
-        public string DbPath { get; }
-
         public BindableCollection<ProductImage> Images { get; set; } = new BindableCollection<ProductImage>();
         public BindableCollection<ProductItem> Items { get; set; } = new BindableCollection<ProductItem>();
         public ProductItem SelectedItem { get => _selectedItem; set => Set(ref _selectedItem, value); }
         public InventoryViewModel(IDialogCoordinator dialogCoordinator)
         {
-            DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
-            Directory.CreateDirectory(Path.GetDirectoryName(DbPath));
             DisplayName = "Files";
 
             PropertyChanged += InventoryViewModel_PropertyChanged;
@@ -92,71 +88,20 @@ namespace SmartPhotShop.ViewModels
             try
             {
                 using (var excel = new ExcelPackage(Properties.Settings.Default.FlatFile))
-                using (var db = new LiteDatabase(DbPath))
+                using (var db = new LiteDatabase(Constants.DbPath))
                 {
                     var productTemplatesCollection = db.GetCollection<ProductTemplate>().FindAll();
                     var flatFile = Properties.Settings.Default.FlatFile;
                     var sheetName = "Template";
                     var productItems = db.GetCollection<ProductItem>().FindAll().ToList();
 
-
                     foreach (var productItem in productItems)
                     {
-                        var data = new List<object> { productItem.Sku };
+                        var data = new List<object> { productItem.SKU };
 
                         if (productItem != null)
                         {
-                            data = new List<object> {
-                                $"{productItem.Sku}",
-                                $"{productItem.ProductId}",
-                                $"{productItem.ProductIdType}",
-                                productItem.Price,
-                                productItem.MinimumSellerAllowedPrice,
-                                productItem.MaximumSellerAllowedPrice,
-                                $"{productItem.ItemCondition}",
-                                productItem.Quantity,
-                                $"{productItem.AddDelete}",
-                                productItem.WillShipInternationally,
-                                productItem.ExpeditedShipping,
-                                $"{productItem.ItemNote}",
-                                $"{productItem.FulfillmentCenterId}",
-                                $"{productItem.MerchantShippingGroupName}",
-                                $"{productItem.ProductTaxCode}",
-                                productItem.HandlingTime,
-                                productItem.BatteriesRequired ? "True" : "False",
-                                productItem.AreBatteriesIncluded ? "True" : "False",
-                                $"{productItem.BatteryCellComposition}",
-                                $"{productItem.BatteryType}",
-                                productItem.NumberOfBatteries,
-                                productItem.BatteryWeight,
-                                $"{productItem.BatteryWeightUnitOfMeasure}",
-                                productItem.NumberOfLithiumIonCells,
-                                productItem.NumberOfLithiumMetalCells,
-                                $"{productItem.LithiumBatteryPackaging}",
-                                productItem.LithiumBatteryEnergyContent,
-                                $"{productItem.LithiumBatteryEnergyContentUnitOfMeasure}",
-                                productItem.LithiumBatteryWeight,
-                                $"{productItem.LithiumBatteryWeightUnitOfMeasure}",
-                                $"{productItem.SupplierDeclaredDgHzRegulation1}",
-                                $"{productItem.SupplierDeclaredDgHzRegulation2}",
-                                $"{productItem.SupplierDeclaredDgHzRegulation3}",
-                                $"{productItem.SupplierDeclaredDgHzRegulation4}",
-                                $"{productItem.SupplierDeclaredDgHzRegulation5}",
-                                $"{productItem.HazmatUnitedNationsRegulatoryId}",
-                                $"{productItem.SafetyDataSheetUrl}",
-                                productItem.ItemWeight,
-                                $"{productItem.ItemWeightUnitOfMeasure}",
-                                productItem.ItemVolume,
-                                $"{productItem.ItemVolumeUnitOfMeasure}",
-                                productItem.FlashPoint,
-                                $"{productItem.GhsClassificationClass1}",
-                                $"{productItem.GhsClassificationClass2}",
-                                $"{productItem.GhsClassificationClass3}",
-                                productItem.ListPriceWithTax,
-                                productItem.UvpListPrice,
-                        };
-
-                            UpdateOrInsertRow(excel, flatFile, sheetName, (string)productItem.Sku, data);
+                            UpdateOrInsertRow(excel, flatFile, sheetName, (string)productItem.SKU, data);
                         }
 
                         // Process.Start(Properties.Settings.Default.FlatFile);
@@ -304,7 +249,7 @@ namespace SmartPhotShop.ViewModels
 
         private void LoadItems()
         {
-            using (var db = new LiteDatabase(DbPath))
+            using (var db = new LiteDatabase(Constants.DbPath))
             {
                 var items = db.GetCollection<ProductItem>().FindAll();
                 Items.Clear();
@@ -318,7 +263,7 @@ namespace SmartPhotShop.ViewModels
 
             try
             {
-                using (var db = new LiteDatabase(DbPath))
+                using (var db = new LiteDatabase(Constants.DbPath))
                 {
                     var itemsCollection = db.GetCollection<ProductItem>();
                     var selected = Items.Where(i => i.IsSelected).ToList();
@@ -326,7 +271,7 @@ namespace SmartPhotShop.ViewModels
 
                     for (int i = selected.Count - 1; i >= 0; i--)
                     {
-                        progress.SetMessage($"Deleting {selected[i].ProductName}...");
+                        progress.SetMessage($"Deleting {selected[i].ItemName}...");
                         progress.SetProgress((double)(selected.Count - i - 1) / selected.Count);
 
                         for (int j = selected[i].Images.Count - 1; j >= 0; j--)

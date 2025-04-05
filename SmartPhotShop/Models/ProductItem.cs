@@ -2,6 +2,8 @@
 using LiteDB;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,60 +13,21 @@ namespace SmartPhotShop.Models
     public class ProductItem : PropertyChangedBase
     {
         private bool _isSelected;
+        private string _sku;
+        private BindableCollection<FieldValue> _fields;
+        private BindableCollection<ProductImage> _images;
 
         [BsonIgnore]
         public bool IsSelected { get => _isSelected; set => Set(ref _isSelected, value); }
         public int Id { get; set; }
-        public string ProductName { get; set; }
-        public string Sku { get; set; }
-        public string ProductId { get; set; }
-        public string ProductIdType { get; set; }
-        public decimal Price { get; set; }
-        public decimal MinimumSellerAllowedPrice { get; set; }
-        public decimal MaximumSellerAllowedPrice { get; set; }
-        public string ItemCondition { get; set; }
-        public int Quantity { get; set; }
-        public string AddDelete { get; set; }
-        public int WillShipInternationally { get; set; }
-        public int ExpeditedShipping { get; set; }
-        public string ItemNote { get; set; }
-        public string FulfillmentCenterId { get; set; }
-        public string MerchantShippingGroupName { get; set; }
-        public string ProductTaxCode { get; set; }
-        public int HandlingTime { get; set; }
-        public bool BatteriesRequired { get; set; }
-        public bool AreBatteriesIncluded { get; set; }
-        public string BatteryCellComposition { get; set; }
-        public string BatteryType { get; set; }
-        public int NumberOfBatteries { get; set; }
-        public decimal BatteryWeight { get; set; }
-        public string BatteryWeightUnitOfMeasure { get; set; }
-        public int NumberOfLithiumIonCells { get; set; }
-        public int NumberOfLithiumMetalCells { get; set; }
-        public string LithiumBatteryPackaging { get; set; }
-        public decimal LithiumBatteryEnergyContent { get; set; }
-        public string LithiumBatteryEnergyContentUnitOfMeasure { get; set; }
-        public decimal LithiumBatteryWeight { get; set; }
-        public string LithiumBatteryWeightUnitOfMeasure { get; set; }
-        public string SupplierDeclaredDgHzRegulation1 { get; set; }
-        public string SupplierDeclaredDgHzRegulation2 { get; set; }
-        public string SupplierDeclaredDgHzRegulation3 { get; set; }
-        public string SupplierDeclaredDgHzRegulation4 { get; set; }
-        public string SupplierDeclaredDgHzRegulation5 { get; set; }
-        public string HazmatUnitedNationsRegulatoryId { get; set; }
-        public string SafetyDataSheetUrl { get; set; }
-        public decimal ItemWeight { get; set; }
-        public string ItemWeightUnitOfMeasure { get; set; }
-        public decimal ItemVolume { get; set; }
-        public string ItemVolumeUnitOfMeasure { get; set; }
-        public decimal FlashPoint { get; set; }
-        public string GhsClassificationClass1 { get; set; }
-        public string GhsClassificationClass2 { get; set; }
-        public string GhsClassificationClass3 { get; set; }
-        public decimal ListPriceWithTax { get; set; }
-        public decimal UvpListPrice { get; set; }
-        public int ProductTemplateId { get; set; }
 
-        public List<ProductImage> Images { get; set; } = new List<ProductImage>();
+        // Supplier Description				
+        public string SKU { get => _sku; set => Set(ref _sku, value); }
+        public string ItemName { get; set; }
+
+        public BindableCollection<ProductImage> Images { get => _images; set => Set(ref _images, value); }
+
+        public BindableCollection<FieldValue> Fields { get => _fields; set => Set(ref _fields, value); }
+        public int ProductTemplateId { get; internal set; }
     }
 }

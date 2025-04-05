@@ -40,6 +40,8 @@ namespace SmartPhotShop
         {
             DotEnv.Load();
 
+            Directory.CreateDirectory(Path.GetDirectoryName(Constants.DbPath));
+
             container = new SimpleContainer();
             container.Singleton<IEventAggregator, EventAggregator>();
             container.Singleton<IWindowManager, WindowManager>();
@@ -50,6 +52,8 @@ namespace SmartPhotShop
             container.PerRequest<RunViewModel>();
             container.PerRequest<ProductsViewModel>();
             container.PerRequest<InventoryViewModel>();
+            container.PerRequest<FieldsViewModel>();
+            container.PerRequest<FieldCrudViewModel>();
             container.Instance(DialogCoordinator.Instance);
 
             var config = new MapperConfiguration(cfg =>

@@ -358,19 +358,29 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Converters\StringToBitmapImageConverter.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Models\BaseImage.cs" />
+    <Compile Include="Models\Field.cs" />
     <Compile Include="Models\ProductImage.cs" />
     <Compile Include="Models\ProcessingItem.cs" />
     <Compile Include="Models\Processor.cs" />
     <Compile Include="Models\ProductItem.cs" />
     <Compile Include="Models\ProductTemplate.cs" />
     <Compile Include="SimpleBootstrapper.cs" />
+    <Compile Include="ViewModels\FieldCrudViewModel.cs" />
+    <Compile Include="ViewModels\FieldsViewModel.cs" />
     <Compile Include="ViewModels\InventoryViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\ProductsViewModel.cs" />
     <Compile Include="ViewModels\RunViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SplashViewModel.cs" />
+    <Compile Include="Views\FieldCrudView.xaml.cs">
+      <DependentUpon>FieldCrudView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FieldsView.xaml.cs">
+      <DependentUpon>FieldsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\InventoryView.xaml.cs">
       <DependentUpon>InventoryView.xaml</DependentUpon>
     </Compile>
@@ -434,6 +444,14 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\FieldCrudView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FieldsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\InventoryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -15,14 +15,11 @@ namespace SmartPhotShop.ViewModels
     {
         private readonly IWindowManager _windowManager;
 
-        public string DbPath { get; }
+ 
 
         public SplashViewModel(IWindowManager windowManager)
         {
             _windowManager = windowManager;
-
-            DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
-            Directory.CreateDirectory(Path.GetDirectoryName(DbPath));
         }
 
         private Task ImportProductsAsync()
@@ -36,7 +33,7 @@ namespace SmartPhotShop.ViewModels
                 var products = Directory.GetDirectories(Properties.Settings.Default.ProductsDirectory)
                     .Select(d => new ProductTemplate(d));
 
-                using (var db = new LiteDatabase(DbPath))
+                using (var db = new LiteDatabase(Constants.DbPath))
                 {
                     var productTemplateCollection = db.GetCollection<ProductTemplate>();
                     foreach (var product in products)

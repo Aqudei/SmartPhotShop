@@ -111,7 +111,6 @@ namespace SmartPhotShop.ViewModels
         private readonly IMapper _mapper;
         private readonly IDialogCoordinator _dialogCoordinator;
 
-        public string DbPath { get; private set; }
 
         private string _workingDirectory;
 
@@ -130,9 +129,6 @@ namespace SmartPhotShop.ViewModels
             DisplayName = "Run";
             _mapper = mapper;
             _dialogCoordinator = dialogCoordinator;
-
-            DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
-            Directory.CreateDirectory(Path.GetDirectoryName(DbPath));
         }
 
         protected override Task OnActivateAsync(CancellationToken cancellationToken)
@@ -202,7 +198,7 @@ namespace SmartPhotShop.ViewModels
 
                             }
 
-                            using (var db = new LiteDatabase(DbPath))
+                            using (var db = new LiteDatabase(Constants.DbPath))
                             {
                                 var productImages = new List<ProductImage>();
 
@@ -229,15 +225,15 @@ namespace SmartPhotShop.ViewModels
 
                                 }
 
-                                var dbItem = db.GetCollection<ProductItem>().FindOne(x => x.Sku == processingItem.Sku);
+                                var dbItem = db.GetCollection<ProductItem>().FindOne(x => x.SKU == processingItem.Sku);
 
                                 if (dbItem == null)
                                 {
                                     var productItem = new ProductItem();
                                     _mapper.Map(processingItem.ProductTemplate, productItem);
-                                    productItem.Sku = processingItem.Sku;
+                                    productItem.SKU = processingItem.Sku;
                                     productItem.ProductTemplateId = processingItem.ProductTemplate.Id;
-                                    productItem.Images = productImages;
+                                    productItem.Images.AddRange(productImages);
 
                                     var inserted = db.GetCollection<ProductItem>().Insert(productItem);
 
@@ -399,7 +395,7 @@ namespace SmartPhotShop.ViewModels
             if (string.IsNullOrEmpty(ext) || !_supportedFiles.Contains(ext))
                 return;
 
-            using (var db = new LiteDatabase(DbPath))
+            using (var db = new LiteDatabase(Constants.DbPath))
             {
                 var productTemplates = db.GetCollection<ProductTemplate>().FindAll().ToList();
                 if (!productTemplates.Any())

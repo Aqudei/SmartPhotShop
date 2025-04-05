@@ -25,22 +25,20 @@ namespace SmartPhotShop.ViewModels
 
         public BindableCollection<ProductTemplate> ProductTemplates { get; set; } = new BindableCollection<ProductTemplate>();
         public ProductTemplate SelectedProductTemplate { get => _selectedProductTemplate; set => Set(ref _selectedProductTemplate, value); }
-        public string DbPath { get; }
+    
 
         public ProductsViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator)
         {
             DisplayName = "Products";
 
 
-            DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
-            Directory.CreateDirectory(Path.GetDirectoryName(DbPath));
-            _mapper = mapper;
+             _mapper = mapper;
             _dialogCoordinator = dialogCoordinator;
         }
 
         public void Save()
         {
-            using (var db = new LiteDatabase(DbPath))
+            using (var db = new LiteDatabase(Constants.DbPath))
             {
                 var variants = db.GetCollection<ProductTemplate>();
                 foreach (var item in ProductTemplates)
@@ -61,7 +59,7 @@ namespace SmartPhotShop.ViewModels
         protected override void OnViewLoaded(object view)
         {
             ProductTemplates.Clear();
-            using (var db = new LiteDatabase(DbPath))
+            using (var db = new LiteDatabase(Constants.DbPath))
             {
                 var products = db.GetCollection<ProductTemplate>().FindAll().ToList();
 
@@ -80,7 +78,7 @@ namespace SmartPhotShop.ViewModels
 
         internal void SaveItem(ProductTemplate item)
         {
-            using (var db = new LiteDatabase(DbPath))
+            using (var db = new LiteDatabase(Constants.DbPath))
             {
                 var variantsCol = db.GetCollection<ProductTemplate>();
                 if (item.Id == 0)
