@@ -8,6 +8,7 @@ using SmartPhotShop.Events;
 using SmartPhotShop.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -15,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace SmartPhotShop.ViewModels
 {
@@ -24,7 +26,8 @@ namespace SmartPhotShop.ViewModels
         private readonly IEventAggregator _eventAggregator;
         private readonly IDialogCoordinator _dialogCoordinator;
 
-        public BindableCollection<Field> Fields { get; set; } = new BindableCollection<Field>();
+        private BindableCollection<Field> _fields = new BindableCollection<Field>();
+        public ICollectionView FieldsCollectionView { get; set; }
         public FieldsViewModel(IWindowManager windowManager, IEventAggregator eventAggregator, IDialogCoordinator dialogCoordinator)
         {
             DisplayName = "Fields";
@@ -32,26 +35,28 @@ namespace SmartPhotShop.ViewModels
             _eventAggregator = eventAggregator;
             _dialogCoordinator = dialogCoordinator;
             _eventAggregator.SubscribeOnPublishedThread(this);
+
+            FieldsCollectionView = CollectionViewSource.GetDefaultView(_fields);
         }
         protected override void OnViewAttached(object view, object context)
         {
             using (var db = new LiteDatabase(Constants.DbPath))
             {
-                Fields.Clear();
+                _fields.Clear();
                 var collection = db.GetCollection<Field>();
                 var fields = collection.FindAll();
 
                 if (fields != null && fields.Any())
                 {
-                    Fields.AddRange(fields);
+                    _fields.AddRange(fields);
                 }
 
 
-                if (Fields.Any() && Fields.All(f => f.Order == 0))
+                if (_fields.Any() && _fields.All(f => f.Order == 0))
                 {
                     var order = 1;
 
-                    foreach (var field in Fields)
+                    foreach (var field in _fields)
                     {
                         field.Order = order++;
                         collection.Update(field);
@@ -63,6 +68,18 @@ namespace SmartPhotShop.ViewModels
         public void NewField()
         {
             _windowManager.ShowDialogAsync(IoC.Get<FieldCrudViewModel>());
+        }
+
+        public void SaveChanges()
+        {
+            using (var db = new LiteDatabase(Constants.DbPath))
+            {
+                var collection = db.GetCollection<Field>();
+                foreach (var item in _fields)
+                {
+                    collection.Update(item);
+                }
+            }
         }
 
         public async void ExportColumns()
@@ -95,7 +112,7 @@ namespace SmartPhotShop.ViewModels
 
                     using (var db = new LiteDatabase(Constants.DbPath))
                     {
-                        var fields = Fields.ToList();
+                        var fields = _fields.ToList();
 
                         for (int i = 0; i < fields.Count; i++)
                         {
@@ -187,22 +204,42 @@ namespace SmartPhotShop.ViewModels
             {
                 var fields = db.GetCollection<Field>();
                 fields.Delete(field.Id);
-                Fields.Remove(field);
+                _fields.Remove(field);
             }
         }
 
         public void MoveUp(Field field)
         {
+            var swapItem = _fields.OrderByDescending(f => f.Order).FirstOrDefault(f => f.Order < field.Order);
+            if (swapItem != null)
+            {
+                var swapOrder = swapItem.Order;
+                swapItem.Order = field.Order;
+                field.Order = swapOrder;
 
+                FieldsCollectionView.SortDescriptions.Clear();
+                FieldsCollectionView.SortDescriptions.Add(new SortDescription("Order", ListSortDirection.Ascending));
+            }
+
+          
         }
 
         public void MoveDown(Field field)
         {
+            var swapItem = _fields.OrderBy(f => f.Order).FirstOrDefault(f => f.Order > field.Order);
+            if (swapItem != null)
+            {
+                var swapOrder = swapItem.Order;
+                swapItem.Order = field.Order;
+                field.Order = swapOrder;
 
+                FieldsCollectionView.SortDescriptions.Clear();
+                FieldsCollectionView.SortDescriptions.Add(new SortDescription("Order", ListSortDirection.Ascending));
+            }
         }
         public async Task HandleAsync(CrudEvent<Field> message, CancellationToken cancellationToken)
         {
-            await Task.Run(() => Fields.Add(message.Item));
+            await Task.Run(() => _fields.Add(message.Item));
         }
     }
 }

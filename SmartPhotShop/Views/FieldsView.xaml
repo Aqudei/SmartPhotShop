@@ -29,8 +29,12 @@
                     Margin="4"
                     Width="120"
                     x:Name="ExportColumns"/>
+            <Button Content="Save Changes"
+                    Margin="4"
+                    Width="120"
+                    x:Name="SaveChanges"/>
         </StackPanel>
-        <DataGrid x:Name="Fields"
+        <DataGrid x:Name="FieldsCollectionView"
                   AutoGenerateColumns="False"
                   Grid.Row="1"
                   CanUserAddRows="False">
