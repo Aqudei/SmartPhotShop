@@ -1,0 +1,745 @@
+header,group,type,sample
+SKU,Supplier Description,System.String,ABC123
+Listing Action,Supplier Description,System.String,(Default) Create or Replace
+Product Type,Product Identity,System.String,SHIRT
+Item Name,Product Identity,System.String,"Robert Graham Men's Maya Bay Short Sleeve Classic Fit Shirt, Cranberry, X-Large"
+Brand Name,Product Identity,System.String,"Calvin Klein, Hanes, Goodthreads, Under Armour"
+External Product ID Type,Product Identity,System.String,UPC
+External Product ID,Product Identity,System.String,714532191586
+Merchant Suggested ASIN,Product Identity,System.String,B007KQBXN0
+Is exempt from supplier declared external product identifier,Product Identity,System.String,"Yes, No"
+Recommended Browse Nodes,Product Identity,System.String,Diet Bars
+Recommended Browse Nodes,Product Identity,System.String,Diet Bars
+Recommended Browse Nodes,Product Identity,System.String,Diet Bars
+Recommended Browse Nodes,Product Identity,System.String,Diet Bars
+Recommended Browse Nodes,Product Identity,System.String,Diet Bars
+Model Number,Product Identity,System.String,"RXZER23, 123"
+Model Name,Product Identity,System.String,Maya Bay Short Sleeve Classic Fit Shirt
+Manufacturer,Product Identity,System.String,"Nike, Procter & Gamble"
+Collar Style,Product Identity,System.String,"Buttoned, Spread, Cutaway"
+Collar Style,Product Identity,System.String,"Buttoned, Spread, Cutaway"
+Age Gender Category,Product Identity,System.String,"Men, Women, Boys Girls"
+Model Year,Product Identity,System.String,2018
+Package Level,Product Identity,System.String,"Unit, Case"
+Package Contains SKU Quantity,Product Identity,System.String,1
+Package Contains SKU Identifier,Product Identity,System.String,ABC123
+Target Audience,Product Identity,System.String,Boys
+Target Audience,Product Identity,System.String,Boys
+Target Audience,Product Identity,System.String,Boys
+Target Audience,Product Identity,System.String,Boys
+Target Audience,Product Identity,System.String,Boys
+Target Audience Keyword,Product Identity,System.String,"Women, Teens, Cats"
+Target Audience Keyword,Product Identity,System.String,"Women, Teens, Cats"
+Target Audience Keyword,Product Identity,System.String,"Women, Teens, Cats"
+Target Audience Keyword,Product Identity,System.String,"Women, Teens, Cats"
+Target Audience Keyword,Product Identity,System.String,"Women, Teens, Cats"
+Skip Offer,Offer,System.String,Yes
+Item Condition,Offer,System.String,New
+Offer Condition Note,Offer,System.String,Small dent in left side panel.
+List Price with Tax,Offer,System.String,69
+Product Tax Code,Offer,System.String,A_GEN_NOTAX
+Release Date,Offer,System.String,2017-07-20
+Merchant Shipping Group,Offer,System.String,"""Heavy Bulky Products"", ""CN ShunFeng Delivery"""
+Maximum Order Quantity,Offer,System.String,3
+Offering Can Be Gift Messaged,Offer,System.String,TRUE
+Is Gift Wrap Available,Offer,System.String,TRUE
+Main Image Location,Offer,System.String,http://www.companyname.com/images/1250.offer.jpg
+Other Image Location,Offer,System.String,http://www.companyname.com/images/1250.other1.jpg
+Other Image Location,Offer,System.String,http://www.companyname.com/images/1250.other1.jpg
+Other Image Location,Offer,System.String,http://www.companyname.com/images/1250.other1.jpg
+Other Image Location,Offer,System.String,http://www.companyname.com/images/1250.other1.jpg
+Other Image Location,Offer,System.String,http://www.companyname.com/images/1250.other1.jpg
+Import Designation,Offer,System.String,Imported
+Fulfillment Channel Code (UK),Fulfillment Availability (UK),System.String,AMAZON_NA
+Quantity (UK),Fulfillment Availability (UK),System.String,152
+Handling Time (UK),Fulfillment Availability (UK),System.String,5
+Restock Date (UK),Fulfillment Availability (UK),System.String,2020-05-05
+Inventory Always Available (UK),Fulfillment Availability (UK),System.String,Enabled
+"Your Price GBP (Sell on Amazon, UK)",Offer (UK) - (Sell on Amazon),System.String,9.00
+"Pricing Rule (Sell on Amazon, UK)",Offer (UK) - (Sell on Amazon),System.String,Competitive Price Rule by Amazon
+"Minimum Seller Alllowed Price (Sell on Amazon, UK)",Offer (UK) - (Sell on Amazon),System.String,259.99
+"Maximum Seller Allowed Price (Sell on Amazon, UK)",Offer (UK) - (Sell on Amazon),System.String,259.99
+"Sale Price GBP (Sell on Amazon, UK)",Offer (UK) - (Sell on Amazon),System.String,219.99
+"Sale Start Date (Sell on Amazon, UK)",Offer (UK) - (Sell on Amazon),System.String,2017-06-30
+"Sale End Date (Sell on Amazon, UK)",Offer (UK) - (Sell on Amazon),System.String,2017-07-01
+"Offering Release Date (Sell on Amazon, UK)",Offer (UK) - (Sell on Amazon),System.String,2017-06-30
+"Stop Selling Date (Sell on Amazon, UK)",Offer (UK) - (Sell on Amazon),System.String,2017-07-01
+Product Description,Product Details,System.String,"This summer, boots by Jette made from high quality suede leather are real gems. They visually highlight the craftsmanship and fine leather braid positioned at the top of the shaft"
+Bullet Point,Product Details,System.String,"Breathable leather lining, Classic look and feel"
+Bullet Point,Product Details,System.String,"Breathable leather lining, Classic look and feel"
+Bullet Point,Product Details,System.String,"Breathable leather lining, Classic look and feel"
+Bullet Point,Product Details,System.String,"Breathable leather lining, Classic look and feel"
+Bullet Point,Product Details,System.String,"Breathable leather lining, Classic look and feel"
+Generic Keywords,Product Details,System.String,Casual shirt; Button down; Relaxed fit; Men's shirt
+Lifestyle,Product Details,System.String,Athletic
+Style,Product Details,System.String,Maya Bay Short Sleeve Classic Fit Shirt
+Department Name,Product Details,System.String,Mens
+Target Gender,Product Details,System.String,"Male, Female, Unisex"
+Age Range Description,Product Details,System.String,"Adult, Big Kid, Toddler"
+Apparel Size System,Product Details,System.String,UK
+Apparel Size Class,Product Details,System.String,Alpha
+Apparel Size Value,Product Details,System.String,"4, M, 2 Years"
+Apparel Size To Value,Product Details,System.String,"5, L, 3 Years"
+Apparel Size Body Type,Product Details,System.String,Plus
+Apparel Size Height Type,Product Details,System.String,Tall
+Material,Product Details,System.String,"Acrylic, Cashmere Blend"
+Material,Product Details,System.String,"Acrylic, Cashmere Blend"
+Material,Product Details,System.String,"Acrylic, Cashmere Blend"
+Fabric Type,Product Details,System.String,"75% Cotton, 15% Nylon, 10% Wool"
+Pattern Style,Product Details,System.String,Striped
+Number of Items,Product Details,System.String,"1, 5, 20"
+Item Package Quantity,Product Details,System.String,1
+Item Type Name,Product Details,System.String,"Sweatshirt, Polo Sweater"
+Subject Character,Product Details,System.String,Batman
+Special Size,Product Details,System.String,"Petite, Husky Boys"
+Colour Map,Product Details,System.String,Red
+Colour,Product Details,System.String,Cranberry
+Item Length Description,Product Details,System.String,"Mini, Knee-Length"
+Metal Type,Product Details,System.String,"Bronze, Platinum Plated Brass"
+Metal Type,Product Details,System.String,"Bronze, Platinum Plated Brass"
+Metal Type,Product Details,System.String,"Bronze, Platinum Plated Brass"
+Metal Type,Product Details,System.String,"Bronze, Platinum Plated Brass"
+Metal Type,Product Details,System.String,"Bronze, Platinum Plated Brass"
+Gem Type,Product Details,System.String,"Amazonite, Blue Agate, Created Amethyst"
+Gem Type,Product Details,System.String,"Amazonite, Blue Agate, Created Amethyst"
+Gem Type,Product Details,System.String,"Amazonite, Blue Agate, Created Amethyst"
+Gem Type,Product Details,System.String,"Amazonite, Blue Agate, Created Amethyst"
+Gem Type,Product Details,System.String,"Amazonite, Blue Agate, Created Amethyst"
+Occasion,Product Details,System.String,"Anniversary, Birthday, Wedding, Get Well, Independence Day"
+Occasion,Product Details,System.String,"Anniversary, Birthday, Wedding, Get Well, Independence Day"
+Occasion,Product Details,System.String,"Anniversary, Birthday, Wedding, Get Well, Independence Day"
+Occasion,Product Details,System.String,"Anniversary, Birthday, Wedding, Get Well, Independence Day"
+Occasion,Product Details,System.String,"Anniversary, Birthday, Wedding, Get Well, Independence Day"
+Part Number,Product Details,System.String,RXZER23
+Item Shape,Product Details,System.String,"Round, Oval, Square"
+Theme,Product Details,System.String,"Aliens, Animals"
+Ring Size,Product Details,System.String,"4.25, 7.5, 8.75"
+Fit Type,Product Details,System.String,"Skinny, Relaxed"
+Pocket Description,Product Details,System.String,"Back-Flap-Pocket, Basic-5-Pocket"
+Pocket Description,Product Details,System.String,"Back-Flap-Pocket, Basic-5-Pocket"
+Pocket Description,Product Details,System.String,"Back-Flap-Pocket, Basic-5-Pocket"
+Pocket Description,Product Details,System.String,"Back-Flap-Pocket, Basic-5-Pocket"
+Pocket Description,Product Details,System.String,"Back-Flap-Pocket, Basic-5-Pocket"
+Weave Type,Product Details,System.String,Knit
+Care Instructions,Product Details,System.String,"Hand Wash, Machine Wash"
+Magnification Strength,Product Details,System.String,"1, 1.5, 2"
+Magnification Strength Unit,Product Details,System.String,diopters
+Shaft Material Type,Product Details,System.String,Graphite
+Edition,Product Details,System.String,"Special Edition,Standard Edition"
+Configuration,Product Details,System.String,AWD configuration
+Platform for Display,Product Details,System.String,"Android, Mac, PC"
+Language Type,Product Details,System.String,"Original, Subtitled"
+Language,Product Details,System.String,"Chinese, English, Dutch"
+Language Type,Product Details,System.String,"Original, Subtitled"
+Language,Product Details,System.String,"Chinese, English, Dutch"
+Language Type,Product Details,System.String,"Original, Subtitled"
+Language,Product Details,System.String,"Chinese, English, Dutch"
+Language Type,Product Details,System.String,"Original, Subtitled"
+Language,Product Details,System.String,"Chinese, English, Dutch"
+Language Type,Product Details,System.String,"Original, Subtitled"
+Language,Product Details,System.String,"Chinese, English, Dutch"
+Wireless Provider,Product Details,System.String,"Verizon, Cingular, Orange"
+Lens Colour,Product Details,System.String,"Maroon, Sky Blue/Ash Grey, Blue, Emerald"
+Sunglasses Lens Width,Product Details,System.String,55
+Lens Width Unit,Product Details,System.String,millimeters
+Item Display Diameter,Product Details,System.String,"2.75, 3.00"
+Item Display Diameter Unit,Product Details,System.String,"Centimetres, Millimetres, Inches"
+Item Display Length,Product Details,System.String,5.7
+Item Display Length Unit,Product Details,System.String,"Centimetres, Millimetres, Inches"
+Item Display Depth,Product Details,System.String,"2.75, 3.00"
+Item Display Depth Unit,Product Details,System.String,"Centimetres, Millimetres, Inches"
+Item Display Width,Product Details,System.String,3.5
+Item Display Width Unit,Product Details,System.String,"Centimetres, Millimetres, Inches"
+Item Display Height,Product Details,System.String,1.8
+Item Display Height Unit,Product Details,System.String,"Centimetres, Millimetres, Inches"
+Service Provider,Product Details,System.String,"AT&T, Sprint, Verizon Wireless"
+Flavour,Product Details,System.String,"Double Rich Chocolate, Cherry, Chocolate, Vanilla"
+Wattage,Product Details,System.String,"200, 11"
+Wattage Unit,Product Details,System.String,watts
+Memory Storage Capacity,Product Details,System.String,"1, 15, 1000"
+Memory Storage Capacity Unit,Product Details,System.String,"MB, KB, GB"
+Customer Package Type,Product Details,System.String,Standard Packaging
+Pattern,Product Details,System.String,"Floral, Geometric, Polka Dot"
+Unit Count,Product Details,System.String,72.0
+Unit Count Type,Product Details,System.String,Ounces
+Product Site Launch Date,Product Details,System.String,2017-07-20
+Golf Club Flex,Product Details,System.String,Regular (R)
+Golf Club Loft,Product Details,System.String,20 degrees
+Golf Club Loft Unit,Product Details,System.String,Degrees
+League Name,Product Details,System.String,NBA
+Team Name,Product Details,System.String,Manchester city
+Athlete,Product Details,System.String,Michael Jordan
+Scent,Product Details,System.String,"Lavender, Musk"
+Scent,Product Details,System.String,"Lavender, Musk"
+Scent,Product Details,System.String,"Lavender, Musk"
+Scent,Product Details,System.String,"Lavender, Musk"
+Scent,Product Details,System.String,"Lavender, Musk"
+Hand Orientation,Product Details,System.String,"Left, Right"
+Band Colour,Product Details,System.String,Black
+Cup Size,Product Details,System.String,"A, B, DD"
+Embellishment Feature,Product Details,System.String,Lace
+Embellishment Feature,Product Details,System.String,Lace
+Embellishment Feature,Product Details,System.String,Lace
+Embellishment Feature,Product Details,System.String,Lace
+Embellishment Feature,Product Details,System.String,Lace
+Grip Size,Product Details,System.String,Small
+Ink Colour,Product Details,System.String,"Blue, Red, Black"
+Length Range,Product Details,System.String,"24-60"" long"
+Length Range,Product Details,System.String,"24-60"" long"
+Length Range,Product Details,System.String,"24-60"" long"
+Length Range,Product Details,System.String,"24-60"" long"
+Length Range,Product Details,System.String,"24-60"" long"
+Neck Style,Product Details,System.String,Crew neck
+Neck Style,Product Details,System.String,Crew neck
+Neck Style,Product Details,System.String,Crew neck
+Neck Style,Product Details,System.String,Crew neck
+Neck Style,Product Details,System.String,Crew neck
+Version for Country,Product Details,System.String,French Guiana
+Version for Country,Product Details,System.String,French Guiana
+Version for Country,Product Details,System.String,French Guiana
+Version for Country,Product Details,System.String,French Guiana
+Version for Country,Product Details,System.String,French Guiana
+Width Range,Product Details,System.String,"24-60"" wide"
+Width Range,Product Details,System.String,"24-60"" wide"
+Width Range,Product Details,System.String,"24-60"" wide"
+Width Range,Product Details,System.String,"24-60"" wide"
+Width Range,Product Details,System.String,"24-60"" wide"
+Sleeve Type,Product Details,System.String,"3-4-Sleeve, Cap-sleeve"
+Closure Type,Product Details,System.String,"Snap,Buckle"
+Closure Type,Product Details,System.String,"Snap,Buckle"
+Sweater Form,Product Details,System.String,Cardigan
+Garment Closure Length Description,Product Details,System.String,Full length
+Hemline Form,Product Details,System.String,Fishtail Hemline
+Hemline Form,Product Details,System.String,Fishtail Hemline
+Hemline Form,Product Details,System.String,Fishtail Hemline
+Hemline Form,Product Details,System.String,Fishtail Hemline
+Hemline Form,Product Details,System.String,Fishtail Hemline
+Size,Product Details,System.String,"Extra Large, One Size"
+Metal ID,Product Details,System.String,"1, 2, 3, 4, 5"
+Metal Type,Product Details,System.String,"Alloy, Argentium Plated Base"
+Metal Stamp,Product Details,System.String,"8k (333), 9k (375)"
+Metal Weight,Product Details,System.String,"943, 0.05"
+Metal Weight Unit,Product Details,System.String,Grams
+Metal ID,Product Details,System.String,"1, 2, 3, 4, 5"
+Metal Type,Product Details,System.String,"Alloy, Argentium Plated Base"
+Metal Stamp,Product Details,System.String,"8k (333), 9k (375)"
+Metal Weight,Product Details,System.String,"943, 0.05"
+Metal Weight Unit,Product Details,System.String,Grams
+Metal ID,Product Details,System.String,"1, 2, 3, 4, 5"
+Metal Type,Product Details,System.String,"Alloy, Argentium Plated Base"
+Metal Stamp,Product Details,System.String,"8k (333), 9k (375)"
+Metal Weight,Product Details,System.String,"943, 0.05"
+Metal Weight Unit,Product Details,System.String,Grams
+Stone ID,Product Details,System.String,"1, 2, 3, 4, 5"
+Stone Type,Product Details,System.String,"Ruby, Opal, Topaz"
+Number of Stones,Product Details,System.String,"1,3"
+Stone Creation Method,Product Details,System.String,"Synthetic, Simulated"
+Stone Treatment Method,Product Details,System.String,"Bleached, Clarity Enhanced"
+Stone Clarity,Product Details,System.String,"FL, I1"
+Stone Colour,Product Details,System.String,"Pink, Blue, Red, Yellow"
+Stone Cut,Product Details,System.String,Ideal Cut
+Stone Shape,Product Details,System.String,"Asscher, Baguette"
+Stone ID,Product Details,System.String,"1, 2, 3, 4, 5"
+Stone Type,Product Details,System.String,"Ruby, Opal, Topaz"
+Number of Stones,Product Details,System.String,"1,3"
+Stone Creation Method,Product Details,System.String,"Synthetic, Simulated"
+Stone Treatment Method,Product Details,System.String,"Bleached, Clarity Enhanced"
+Stone Clarity,Product Details,System.String,"FL, I1"
+Stone Colour,Product Details,System.String,"Pink, Blue, Red, Yellow"
+Stone Cut,Product Details,System.String,Ideal Cut
+Stone Shape,Product Details,System.String,"Asscher, Baguette"
+Stone ID,Product Details,System.String,"1, 2, 3, 4, 5"
+Stone Type,Product Details,System.String,"Ruby, Opal, Topaz"
+Number of Stones,Product Details,System.String,"1,3"
+Stone Creation Method,Product Details,System.String,"Synthetic, Simulated"
+Stone Treatment Method,Product Details,System.String,"Bleached, Clarity Enhanced"
+Stone Clarity,Product Details,System.String,"FL, I1"
+Stone Colour,Product Details,System.String,"Pink, Blue, Red, Yellow"
+Stone Cut,Product Details,System.String,Ideal Cut
+Stone Shape,Product Details,System.String,"Asscher, Baguette"
+Pearl Size Unit,Product Details,System.String,Millimetres
+Stone Clarity,Product Details,System.String,"Perfection, Slightly Included, Insignificant Inclusions"
+Stone Clarity,Product Details,System.String,"Perfection, Slightly Included, Insignificant Inclusions"
+Stone Clarity,Product Details,System.String,"Perfection, Slightly Included, Insignificant Inclusions"
+Stone Colour,Product Details,System.String,"Pink, Blue, Red, Yellow"
+Stone Colour,Product Details,System.String,"Pink, Blue, Red, Yellow"
+Stone Colour,Product Details,System.String,"Pink, Blue, Red, Yellow"
+Stone Colour,Product Details,System.String,"Pink, Blue, Red, Yellow"
+Stone Colour,Product Details,System.String,"Pink, Blue, Red, Yellow"
+Stone Cut,Product Details,System.String,Round
+Stone Cut,Product Details,System.String,Round
+Stone Cut,Product Details,System.String,Round
+Stone Shape,Product Details,System.String,"Asscher Shape, Baguette Shape"
+Stone Shape,Product Details,System.String,"Asscher Shape, Baguette Shape"
+Stone Shape,Product Details,System.String,"Asscher Shape, Baguette Shape"
+Stone Shape,Product Details,System.String,"Asscher Shape, Baguette Shape"
+Stone Shape,Product Details,System.String,"Asscher Shape, Baguette Shape"
+Stone Weight,Product Details,System.String,"943, 0.05"
+Stone Weight Unit,Product Details,System.String,"Grams, Carats"
+Total Diamond Weight,Product Details,System.String,"6, 0.5"
+Total Diamond Weight Unit,Product Details,System.String,carats
+Collection Name,Product Details,System.String,Rivington
+Clasp Type,Product Details,System.String,Bangle
+Occasion,Product Details,System.String,Halloween
+Occasion,Product Details,System.String,Halloween
+Occasion,Product Details,System.String,Halloween
+Occasion,Product Details,System.String,Halloween
+Occasion,Product Details,System.String,Halloween
+Grade Rating,Product Details,System.String,"N20D, 1220"
+Metal Stamp,Product Details,System.String,14K
+League Name,Product Details,System.String,NBA
+League Name,Product Details,System.String,NBA
+League Name,Product Details,System.String,NBA
+League Name,Product Details,System.String,NBA
+Team Name,Product Details,System.String,Manchester city
+Athlete,Product Details,System.String,Michael Jordan
+Athlete,Product Details,System.String,Michael Jordan
+Athlete,Product Details,System.String,Michael Jordan
+Athlete,Product Details,System.String,Michael Jordan
+Special Features,Product Details,System.String,Moisture Wicking
+Special Features,Product Details,System.String,Moisture Wicking
+Special Features,Product Details,System.String,Moisture Wicking
+Special Features,Product Details,System.String,Moisture Wicking
+Special Features,Product Details,System.String,Moisture Wicking
+Apparel Size System,Product Details,System.String,UK
+Apparel Size Class,Product Details,System.String,Alpha
+Apparel Size Value,Product Details,System.String,"4, M, 2 Years"
+Apparel Size To Value,Product Details,System.String,"5, L, 3 Years"
+Neck Size Value,Product Details,System.String,"15, 16, 17"
+Neck Size To Value,Product Details,System.String,"15.5, 16.5, 17.5"
+Sleeve Length Value,Product Details,System.String,"32, 33, 34"
+Sleeve Length To Value,Product Details,System.String,"33, 34, 35"
+Apparel Size Body Type,Product Details,System.String,Plus
+Apparel Size Height Type,Product Details,System.String,Tall
+Strap Type,Product Details,System.String,"basic, spaghetti"
+Strap Type,Product Details,System.String,"basic, spaghetti"
+Strap Type,Product Details,System.String,"basic, spaghetti"
+Water Resistance Level,Product Details,System.String,Water Resistant
+Denomination,Product Details,System.String,"10, 20, 100, 1000"
+Design Name,Product Details,System.String,"Birthday, Graduation"
+Is Customizable?,Product Details,System.String,Yes
+Pre Printed Text,Product Details,System.String,FALSE
+Capacity,Product Details,System.String,"5.3, 7, 25"
+Capacity Unit,Product Details,System.String,"quarts, litres, gallons"
+Voltage,Product Details,System.String,"28, 120"
+Voltage Unit,Product Details,System.String,volts
+Item Form,Product Details,System.String,"Sticks, Powder, Whole Bean"
+Item Form,Product Details,System.String,"Sticks, Powder, Whole Bean"
+Item Form,Product Details,System.String,"Sticks, Powder, Whole Bean"
+Item Form,Product Details,System.String,"Sticks, Powder, Whole Bean"
+Sport Type,Product Details,System.String,Snowboarding
+Sport Type,Product Details,System.String,Snowboarding
+Back Style,Product Details,System.String,"cushion, pillow"
+Back Style,Product Details,System.String,"cushion, pillow"
+Back Style,Product Details,System.String,"cushion, pillow"
+Back Style,Product Details,System.String,"cushion, pillow"
+Back Style,Product Details,System.String,"cushion, pillow"
+Grip Type,Product Details,System.String,Insulated
+Inseam Length,Product Details,System.String,3
+Inseam Length Unit,Product Details,System.String,inches
+Top Style,Product Details,System.String,"Blouson, Camisole, Kaftan"
+Top Style,Product Details,System.String,"Blouson, Camisole, Kaftan"
+Top Style,Product Details,System.String,"Blouson, Camisole, Kaftan"
+Top Style,Product Details,System.String,"Blouson, Camisole, Kaftan"
+Top Style,Product Details,System.String,"Blouson, Camisole, Kaftan"
+Number of Pockets,Product Details,System.String,12
+Fabric Stretchability,Product Details,System.String,Stretchable
+Shirt Form Type,Product Details,System.String,"T-Shirt, Tuxedo Shirt, Polo Shirt"
+Sleeve Cuff Style,Product Details,System.String,"Rolled, Open"
+Sleeve Cuff Style,Product Details,System.String,"Rolled, Open"
+Animal Theme,Product Details,System.String,Alpaca
+Fashion Decade,Product Details,System.String,1970s
+Generic Keyword,Product Details,System.String,Water sport shoes; Derek Rose; Electric; Wi-Fi; Banana
+Generic Keyword,Product Details,System.String,Water sport shoes; Derek Rose; Electric; Wi-Fi; Banana
+Generic Keyword,Product Details,System.String,Water sport shoes; Derek Rose; Electric; Wi-Fi; Banana
+Generic Keyword,Product Details,System.String,Water sport shoes; Derek Rose; Electric; Wi-Fi; Banana
+Material,Product Details,System.String,"Resin, Plastic"
+Material,Product Details,System.String,"Resin, Plastic"
+Theme,Product Details,System.String,"Western, Wildlife, Sci-Fi, Military, Sports, Animal, Party, Patriotic"
+Theme,Product Details,System.String,"Western, Wildlife, Sci-Fi, Military, Sports, Animal, Party, Patriotic"
+Theme,Product Details,System.String,"Western, Wildlife, Sci-Fi, Military, Sports, Animal, Party, Patriotic"
+Theme,Product Details,System.String,"Western, Wildlife, Sci-Fi, Military, Sports, Animal, Party, Patriotic"
+Paper Size,Product Details,System.String,"6 x 5, 8 1/2 x 11"
+Paper Size Unit,Product Details,System.String,"Millimetres, Centimetres"
+Line Size,Product Details,System.String,0.7 mm
+Line Size Unit,Product Details,System.String,Millimeters
+Maximum Size,Product Details,System.String,"4.5, 12, 55.75"
+Maximum Size Unit,Product Details,System.String,"Meters, Inches"
+Paper Finish Type,Product Details,System.String,Matt/Glossy
+Total Eaches,Product Details,System.String,"1, 20"
+Included Components,Product Details,System.String,"Camera Body, Battery Pack"
+Included Components,Product Details,System.String,"Camera Body, Battery Pack"
+Included Components,Product Details,System.String,"Camera Body, Battery Pack"
+Included Components,Product Details,System.String,"Camera Body, Battery Pack"
+Included Components,Product Details,System.String,"Camera Body, Battery Pack"
+Recommended Uses For Product,Product Details,System.String,Money
+Recommended Uses For Product,Product Details,System.String,Money
+Recommended Uses For Product,Product Details,System.String,Money
+Recommended Uses For Product,Product Details,System.String,Money
+Recommended Uses For Product,Product Details,System.String,Money
+Giftwrap Capacity ID,Product Details,System.String,"50,51"
+Giftwrap Capacity ID,Product Details,System.String,"50,51"
+Giftwrap Capacity ID,Product Details,System.String,"50,51"
+Giftwrap Capacity ID,Product Details,System.String,"50,51"
+Giftwrap Capacity ID,Product Details,System.String,"50,51"
+Net Content Length,Product Details,System.String,200
+Net Content Length Unit,Product Details,System.String,Centimeters
+Net Content Length,Product Details,System.String,200
+Net Content Length Unit,Product Details,System.String,Centimeters
+Net Content Count,Product Details,System.String,1
+Net Content Count Unit,Product Details,System.String,"Bag, Box, Sheet"
+Net Content Count,Product Details,System.String,1
+Net Content Count Unit,Product Details,System.String,"Bag, Box, Sheet"
+Net Content Count,Product Details,System.String,1
+Net Content Count Unit,Product Details,System.String,"Bag, Box, Sheet"
+Net Content Count,Product Details,System.String,1
+Net Content Count Unit,Product Details,System.String,"Bag, Box, Sheet"
+Net Content Count,Product Details,System.String,1
+Net Content Count Unit,Product Details,System.String,"Bag, Box, Sheet"
+Net Content Area,Product Details,System.String,10
+Net Content Area Unit,Product Details,System.String,Square Inches
+Net Content Area,Product Details,System.String,10
+Net Content Area Unit,Product Details,System.String,Square Inches
+Net Content Weight,Product Details,System.String,"12.0, 10.0"
+Net Content Weight Unit,Product Details,System.String,"Ounces, Grams"
+Net Content Weight,Product Details,System.String,"12.0, 10.0"
+Net Content Weight Unit,Product Details,System.String,"Ounces, Grams"
+Net Content Volume,Product Details,System.String,576
+Net Content Volume Unit,Product Details,System.String,Fluid Ounces
+Net Content Volume,Product Details,System.String,576
+Net Content Volume Unit,Product Details,System.String,Fluid Ounces
+Item Height Floor To Top,Product Details,System.String,100
+Item Height Unit of Measure,Product Details,System.String,Inches
+Item Length,Product Details,System.String,300
+Item length Unit,Product Details,System.String,Inches
+Item Width Side To Side,Product Details,System.String,100
+Item Width Unit,Product Details,System.String,Inches
+Is Bulk Pack,Product Details,System.String,"Yes, No"
+Master Pack Height,Product Details,System.String,32.4
+Master Pack Height Unit,Product Details,System.String,Inches
+Master Pack Length,Product Details,System.String,32.4
+Master Pack Length Unit,Product Details,System.String,Inches
+Master Pack Width,Product Details,System.String,32.4
+Master Pack Width Unit,Product Details,System.String,Inches
+Master Pack Weight,Product Details,System.String,25.3
+Master Pack Weight Unit,Product Details,System.String,Pounds
+Fabric Type,Product Details,System.String,"60% Cotton, 40% Polyester"
+Fabric Type,Product Details,System.String,"60% Cotton, 40% Polyester"
+Fabric Type,Product Details,System.String,"60% Cotton, 40% Polyester"
+Fabric Type,Product Details,System.String,"60% Cotton, 40% Polyester"
+Care Instructions,Product Details,System.String,Hand Wash
+Care Instructions,Product Details,System.String,Hand Wash
+Care Instructions,Product Details,System.String,Hand Wash
+Care Instructions,Product Details,System.String,Hand Wash
+Processor Description,Product Details,System.String,"Intel Pentium, BIONZ, EXR Processor II"
+Processor Description,Product Details,System.String,"Intel Pentium, BIONZ, EXR Processor II"
+Processor Description,Product Details,System.String,"Intel Pentium, BIONZ, EXR Processor II"
+Processor Description,Product Details,System.String,"Intel Pentium, BIONZ, EXR Processor II"
+Processor Description,Product Details,System.String,"Intel Pentium, BIONZ, EXR Processor II"
+Temperature Rating,Product Details,System.String,Chilled: 33 to 38 degrees
+Resolution,Product Details,System.String,"8K, UHD, 1080p"
+Specification Met,Product Details,System.String,"FDA, USDA, USP Class VI"
+Specification Met,Product Details,System.String,"FDA, USDA, USP Class VI"
+Specification Met,Product Details,System.String,"FDA, USDA, USP Class VI"
+Specification Met,Product Details,System.String,"FDA, USDA, USP Class VI"
+Specification Met,Product Details,System.String,"FDA, USDA, USP Class VI"
+Tension Level,Product Details,System.String,"50 pounds, low, medium, high"
+Range,Product Details,System.String,"Soprano, 1-4, 5"
+Range Unit (Optional),Product Details,System.String,"kHz, metres"
+Range,Product Details,System.String,"Soprano, 1-4, 5"
+Range Unit (Optional),Product Details,System.String,"kHz, metres"
+Range,Product Details,System.String,"Soprano, 1-4, 5"
+Range Unit (Optional),Product Details,System.String,"kHz, metres"
+Range,Product Details,System.String,"Soprano, 1-4, 5"
+Range Unit (Optional),Product Details,System.String,"kHz, metres"
+Range,Product Details,System.String,"Soprano, 1-4, 5"
+Range Unit (Optional),Product Details,System.String,"kHz, metres"
+Is Product Expirable,Product Details,System.String,"Yes, No"
+Product Expiration Type,Product Details,System.String,"Expiration Date Required, Shelf Life"
+Fulfillment Center Shelf Life,Product Details,System.String,"180, 365"
+Fulfillment Center Shelf Life Unit,Product Details,System.String,Days
+Measurement Accuracy,Product Details,System.String,+/-0.5%
+Sport Type,Product Details,System.String,American Football
+Sport Type,Product Details,System.String,American Football
+Sport Type,Product Details,System.String,American Football
+Roll Diameter String Value,Product Details,System.String,10
+Roll Diameter Unit,Product Details,System.String,"Inches, Millimeters"
+Roll Length String Value,Product Details,System.String,100
+Roll Length Unit,Product Details,System.String,"Inches, Feet"
+Roll Width String Value,Product Details,System.String,12
+Roll Width Unit,Product Details,System.String,"Inches, Millimeters"
+Line Weight,Product Details,System.String,5.0 pounds
+Item Length Longer Edge,Product Details,System.String,54
+Item Length Unit,Product Details,System.String,"Inches, Centimeters"
+Item Width Shorter Edge,Product Details,System.String,30
+Item Width Unit,Product Details,System.String,"Inches, Centimeters"
+Towel Form Type,Product Details,System.String,Washcloth
+Strap Type,Product Details,System.String,"basic, spaghetti"
+Strap Type,Product Details,System.String,"basic, spaghetti"
+Display Type,Product Details,System.String,"Analog, Digital"
+Calendar Type,Product Details,System.String,Date And Month
+Dial Window Material Type,Product Details,System.String,Mineral
+Case Diameter,Product Details,System.String,42.5
+Case Diameter Unit,Product Details,System.String,millimeters
+Case Material Type,Product Details,System.String,Copper
+Case Thickness,Product Details,System.String,13.55
+Case Thickness Unit,Product Details,System.String,millimeters
+Dial Colour,Product Details,System.String,Purple
+Warranty Type,Product Details,System.String,Manufacturer
+Watch Movement,Product Details,System.String,Quartz
+Water Resistance Depth,Product Details,System.String,"50.0, 15.0"
+Water Resistance Depth Unit,Product Details,System.String,"Metres, Feet"
+Power Source,Product Details,System.String,"Battery, Gas"
+Series Number,Product Details,System.String,4
+Dial Size Decimal Value,Product Details,System.String,"3/16, 0.25"
+Dial Size Unit,Product Details,System.String,"Inches, Millimeters"
+Band Length,Product Details,System.String,9.0000
+Band Length Unit,Product Details,System.String,"9.0000 inches, 8.0000 inches"
+Band Material Type,Product Details,System.String,Resin
+Band Width,Product Details,System.String,5
+Band Width Unit,Product Details,System.String,millimetres
+Face Style,Product Details,System.String,"Spherical anvil/flat spindle, spherical anvil and spindle"
+Face Style,Product Details,System.String,"Spherical anvil/flat spindle, spherical anvil and spindle"
+Face Style,Product Details,System.String,"Spherical anvil/flat spindle, spherical anvil and spindle"
+Face Style,Product Details,System.String,"Spherical anvil/flat spindle, spherical anvil and spindle"
+Face Style,Product Details,System.String,"Spherical anvil/flat spindle, spherical anvil and spindle"
+Number of Bands,Product Details,System.String,"1, 50, 100"
+Total USB 2.0 Ports,Product Details,System.String,"1, 2, 3"
+GDPR  Risk,Product Details,System.String,Physical or Cloud Data Storage
+Closure Type,Product Details,System.String,"Snap, Buckle, Slip-On"
+Closure Type,Product Details,System.String,"Snap, Buckle, Slip-On"
+Closure Type,Product Details,System.String,"Snap, Buckle, Slip-On"
+Designer,Product Details,System.String,Tom Ford
+Number of Pieces,Product Details,System.String,"1, 500"
+Lock Type,Product Details,System.String,Cylindrical
+Lock Type,Product Details,System.String,Cylindrical
+Lock Type,Product Details,System.String,Cylindrical
+Lock Type,Product Details,System.String,Cylindrical
+Connectivity Technology,Product Details,System.String,"WIFI, Ethernet, HDMI"
+Connectivity Technology,Product Details,System.String,"WIFI, Ethernet, HDMI"
+Connectivity Technology,Product Details,System.String,"WIFI, Ethernet, HDMI"
+Connectivity Technology,Product Details,System.String,"WIFI, Ethernet, HDMI"
+Connectivity Technology,Product Details,System.String,"WIFI, Ethernet, HDMI"
+Breaking Strength,Product Details,System.String,40.0
+Breaking Strength Unit,Product Details,System.String,pounds
+Furniture Finish,Product Details,System.String,"Stained, Painted, Marbled"
+Volume Capacity,Product Details,System.String,"7, 16"
+Volume Capacity Unit,Product Details,System.String,"quarts, litres, gallons"
+Finish Type,Product Details,System.String,"Ceramic, Antique Nickel, Enamel"
+Base Type,Product Details,System.String,Pedestal
+Release Date,Product Details,System.String,2017-07-20
+Connectivity Protocol,Product Details,System.String,"HomePNA, IEEE 802.11a, IEEE 802.11b (Wi-Fi), IEEE 802.11g, IEEE 802.3 (Ethernet)"
+Connectivity Protocol,Product Details,System.String,"HomePNA, IEEE 802.11a, IEEE 802.11b (Wi-Fi), IEEE 802.11g, IEEE 802.3 (Ethernet)"
+Connectivity Protocol,Product Details,System.String,"HomePNA, IEEE 802.11a, IEEE 802.11b (Wi-Fi), IEEE 802.11g, IEEE 802.3 (Ethernet)"
+Connectivity Protocol,Product Details,System.String,"HomePNA, IEEE 802.11a, IEEE 802.11b (Wi-Fi), IEEE 802.11g, IEEE 802.3 (Ethernet)"
+Connectivity Protocol,Product Details,System.String,"HomePNA, IEEE 802.11a, IEEE 802.11b (Wi-Fi), IEEE 802.11g, IEEE 802.3 (Ethernet)"
+Controller Type,Product Details,System.String,"Wimoto, Nexia, B 180"
+Controller Type,Product Details,System.String,"Wimoto, Nexia, B 180"
+Controller Type,Product Details,System.String,"Wimoto, Nexia, B 180"
+Controller Type,Product Details,System.String,"Wimoto, Nexia, B 180"
+Controller Type,Product Details,System.String,"Wimoto, Nexia, B 180"
+bare_outside_diameter[marketplace_id=A1F83G8C2ARO7P]#1.string_value,Product Details,System.String,
+Bare Outside Diameter Unit,Product Details,System.String,Square Meters
+Belt Style,Product Details,System.String,V-Belt
+Belt Style,Product Details,System.String,V-Belt
+Belt Style,Product Details,System.String,V-Belt
+Belt Style,Product Details,System.String,V-Belt
+Belt Style,Product Details,System.String,V-Belt
+Belt Length Decimal Value,Product Details,System.String,"1/16"", 1/8"", 3/16"", 1-1/8"", 6"" 0.0058"", 0.0355"", 10mm"
+Belt Length String Value,Product Details,System.String,
+Belt Length Unit,Product Details,System.String,"Metres,Inches"
+coated_outside_diameter[marketplace_id=A1F83G8C2ARO7P]#1.string_value,Product Details,System.String,
+Coated Outside Diameter Unit,Product Details,System.String,Square Meters
+Head Size,Product Details,System.String,"51-55 cm, 18'' Height, 21'' Circumference"
+Control Method,Product Details,System.String,App
+Control Method,Product Details,System.String,App
+Control Method,Product Details,System.String,App
+Control Method,Product Details,System.String,App
+Item Diameter Decimal Value,Product Details,System.String,"0.79, 1.25"
+Item Diameter Unit,Product Details,System.String,"inches, millimetres"
+Benefits,Product Details,System.String,Skin-trapped facial hairs are surfaced; pore-clogging facial oils are dissolved; dryness is counteracted.
+Benefits,Product Details,System.String,Skin-trapped facial hairs are surfaced; pore-clogging facial oils are dissolved; dryness is counteracted.
+Benefits,Product Details,System.String,Skin-trapped facial hairs are surfaced; pore-clogging facial oils are dissolved; dryness is counteracted.
+Benefits,Product Details,System.String,Skin-trapped facial hairs are surfaced; pore-clogging facial oils are dissolved; dryness is counteracted.
+Benefits,Product Details,System.String,Skin-trapped facial hairs are surfaced; pore-clogging facial oils are dissolved; dryness is counteracted.
+Is the Item Heat Sensitive?,Product Details,System.String,"Yes, No"
+Short Product Description,Product Details,System.String,Dual-action exfoliator with fruit acids and gentle mechanical exfoliants to cleanse pores and remove dead skin cells.
+Specific Uses for Product,Product Details,System.String,"Dry Sanding, Personal, Business, Amateur"
+Specific Uses for Product,Product Details,System.String,"Dry Sanding, Personal, Business, Amateur"
+Specific Uses for Product,Product Details,System.String,"Dry Sanding, Personal, Business, Amateur"
+Specific Uses for Product,Product Details,System.String,"Dry Sanding, Personal, Business, Amateur"
+Specific Uses for Product,Product Details,System.String,"Dry Sanding, Personal, Business, Amateur"
+Base Curve Radius,Product Details,System.String,"10.0, 11.6, 0.39"
+Base Curve Radius Unit,Product Details,System.String,"millimetres, centimetres, inches"
+Optical Power,Product Details,System.String,5
+Chest Size,Product Details,System.String,"5.5 inches, .75 metres, 28.6 centimetres"
+Chest Size Unit,Product Details,System.String,"inches, metres, centimetres"
+Mounting Type,Product Details,System.String,Clevis
+Is the item dishwasher safe?,Product Details,System.String,Yes
+Is Fragile?,Product Details,System.String,"Yes, No"
+Item Thickness Decimal Value,Product Details,System.String,0.25
+Item Thickness Unit,Product Details,System.String,Inches
+Rise Style,Product Details,System.String,Low
+Seasons,Product Details,System.String,"Fall, Spring"
+Seasons,Product Details,System.String,"Fall, Spring"
+Seasons,Product Details,System.String,"Fall, Spring"
+Seasons,Product Details,System.String,"Fall, Spring"
+Seasons,Product Details,System.String,"Fall, Spring"
+Apparel Closure Orientation,Product Details,System.String,Front
+Shaft Style Type,Product Details,System.String,
+Current Rating,Product Details,System.String,"2, 5"
+Current Rating Unit,Product Details,System.String,Amps
+Interior Colour,Product Details,System.String,
+Manufacture Year,Product Details,System.String,2023
+Number of Drawers,Product Details,System.String,7
+Number of Compartments,Product Details,System.String,7
+Item Depth Front To Back,Product Details,System.String,17
+Item Depth Unit,Product Details,System.String,"Inches, Centimeters"
+Item Height Base to Top,Product Details,System.String,18
+Item Height Unit,Product Details,System.String,"Inches, Centimeters"
+Item Width Side To Side,Product Details,System.String,25
+Item Width Unit,Product Details,System.String,"Inches, Centimeters"
+Jewelry Storage Type,Product Details,System.String,Jewelry Armoire
+Parentage Level,Variations,System.String,Parent
+Child Relationship Type,Variations,System.String,accessory
+Parent SKU,Variations,System.String,ABC123
+Variation Theme Name,Variations,System.String,Size/Colour
+Country of Origin,Safety & Compliance,System.String,"China, Japan, United States"
+Dangerous Goods Regulations,Safety & Compliance,System.String,"GHS, Storage, Transportation"
+Dangerous Goods Regulations,Safety & Compliance,System.String,"GHS, Storage, Transportation"
+Dangerous Goods Regulations,Safety & Compliance,System.String,"GHS, Storage, Transportation"
+Dangerous Goods Regulations,Safety & Compliance,System.String,"GHS, Storage, Transportation"
+Dangerous Goods Regulations,Safety & Compliance,System.String,"GHS, Storage, Transportation"
+GHS Class,Safety & Compliance,System.String,Explosive
+GHS Class,Safety & Compliance,System.String,Explosive
+GHS Class,Safety & Compliance,System.String,Explosive
+GHS Class,Safety & Compliance,System.String,Explosive
+GHS Class,Safety & Compliance,System.String,Explosive
+Hazmat Aspect,Safety & Compliance,System.String,UN Regulatory Id
+Hazmat Information,Safety & Compliance,System.String,UN1993
+Safety Data Sheet (SDS or MSDS) URL,Safety & Compliance,System.String,www.safetysheetsRus.com/hazardous_substance/msds.pdf
+Item Weight,Safety & Compliance,System.String,10
+Item Weight Unit,Safety & Compliance,System.String,"Grams, Kilograms"
+Outer Material,Safety & Compliance,System.String,Cotton
+Outer Material,Safety & Compliance,System.String,Cotton
+Outer Material,Safety & Compliance,System.String,Cotton
+Outer Material,Safety & Compliance,System.String,Cotton
+Outer Material,Safety & Compliance,System.String,Cotton
+Responsible Person's Email or Electronic Address,Safety & Compliance,System.String,rsp-email@example.com
+"Compliance Media Source Location (en_GB, Application Guide)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Certificate of Analysis)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Certificate of Compliance)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Compatibility Guide)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Emergency Use Authorization)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Emergency Use Authorization Amendment)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Installation Manual)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Instructions for Use)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Patient Fact Sheet)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Provider Fact Sheet)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Safety Data Sheet)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Safety Information)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Specification Sheet)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Troubleshooting Guide)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, User Guide)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, User Manual)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+"Compliance Media Source Location (en_GB, Warranty)",Safety & Compliance,System.String,http://example.eg/sds_1.pdf
+GPSR Safety Attestation,Safety & Compliance,System.String,Yes
+Manufacturer’s Email or Electronic Address,Safety & Compliance,System.String,abc@example.com
+Ships Globally,Safety & Compliance,System.String,Yes
+Are batteries required?,Safety & Compliance,System.String,"Yes, No"
+Are batteries included?,Safety & Compliance,System.String,Yes
+Battery Cell Composition,Safety & Compliance,System.String,NiMh
+Battery Cell Composition Other Than Listed,Safety & Compliance,System.String,Silver Oxide (Ag₂O)
+Battery Weight,Safety & Compliance,System.String,2.5
+Battery Weight Unit,Safety & Compliance,System.String,Grams
+Number of Batteries,Safety & Compliance,System.String,"1, 4"
+Battery Type,Safety & Compliance,System.String,12 V
+Number of Lithium Metal Cells,Safety & Compliance,System.String,7
+Number of Lithium-ion Cells,Safety & Compliance,System.String,7
+Lithium Battery Energy Content,Safety & Compliance,System.String,2.6
+Lithium Battery Energy Content Unit,Safety & Compliance,System.String,Watt Hours
+Lithium Battery Packaging,Safety & Compliance,System.String,"Batteries contained in equipment, Batteries packed with equipment, Batteries only"
+Lithium Battery Weight,Safety & Compliance,System.String,2
+Lithium Battery Weight Unit,Safety & Compliance,System.String,Grams
+Compliance - Chest Size,Safety & Compliance,System.String,86 cm or More
+Compliance - Is Handmade,Safety & Compliance,System.String,Yes
+Compliance - Printing method,Safety & Compliance,System.String,Hand Printed - Batik
+Compliance - Age Range,Safety & Compliance,System.String,Women
+Compliance Weave Type,Safety & Compliance,System.String,"Knitted, Crocheted, Woven"
+Compliance - Warp Or Filling Coloring,Safety & Compliance,System.String,2 or More
+Compliance - T-Shirt Design,Safety & Compliance,System.String,Printed Design
+Compliance - Shirt Type,Safety & Compliance,System.String,T-Shirt
+Compliance - Collar Type,Safety & Compliance,System.String,Tailored
+Number of Batteries,Safety & Compliance,System.String,"1, 4"
+Battery Type,Safety & Compliance,System.String,12 V
+Number of Batteries,Safety & Compliance,System.String,"1, 4"
+Battery Type,Safety & Compliance,System.String,12 V
+Number of Batteries,Safety & Compliance,System.String,"1, 4"
+Battery Type,Safety & Compliance,System.String,12 V
+Number of Batteries,Safety & Compliance,System.String,"1, 4"
+Battery Type,Safety & Compliance,System.String,12 V
+Fabric Weight,Safety & Compliance,System.String,120
+Fabric Weight Unit,Safety & Compliance,System.String,Grams per Square Metre
+Medical Device Sales Channel,Safety & Compliance,System.String,OTC Retail
+Compliance - Towel End Use,Safety & Compliance,System.String,Bath Towel
+Compliance - Outer Surface Material,Safety & Compliance,System.String,"Leather, Rubber, Cotton"
+Battery IEC Code,Safety & Compliance,System.String,CR2320
+Directions,Safety & Compliance,System.String,"Adults 18 years and older: This product is to be used once a day (every 24 hours), every day for 14 days. It may take 1 to 4 days for full effect, although some people get complete relief of symptoms within 24 hours"
+Directions,Safety & Compliance,System.String,"Adults 18 years and older: This product is to be used once a day (every 24 hours), every day for 14 days. It may take 1 to 4 days for full effect, although some people get complete relief of symptoms within 24 hours"
+Directions,Safety & Compliance,System.String,"Adults 18 years and older: This product is to be used once a day (every 24 hours), every day for 14 days. It may take 1 to 4 days for full effect, although some people get complete relief of symptoms within 24 hours"
+Directions,Safety & Compliance,System.String,"Adults 18 years and older: This product is to be used once a day (every 24 hours), every day for 14 days. It may take 1 to 4 days for full effect, although some people get complete relief of symptoms within 24 hours"
+Directions,Safety & Compliance,System.String,"Adults 18 years and older: This product is to be used once a day (every 24 hours), every day for 14 days. It may take 1 to 4 days for full effect, although some people get complete relief of symptoms within 24 hours"
+EU Spare Part Availability Duration,Safety & Compliance,System.String,2.0
+EU Spare Part Availability Duration Unit,Safety & Compliance,System.String,Years
+Has Multiple Battery Powered Components,Safety & Compliance,System.String,Yes
+Contains Battery or Cell,Safety & Compliance,System.String,Battery
+Battery Contains free Unabsorbed Liquid,Safety & Compliance,System.String,Yes
+Is Battery Non Spillable,Safety & Compliance,System.String,Yes
+Non-Lithium Battery Packaging,Safety & Compliance,System.String,Batteries Only
+Has Replaceable Battery,Safety & Compliance,System.String,Yes
+Non-Lithium Battery Energy Content,Safety & Compliance,System.String,2.6
+Non-Lithium Battery Energy Content Unit,Safety & Compliance,System.String,Watt Hours
+Has Less than 30 Percent State of Charge,Safety & Compliance,System.String,Yes
+Battery Installation Device Type,Safety & Compliance,System.String,Installed In Vessel
+Is OEM Sourced Product,Safety & Compliance,System.String,Yes
+Safety Warning,Safety & Compliance,System.String,For external use only. Avoid contact with eyes. Keep away from naked flame or direct heat sources.
+Safety Warning,Safety & Compliance,System.String,For external use only. Avoid contact with eyes. Keep away from naked flame or direct heat sources.
+Safety Warning,Safety & Compliance,System.String,For external use only. Avoid contact with eyes. Keep away from naked flame or direct heat sources.
+Safety Warning,Safety & Compliance,System.String,For external use only. Avoid contact with eyes. Keep away from naked flame or direct heat sources.
+Safety Warning,Safety & Compliance,System.String,For external use only. Avoid contact with eyes. Keep away from naked flame or direct heat sources.
+Inner Material,Safety & Compliance,System.String,"Nylon, Polyester, Acrylic"
+Main Image URL,Images,System.String,http://www.companyname.com/images/1250.main.jpg
+Other Image URL,Images,System.String,http://www.companyname.com/images/1250.other1.jpg
+Other Image URL,Images,System.String,http://www.companyname.com/images/1250.other1.jpg
+Other Image URL,Images,System.String,http://www.companyname.com/images/1250.other1.jpg
+Other Image URL,Images,System.String,http://www.companyname.com/images/1250.other1.jpg
+Other Image URL,Images,System.String,http://www.companyname.com/images/1250.other1.jpg
+Other Image URL,Images,System.String,http://www.companyname.com/images/1250.other1.jpg
+Other Image URL,Images,System.String,http://www.companyname.com/images/1250.other1.jpg
+Other Image URL,Images,System.String,http://www.companyname.com/images/1250.other1.jpg
+Swatch Image URL,Images,System.String,http://www.companyname.com/images/1250.swatch.jpg
+other_image_url1,Images,System.String,
+other_image_url2,Images,System.String,
+other_image_url3,Images,System.String,
+other_image_url4,Images,System.String,
+other_image_url5,Images,System.String,
+Item Package Length,Shipping,System.String,10
+Package Length Unit,Shipping,System.String,Inches
+Item Package Width,Shipping,System.String,2
+Package Width Unit,Shipping,System.String,Inches
+Item Package Height,Shipping,System.String,2.7
+Package Height Unit,Shipping,System.String,Inches
+Item Package Weight,Shipping,System.String,24
+Item Package Weight Unit,Shipping,System.String,Pounds
+Item Display Weight,Shipping,System.String,"20, 50"
+Item Display Weight Unit,Shipping,System.String,"Grams, Kilograms"
+Item Length,Shipping,System.String,10
+Item Length Unit,Shipping,System.String,Inches
+Item Width,Shipping,System.String,2
+Item Width Unit,Shipping,System.String,Inches
+Item Height,Shipping,System.String,2.7
+Item Height Unit,Shipping,System.String,Inches
+Master Pack Layers per Pallet Quantity,Shipping,System.String,5
+Master Packs Per Layer Quantity,Shipping,System.String,9
+Item Dimensions Fraction Length,Shipping,System.String,"7/29/1932,  8.66"
+Item Dimensions Fraction Length Unit,Shipping,System.String,Inches

@@ -36,8 +36,8 @@
         <StackPanel Orientation="Horizontal" 
                     Grid.Row="3"
                     HorizontalAlignment="Center">
-            <Button Margin="10" Width="80">Save</Button>
-            <Button Margin="10" Width="80">Close</Button>
+            <Button x:Name="Save" Margin="10" Width="80">Save</Button>
+            <Button Margin="10" x:Name="Close" Width="80">Close</Button>
         </StackPanel>
     </Grid>
 </mah:MetroWindow>
