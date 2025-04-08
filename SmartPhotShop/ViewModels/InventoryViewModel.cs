@@ -27,13 +27,13 @@ namespace SmartPhotShop.ViewModels
         public BindableCollection<ProductImage> Images { get; set; } = new BindableCollection<ProductImage>();
         public BindableCollection<ProductItem> Items { get; set; } = new BindableCollection<ProductItem>();
         public ProductItem SelectedItem { get => _selectedItem; set => Set(ref _selectedItem, value); }
-        public InventoryViewModel(IDialogCoordinator dialogCoordinator)
+        public InventoryViewModel(IDialogCoordinator dialogCoordinator, ILiteDatabase liteDatabase)
         {
             DisplayName = "Files";
 
             PropertyChanged += InventoryViewModel_PropertyChanged;
             _dialogCoordinator = dialogCoordinator;
-
+            _db = liteDatabase;
         }
         static void UpdateOrInsertRow(ExcelPackage excel, string filePath, string sheetName, string sku, List<object> newData)
         {
@@ -88,12 +88,11 @@ namespace SmartPhotShop.ViewModels
             try
             {
                 using (var excel = new ExcelPackage(Properties.Settings.Default.FlatFile))
-                using (var db = new LiteDatabase(Constants.DbPath))
                 {
-                    var productTemplatesCollection = db.GetCollection<ProductTemplate>().FindAll();
+                    var productTemplatesCollection = _db.GetCollection<ProductTemplate>().FindAll();
                     var flatFile = Properties.Settings.Default.FlatFile;
                     var sheetName = "Template";
-                    var productItems = db.GetCollection<ProductItem>().FindAll().ToList();
+                    var productItems = _db.GetCollection<ProductItem>().FindAll().ToList();
 
                     foreach (var productItem in productItems)
                     {
@@ -232,6 +231,7 @@ namespace SmartPhotShop.ViewModels
         private bool _isAllSelected;
         private ProductItem _selectedItem;
         private readonly IDialogCoordinator _dialogCoordinator;
+        private readonly ILiteDatabase _db;
 
         public bool IsAllSelected
         {
@@ -249,12 +249,9 @@ namespace SmartPhotShop.ViewModels
 
         private void LoadItems()
         {
-            using (var db = new LiteDatabase(Constants.DbPath))
-            {
-                var items = db.GetCollection<ProductItem>().FindAll();
-                Items.Clear();
-                OnUIThread(() => Items.AddRange(items));
-            }
+            var items = _db.GetCollection<ProductItem>().FindAll();
+            Items.Clear();
+            OnUIThread(() => Items.AddRange(items));
         }
 
         public async void Delete()
@@ -263,29 +260,26 @@ namespace SmartPhotShop.ViewModels
 
             try
             {
-                using (var db = new LiteDatabase(Constants.DbPath))
+                var itemsCollection = _db.GetCollection<ProductItem>();
+                var selected = Items.Where(i => i.IsSelected).ToList();
+
+
+                for (int i = selected.Count - 1; i >= 0; i--)
                 {
-                    var itemsCollection = db.GetCollection<ProductItem>();
-                    var selected = Items.Where(i => i.IsSelected).ToList();
+                    progress.SetMessage($"Deleting {selected[i].ItemName}...");
+                    progress.SetProgress((double)(selected.Count - i - 1) / selected.Count);
 
-
-                    for (int i = selected.Count - 1; i >= 0; i--)
+                    for (int j = selected[i].Images.Count - 1; j >= 0; j--)
                     {
-                        progress.SetMessage($"Deleting {selected[i].ItemName}...");
-                        progress.SetProgress((double)(selected.Count - i - 1) / selected.Count);
-
-                        for (int j = selected[i].Images.Count - 1; j >= 0; j--)
+                        if (File.Exists(selected[i].Images[j].Path))
                         {
-                            if (File.Exists(selected[i].Images[j].Path))
-                            {
-                                File.Delete(selected[i].Images[j].Path);
-                            }
+                            File.Delete(selected[i].Images[j].Path);
                         }
-
-                        ProductItem item = selected[i];
-                        itemsCollection.Delete(item.Id);
-                        Items.Remove(item);
                     }
+
+                    ProductItem item = selected[i];
+                    itemsCollection.Delete(item.Id);
+                    Items.Remove(item);
                 }
             }
             catch (Exception ex)

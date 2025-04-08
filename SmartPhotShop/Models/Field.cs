@@ -22,6 +22,7 @@ namespace SmartPhotShop.Models
 
     public class FieldValue
     {
+
         public int FieldId { get; set; }
         public object Value { get; set; }
     }

@@ -30,13 +30,13 @@ namespace SmartPhotShop.Views
 
         private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-            if (e.EditAction == DataGridEditAction.Commit)
-            {
+            //if (e.EditAction == DataGridEditAction.Commit)
+            //{
 
-                var row = e.Row.Item as DataRowView; // Get the updated row item
-                var header = e.Column.Header; // Get the updated row item
-                (DataContext as ProductsViewModel)?.SaveItem(row, header);
-            }
+            //    var row = e.Row.Item as DataRowView; // Get the updated row item
+            //    var header = e.Column.Header; // Get the updated row item
+            //    (DataContext as ProductsViewModel)?.SaveItem(row, header);
+            //}
         }
     }
 }

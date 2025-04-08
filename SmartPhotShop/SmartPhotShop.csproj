@@ -380,6 +380,7 @@
     <Compile Include="SimpleBootstrapper.cs" />
     <Compile Include="ViewModels\FieldCrudViewModel.cs" />
     <Compile Include="ViewModels\FieldsViewModel.cs" />
+    <Compile Include="ViewModels\FieldValueViewModel.cs" />
     <Compile Include="ViewModels\InventoryViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\ProductsViewModel.cs" />

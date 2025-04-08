@@ -18,6 +18,7 @@ namespace SmartPhotShop.ViewModels
         private string name;
         private Type _selectedType;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ILiteDatabase _db;
 
         public int Id { get => id; set => Set(ref id, value); }
         public string Group { get => group; set => Set(ref group, value); }
@@ -27,12 +28,13 @@ namespace SmartPhotShop.ViewModels
 
         public BindableCollection<Type> Types { get; set; } = new BindableCollection<Type>();
 
-        public FieldCrudViewModel(IEventAggregator eventAggregator)
+        public FieldCrudViewModel(IEventAggregator eventAggregator, ILiteDatabase liteDatabase)
         {
             Types.Add(typeof(int));
             Types.Add(typeof(decimal));
             Types.Add(typeof(string));
             _eventAggregator = eventAggregator;
+            _db = liteDatabase;
         }
 
         public async void Close()
@@ -44,24 +46,20 @@ namespace SmartPhotShop.ViewModels
 
         public async void Save()
         {
-            using (var db = new LiteDatabase(Constants.DbPath))
+            var newField = new Field
             {
-                var newField = new Field
-                {
-                    Group = Group,
-                    Name = Name,
-                    Type = SelectedType.ToString(),
-                };
-                db.GetCollection<Field>()
-                    .Insert(newField);
+                Group = Group,
+                Name = Name,
+                Type = SelectedType.ToString(),
+            };
+            _db.GetCollection<Field>()
+                .Insert(newField);
 
-                await _eventAggregator.PublishOnUIThreadAsync(new Events.CrudEvent<Field>
-                {
-                    CrudAction = Events.CrudAction.Create,
-                    Item = newField
-                });
-
-            }
+            await _eventAggregator.PublishOnUIThreadAsync(new Events.CrudEvent<Field>
+            {
+                CrudAction = Events.CrudAction.Create,
+                Item = newField
+            });
         }
     }
 }

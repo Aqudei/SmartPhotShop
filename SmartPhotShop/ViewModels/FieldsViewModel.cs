@@ -25,42 +25,41 @@ namespace SmartPhotShop.ViewModels
         private readonly IWindowManager _windowManager;
         private readonly IEventAggregator _eventAggregator;
         private readonly IDialogCoordinator _dialogCoordinator;
-
+        private readonly ILiteDatabase _db;
         private BindableCollection<Field> _fields = new BindableCollection<Field>();
         public ICollectionView FieldsCollectionView { get; set; }
-        public FieldsViewModel(IWindowManager windowManager, IEventAggregator eventAggregator, IDialogCoordinator dialogCoordinator)
+        public FieldsViewModel(IWindowManager windowManager, IEventAggregator eventAggregator, IDialogCoordinator dialogCoordinator,
+            ILiteDatabase liteDatabase)
         {
             DisplayName = "Fields";
             _windowManager = windowManager;
             _eventAggregator = eventAggregator;
             _dialogCoordinator = dialogCoordinator;
+            _db = liteDatabase;
             _eventAggregator.SubscribeOnPublishedThread(this);
 
             FieldsCollectionView = CollectionViewSource.GetDefaultView(_fields);
         }
         protected override void OnViewAttached(object view, object context)
         {
-            using (var db = new LiteDatabase(Constants.DbPath))
+            _fields.Clear();
+            var collection = _db.GetCollection<Field>();
+            var fields = collection.FindAll();
+
+            if (fields != null && fields.Any())
             {
-                _fields.Clear();
-                var collection = db.GetCollection<Field>();
-                var fields = collection.FindAll();
+                _fields.AddRange(fields);
+            }
 
-                if (fields != null && fields.Any())
+
+            if (_fields.Any() && _fields.All(f => f.Order == 0))
+            {
+                var order = 1;
+
+                foreach (var field in _fields)
                 {
-                    _fields.AddRange(fields);
-                }
-
-
-                if (_fields.Any() && _fields.All(f => f.Order == 0))
-                {
-                    var order = 1;
-
-                    foreach (var field in _fields)
-                    {
-                        field.Order = order++;
-                        collection.Update(field);
-                    }
+                    field.Order = order++;
+                    collection.Update(field);
                 }
             }
         }
@@ -72,13 +71,10 @@ namespace SmartPhotShop.ViewModels
 
         public void SaveChanges()
         {
-            using (var db = new LiteDatabase(Constants.DbPath))
+            var collection = _db.GetCollection<Field>();
+            foreach (var item in _fields)
             {
-                var collection = db.GetCollection<Field>();
-                foreach (var item in _fields)
-                {
-                    collection.Update(item);
-                }
+                collection.Update(item);
             }
         }
 
@@ -110,17 +106,14 @@ namespace SmartPhotShop.ViewModels
                     csv.WriteHeader<ImportExportItem>();
                     csv.NextRecord(); // Ensure the header line is completed
 
-                    using (var db = new LiteDatabase(Constants.DbPath))
-                    {
-                        var fields = _fields.ToList();
+                    var fields = _fields.ToList();
 
-                        for (int i = 0; i < fields.Count; i++)
-                        {
-                            var rec = fields[i];
-                            csv.WriteRecord(rec);
-                            csv.NextRecord(); // Move to the next line after writing a record
-                            progress.SetProgress((i + 1) / (double)fields.Count);
-                        }
+                    for (int i = 0; i < fields.Count; i++)
+                    {
+                        var rec = fields[i];
+                        csv.WriteRecord(rec);
+                        csv.NextRecord(); // Move to the next line after writing a record
+                        progress.SetProgress((i + 1) / (double)fields.Count);
                     }
                 }
 
@@ -161,46 +154,42 @@ namespace SmartPhotShop.ViewModels
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     var records = csv.GetRecords<ImportExportItem>().ToList();
-                    using (var db = new LiteDatabase(Constants.DbPath))
+                    var fields = _db.GetCollection<Field>();
+                    var headerCounts = new Dictionary<string, int>();
+
+                    for (int i = 0; i < records.Count; i++)
                     {
-
-                        var fields = db.GetCollection<Field>();
-                        var headerCounts = new Dictionary<string, int>();
-
-                        for (int i = 0; i < records.Count; i++)
+                        var rec = records[i];
+                        // Check if this header has already been used
+                        if (headerCounts.ContainsKey(rec.Header))
                         {
-                            var rec = records[i];
-                            // Check if this header has already been used
-                            if (headerCounts.ContainsKey(rec.Header))
-                            {
-                                headerCounts[rec.Header]++;
-                            }
-                            else
-                            {
-                                headerCounts[rec.Header] = 0;
-                            }
-                            
-                            // Generate a new name based on occurrence
-                            string uniqueName = headerCounts[rec.Header] == 0
-                                ? rec.Header
-                                : $"{rec.Header}.{headerCounts[rec.Header]}";
-
-                            var newField = new Field
-                            {
-                                Group = rec.Group,
-                                Name = uniqueName,
-                                Type = rec.Type,
-                            };
-
-                            fields.Insert(newField);
-                            await _eventAggregator.PublishOnUIThreadAsync(new Events.CrudEvent<Field>
-                            {
-                                CrudAction = CrudAction.Create,
-                                Item = newField,
-                            });
-
-                            progress.SetProgress((i + 1) / (double)records.Count);
+                            headerCounts[rec.Header]++;
                         }
+                        else
+                        {
+                            headerCounts[rec.Header] = 0;
+                        }
+
+                        // Generate a new name based on occurrence
+                        string uniqueName = headerCounts[rec.Header] == 0
+                            ? rec.Header
+                            : $"{rec.Header}.{headerCounts[rec.Header]}";
+
+                        var newField = new Field
+                        {
+                            Group = rec.Group,
+                            Name = uniqueName,
+                            Type = rec.Type,
+                        };
+
+                        fields.Insert(newField);
+                        await _eventAggregator.PublishOnUIThreadAsync(new Events.CrudEvent<Field>
+                        {
+                            CrudAction = CrudAction.Create,
+                            Item = newField,
+                        });
+
+                        progress.SetProgress((i + 1) / (double)records.Count);
                     }
                 }
             }
@@ -215,12 +204,9 @@ namespace SmartPhotShop.ViewModels
         }
         public void DeleteField(Field field)
         {
-            using (var db = new LiteDatabase(Constants.DbPath))
-            {
-                var fields = db.GetCollection<Field>();
-                fields.Delete(field.Id);
-                _fields.Remove(field);
-            }
+            var fields = _db.GetCollection<Field>();
+            fields.Delete(field.Id);
+            _fields.Remove(field);
         }
 
         public void MoveUp(Field field)
@@ -236,7 +222,7 @@ namespace SmartPhotShop.ViewModels
                 FieldsCollectionView.SortDescriptions.Add(new SortDescription("Order", ListSortDirection.Ascending));
             }
 
-          
+
         }
 
         public void MoveDown(Field field)

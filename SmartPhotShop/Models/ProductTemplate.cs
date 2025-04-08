@@ -18,7 +18,7 @@ namespace SmartPhotShop.Models
         public string ItemName { get; set; }
         public string SKU { get; set; }
 
-        public ICollection<FieldValue> Fields { get; set; } = new List<FieldValue>();
+        public List<FieldValue> FieldValues { get; set; } = new List<FieldValue>();
 
         public List<ProductImage> Images { get; set; } = new List<ProductImage>();
 
@@ -45,7 +45,7 @@ namespace SmartPhotShop.Models
 
             foreach (var field in fields)
             {
-                productTemplate.Fields.Add(new FieldValue
+                productTemplate.FieldValues.Add(new FieldValue
                 {
                     FieldId = field.Id
                 });

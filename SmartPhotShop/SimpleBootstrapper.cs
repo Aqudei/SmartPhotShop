@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
 using dotenv.net;
+using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
 using NLog;
 using OfficeOpenXml;
@@ -56,6 +57,8 @@ namespace SmartPhotShop
             container.PerRequest<FieldCrudViewModel>();
             container.Instance(DialogCoordinator.Instance);
 
+            container.Instance<ILiteDatabase>(new LiteDatabase(Constants.DbPath));
+
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Properties.Settings, SettingsViewModel>().ReverseMap();
@@ -93,6 +96,13 @@ namespace SmartPhotShop
             logger.Info("Application Started!");
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             await DisplayRootViewForAsync<SplashViewModel>();
+        }
+
+        protected override void OnExit(object sender, EventArgs e)
+        {
+            using (var db = container.GetInstance<ILiteDatabase>())
+            {
+            }
         }
 
         protected override IEnumerable<Assembly> SelectAssemblies() => new List<Assembly> { Assembly.GetExecutingAssembly() };

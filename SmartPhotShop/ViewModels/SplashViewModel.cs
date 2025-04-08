@@ -14,12 +14,12 @@ namespace SmartPhotShop.ViewModels
     internal class SplashViewModel : Screen
     {
         private readonly IWindowManager _windowManager;
+        private readonly ILiteDatabase _db;
 
-
-
-        public SplashViewModel(IWindowManager windowManager)
+        public SplashViewModel(IWindowManager windowManager, ILiteDatabase liteDatabase)
         {
             _windowManager = windowManager;
+            _db = liteDatabase;
         }
 
         private Task ImportProductsAsync()
@@ -30,24 +30,17 @@ namespace SmartPhotShop.ViewModels
                 if (string.IsNullOrWhiteSpace(Properties.Settings.Default.ProductsDirectory) || !Directory.Exists(Properties.Settings.Default.ProductsDirectory))
                     return;
 
+                var fieldsCollection = _db.GetCollection<Field>();
+                var fields = fieldsCollection.FindAll().ToList();
+                var products = Directory.GetDirectories(Properties.Settings.Default.ProductsDirectory)
+                    .Select(d => ProductTemplate.CreateFromPath(d, fields));
 
-
-                using (var db = new LiteDatabase(Constants.DbPath))
+                var productTemplateCollection = _db.GetCollection<ProductTemplate>();
+                foreach (var product in products)
                 {
-                    var fieldsCollection = db.GetCollection<Field>();
-                    var fields = fieldsCollection.FindAll().ToList();
-                    var products = Directory.GetDirectories(Properties.Settings.Default.ProductsDirectory)
-                        .Select(d => ProductTemplate.CreateFromPath(d, fields));
-
-                    var productTemplateCollection = db.GetCollection<ProductTemplate>();
-                    foreach (var product in products)
-                    {
-                        var dbProduct = productTemplateCollection.FindOne(v => v.SKU == product.SKU);
-                        if (dbProduct == null)
-                            productTemplateCollection.Insert(product);
-                        else
-                            productTemplateCollection.Update(dbProduct.Id, product);
-                    }
+                    var dbProduct = productTemplateCollection.FindOne(v => v.SKU == product.SKU);
+                    if (dbProduct == null)
+                        productTemplateCollection.Insert(product);
                 }
             });
         }
