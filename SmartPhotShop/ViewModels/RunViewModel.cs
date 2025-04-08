@@ -206,8 +206,8 @@ namespace SmartPhotShop.ViewModels
                                 {
                                     try
                                     {
-                                        var outputFileName = $"{processingItem.ProductTemplate.Sku.ToUpper()}-{baseImage.Name}-{Path.GetFileNameWithoutExtension(processingItem.Overlay)}.png".Replace(" ", "-");
-                                        var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, processingItem.ProductTemplate.ProductName, outputFileName).ToUpper();
+                                        var outputFileName = $"{processingItem.ProductTemplate.SKU.ToUpper()}-{baseImage.Name}-{Path.GetFileNameWithoutExtension(processingItem.Overlay)}.png".Replace(" ", "-");
+                                        var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, processingItem.ProductTemplate.ItemName, outputFileName).ToUpper();
                                         Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 
                                         ProcessImage(photoshop, processingItem, baseImage.Path, outputFilePath);
@@ -219,7 +219,7 @@ namespace SmartPhotShop.ViewModels
                                     }
                                     catch (Exception ex)
                                     {
-                                        logger.Error($"Error processing image '{baseImage.Name}' for SKU '{processingItem.ProductTemplate.Sku}'");
+                                        logger.Error($"Error processing image '{baseImage.Name}' for SKU '{processingItem.ProductTemplate.SKU}'");
                                         logger.Error(ex, ex.Message);
                                     }
 

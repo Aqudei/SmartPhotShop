@@ -165,15 +165,30 @@ namespace SmartPhotShop.ViewModels
                     {
 
                         var fields = db.GetCollection<Field>();
+                        var headerCounts = new Dictionary<string, int>();
 
                         for (int i = 0; i < records.Count; i++)
                         {
                             var rec = records[i];
+                            // Check if this header has already been used
+                            if (headerCounts.ContainsKey(rec.Header))
+                            {
+                                headerCounts[rec.Header]++;
+                            }
+                            else
+                            {
+                                headerCounts[rec.Header] = 0;
+                            }
+                            
+                            // Generate a new name based on occurrence
+                            string uniqueName = headerCounts[rec.Header] == 0
+                                ? rec.Header
+                                : $"{rec.Header}.{headerCounts[rec.Header]}";
 
                             var newField = new Field
                             {
                                 Group = rec.Group,
-                                Name = rec.Header,
+                                Name = uniqueName,
                                 Type = rec.Type,
                             };
 

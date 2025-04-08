@@ -33,7 +33,7 @@ namespace SmartPhotShop.Models
 
             var overlayName = Path.GetFileNameWithoutExtension(overlay);
 
-            Sku = Regex.Replace($"{productTemplate.Sku}-{overlayName}".ToUpper(), @"\s+", "-");
+            Sku = Regex.Replace($"{productTemplate.SKU}-{overlayName}".ToUpper(), @"\s+", "-");
         }
     }
 }

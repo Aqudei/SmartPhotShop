@@ -2,6 +2,7 @@
 using SmartPhotShop.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,12 +28,14 @@ namespace SmartPhotShop.Views
             InitializeComponent();
         }
 
-        private void Variants_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             if (e.EditAction == DataGridEditAction.Commit)
             {
-                var item = e.Row.Item as ProductTemplate; // Get the updated row item
-                (DataContext as ProductsViewModel)?.SaveItem(item);
+
+                var row = e.Row.Item as DataRowView; // Get the updated row item
+                var header = e.Column.Header; // Get the updated row item
+                (DataContext as ProductsViewModel)?.SaveItem(row, header);
             }
         }
     }

@@ -15,7 +15,7 @@ namespace SmartPhotShop.ViewModels
     {
         private readonly IWindowManager _windowManager;
 
- 
+
 
         public SplashViewModel(IWindowManager windowManager)
         {
@@ -30,22 +30,25 @@ namespace SmartPhotShop.ViewModels
                 if (string.IsNullOrWhiteSpace(Properties.Settings.Default.ProductsDirectory) || !Directory.Exists(Properties.Settings.Default.ProductsDirectory))
                     return;
 
-                var products = Directory.GetDirectories(Properties.Settings.Default.ProductsDirectory)
-                    .Select(d => new ProductTemplate(d));
+
 
                 using (var db = new LiteDatabase(Constants.DbPath))
                 {
+                    var fieldsCollection = db.GetCollection<Field>();
+                    var fields = fieldsCollection.FindAll().ToList();
+                    var products = Directory.GetDirectories(Properties.Settings.Default.ProductsDirectory)
+                        .Select(d => ProductTemplate.CreateFromPath(d, fields));
+
                     var productTemplateCollection = db.GetCollection<ProductTemplate>();
                     foreach (var product in products)
                     {
-                        var dbProduct = productTemplateCollection.FindOne(v => v.Sku == product.Sku);
+                        var dbProduct = productTemplateCollection.FindOne(v => v.SKU == product.SKU);
                         if (dbProduct == null)
                             productTemplateCollection.Insert(product);
                         else
                             productTemplateCollection.Update(dbProduct.Id, product);
                     }
                 }
-
             });
         }
 
