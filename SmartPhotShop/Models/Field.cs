@@ -20,10 +20,31 @@ namespace SmartPhotShop.Models
 
     }
 
-    public class FieldValue
+    public class FieldValue : IEquatable<FieldValue>        
     {
 
         public int FieldId { get; set; }
         public object Value { get; set; }
+
+        public bool Equals(FieldValue other)
+        {
+            if (other == null) return false;
+
+            return FieldId == other.FieldId &&
+                   Equals(Value, other.Value);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as FieldValue);
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            hash = hash * 23 + FieldId.GetHashCode();
+            hash = hash * 23 + (Value != null ? Value.GetHashCode() : 0);
+            return hash;
+        }
     }
 }

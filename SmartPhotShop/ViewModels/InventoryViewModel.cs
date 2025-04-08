@@ -10,11 +10,13 @@ using OfficeOpenXml;
 using SmartPhotShop.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace SmartPhotShop.ViewModels
 {
@@ -27,6 +29,8 @@ namespace SmartPhotShop.ViewModels
         public BindableCollection<ProductImage> Images { get; set; } = new BindableCollection<ProductImage>();
         public BindableCollection<ProductItem> Items { get; set; } = new BindableCollection<ProductItem>();
         public ProductItem SelectedItem { get => _selectedItem; set => Set(ref _selectedItem, value); }
+        public BindableCollection<FieldValueViewModel> _fieldValues = new BindableCollection<FieldValueViewModel>();
+        public ICollectionView FieldValues { get; set; }
         public InventoryViewModel(IDialogCoordinator dialogCoordinator, ILiteDatabase liteDatabase)
         {
             DisplayName = "Files";
@@ -34,7 +38,13 @@ namespace SmartPhotShop.ViewModels
             PropertyChanged += InventoryViewModel_PropertyChanged;
             _dialogCoordinator = dialogCoordinator;
             _db = liteDatabase;
+
+            FieldValues = CollectionViewSource.GetDefaultView(_fieldValues);
+
         }
+
+
+
         static void UpdateOrInsertRow(ExcelPackage excel, string filePath, string sheetName, string sku, List<object> newData)
         {
             var worksheet = excel.Workbook.Worksheets[sheetName];
@@ -109,7 +119,7 @@ namespace SmartPhotShop.ViewModels
                 }
 
 
-                await UploadFlatFileAsync(Properties.Settings.Default.FlatFile);
+                // await UploadFlatFileAsync(Properties.Settings.Default.FlatFile);
 
                 progress.SetMessage("Uploading output files to S3...");
                 await SyncProductItems();
@@ -239,13 +249,13 @@ namespace SmartPhotShop.ViewModels
             set { Set(ref _isAllSelected, value); }
         }
 
-
-        protected override void OnViewLoaded(object view)
+        protected override void OnViewAttached(object view, object context)
         {
-            base.OnViewLoaded(view);
+            base.OnViewAttached(view, context);
 
             Task.Run(() => LoadItems());
         }
+
 
         private void LoadItems()
         {
@@ -266,7 +276,7 @@ namespace SmartPhotShop.ViewModels
 
                 for (int i = selected.Count - 1; i >= 0; i--)
                 {
-                    progress.SetMessage($"Deleting {selected[i].ItemName}...");
+                    progress.SetMessage($"Deleting {selected[i].SKU}...");
                     progress.SetProgress((double)(selected.Count - i - 1) / selected.Count);
 
                     for (int j = selected[i].Images.Count - 1; j >= 0; j--)

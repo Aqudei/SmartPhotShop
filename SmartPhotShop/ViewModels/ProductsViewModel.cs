@@ -52,7 +52,7 @@ namespace SmartPhotShop.ViewModels
 
         private void ProductsViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (nameof(SelectedProductTemplate).Equals(e.PropertyName))
+            if (nameof(SelectedProductTemplate).Equals(e.PropertyName) && SelectedProductTemplate != null)
             {
                 _fieldValues.Clear();
                 var collection = _db.GetCollection<Field>();

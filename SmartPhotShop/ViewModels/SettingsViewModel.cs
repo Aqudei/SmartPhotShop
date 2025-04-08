@@ -1,13 +1,17 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
+using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SmartPhotShop.ViewModels
 {
@@ -21,7 +25,7 @@ namespace SmartPhotShop.ViewModels
         private string productsDirectory;
         private readonly IMapper _mapper;
         private readonly IDialogCoordinator _dialogCoordinator;
-
+        private readonly ILiteDatabase _db;
         private string _actionSet = "Test ATN";
 
         public string ActionSet
@@ -38,24 +42,34 @@ namespace SmartPhotShop.ViewModels
         public string FlatFile { get => flatFile; set => Set(ref flatFile, value); }
         public string DbPath { get; }
 
-        public SettingsViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator)
+        public SettingsViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator, ILiteDatabase db)
         {
             DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
 
             DisplayName = "Settings";
             _mapper = mapper;
             _dialogCoordinator = dialogCoordinator;
-
+            _db = db;
             mapper.Map(Properties.Settings.Default, this);
         }
+        public static void RestartApp()
+        {
+            var exePath = Assembly.GetEntryAssembly().Location;
 
+            Process.Start(exePath);
+            Application.Current.Shutdown();
+        }
         public async void ClearDatabase()
         {
             var prompt = await _dialogCoordinator.ShowMessageAsync(this, "Confirm", "Are you sure you want to clear database?", MessageDialogStyle.AffirmativeAndNegative);
             if (prompt == MessageDialogResult.Affirmative)
             {
+                _db.Dispose();
+
                 if (File.Exists(DbPath))
                     File.Delete(DbPath);
+
+                RestartApp();
             }
         }
 

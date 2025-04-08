@@ -1,6 +1,7 @@
 header,group,type,sample
-Listing Action,,System.Object,(Default) Create or Replace
+Listing Action,Supplier Description,System.Object,(Default) Create or Replace
 Product Type,Product Identity,System.Object,SHIRT
+Item Name,Product Identity,System.Object,"Robert Graham Men's Maya Bay Short Sleeve Classic Fit Shirt, Cranberry, X-Large"
 Brand Name,Product Identity,System.Object,"Calvin Klein, Hanes, Goodthreads, Under Armour"
 External Product ID Type,Product Identity,System.Object,UPC
 External Product ID,Product Identity,System.Object,714532191586

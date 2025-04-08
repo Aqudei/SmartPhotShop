@@ -154,7 +154,11 @@ namespace SmartPhotShop.ViewModels
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     var records = csv.GetRecords<ImportExportItem>().ToList();
-                    var fields = _db.GetCollection<Field>();
+                    var collection = _db.GetCollection<Field>();
+
+                    collection.DeleteAll();
+                    _fields.Clear();
+
                     var headerCounts = new Dictionary<string, int>();
 
                     for (int i = 0; i < records.Count; i++)
@@ -180,9 +184,13 @@ namespace SmartPhotShop.ViewModels
                             Group = rec.Group,
                             Name = uniqueName,
                             Type = rec.Type,
+                            Order = i + 1
                         };
 
-                        fields.Insert(newField);
+                        collection.Insert(newField);
+
+                        AttachFieldToProducts(newField);
+
                         await _eventAggregator.PublishOnUIThreadAsync(new Events.CrudEvent<Field>
                         {
                             CrudAction = CrudAction.Create,
@@ -202,6 +210,25 @@ namespace SmartPhotShop.ViewModels
                 await progress.CloseAsync();
             }
         }
+
+        private void AttachFieldToProducts(Field newField)
+        {
+            var products = _db.GetCollection<ProductTemplate>().FindAll().ToList();
+            foreach (var product in products)
+            {
+                var fieldValue = new FieldValue
+                {
+                    FieldId = newField.Id,
+                    Value = string.Empty
+                };
+                if (!product.FieldValues.Contains(fieldValue))
+                {
+                    product.FieldValues.Add(fieldValue);
+                    _db.GetCollection<ProductTemplate>().Update(product);
+                }
+            }
+        }
+
         public void DeleteField(Field field)
         {
             var fields = _db.GetCollection<Field>();

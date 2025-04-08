@@ -36,7 +36,6 @@ namespace SmartPhotShop
         }
 
 
-
         protected override void Configure()
         {
             DotEnv.Load();
@@ -64,11 +63,22 @@ namespace SmartPhotShop
                 cfg.CreateMap<Properties.Settings, SettingsViewModel>().ReverseMap();
                 cfg.CreateMap<ProductTemplate, ProductTemplate>();
                 cfg.CreateMap<ProductTemplate, ProductItem>()
-                    .ForMember(m => m.IsSelected, opts => opts.Ignore());
+                    .ForMember(m => m.IsSelected, opts => opts.Ignore())
+                    .ForMember(m => m.IsNotifying, opts => opts.Ignore())
+                    .ForMember(m => m.Id, opts => opts.Ignore());
             });
 
             container.Instance(config.CreateMapper());
 
+
+            var mapper = BsonMapper.Global;
+
+            mapper.Entity<ProductItem>()
+                .Ignore(x => x.IsNotifying)
+                .Ignore(x => x.IsSelected);
+
+            mapper.Entity<ProductTemplate>()
+                .Ignore(x => x.IsNotifying);
         }
 
         protected override IEnumerable<object> GetAllInstances(Type service)
@@ -83,20 +93,12 @@ namespace SmartPhotShop
 
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
-            //var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
-            //if (File.Exists(dbPath))
-            //{
-            //    var result = MessageBox.Show("Database already exists. Do you want to delete the existing database?", "Confirm", MessageBoxButton.OKCancel, MessageBoxImage.Question);
-            //    if (result == MessageBoxResult.OK)
-            //    {
-            //        File.Delete(dbPath);
-            //    }
-            //}
 
             logger.Info("Application Started!");
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             await DisplayRootViewForAsync<SplashViewModel>();
         }
+
 
         protected override void OnExit(object sender, EventArgs e)
         {

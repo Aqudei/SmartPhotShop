@@ -110,8 +110,7 @@ namespace SmartPhotShop.ViewModels
         private BackgroundWorker bgWorker;
         private readonly IMapper _mapper;
         private readonly IDialogCoordinator _dialogCoordinator;
-
-
+        private readonly ILiteDatabase _db;
         private string _workingDirectory;
 
         private HashSet<string> _supportedFiles = new HashSet<string> { ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif", ".webp", ".heic" };
@@ -124,11 +123,12 @@ namespace SmartPhotShop.ViewModels
         }
 
         public BindableCollection<ProcessingItem> Items { get; set; } = new BindableCollection<ProcessingItem>();
-        public RunViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator)
+        public RunViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator, ILiteDatabase db)
         {
             DisplayName = "Run";
             _mapper = mapper;
             _dialogCoordinator = dialogCoordinator;
+            _db = db;
         }
 
         protected override Task OnActivateAsync(CancellationToken cancellationToken)
@@ -198,47 +198,44 @@ namespace SmartPhotShop.ViewModels
 
                             }
 
-                            using (var db = new LiteDatabase(Constants.DbPath))
+                            var productImages = new List<ProductImage>();
+
+                            foreach (var baseImage in processingItem.ProductTemplate.Images)
                             {
-                                var productImages = new List<ProductImage>();
-
-                                foreach (var baseImage in processingItem.ProductTemplate.Images)
+                                try
                                 {
-                                    try
-                                    {
-                                        var outputFileName = $"{processingItem.ProductTemplate.SKU.ToUpper()}-{baseImage.Name}-{Path.GetFileNameWithoutExtension(processingItem.Overlay)}.png".Replace(" ", "-");
-                                        var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, processingItem.ProductTemplate.ItemName, outputFileName).ToUpper();
-                                        Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
+                                    var outputFileName = $"{processingItem.ProductTemplate.SKU.ToUpper()}-{baseImage.Name}-{Path.GetFileNameWithoutExtension(processingItem.Overlay)}.png".Replace(" ", "-");
+                                    var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, processingItem.ProductTemplate.SKU, outputFileName).ToUpper();
+                                    Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 
-                                        ProcessImage(photoshop, processingItem, baseImage.Path, outputFilePath);
-                                        productImages.Add(new ProductImage
-                                        {
-                                            Name = baseImage.Name,
-                                            Path = outputFilePath
-                                        });
-                                    }
-                                    catch (Exception ex)
+                                    ProcessImage(photoshop, processingItem, baseImage.Path, outputFilePath);
+                                    productImages.Add(new ProductImage
                                     {
-                                        logger.Error($"Error processing image '{baseImage.Name}' for SKU '{processingItem.ProductTemplate.SKU}'");
-                                        logger.Error(ex, ex.Message);
-                                    }
-
+                                        Name = baseImage.Name,
+                                        Path = outputFilePath
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    logger.Error($"Error processing image '{baseImage.Name}' for SKU '{processingItem.ProductTemplate.SKU}'");
+                                    logger.Error(ex, ex.Message);
                                 }
 
-                                var dbItem = db.GetCollection<ProductItem>().FindOne(x => x.SKU == processingItem.Sku);
+                            }
 
-                                if (dbItem == null)
-                                {
-                                    var productItem = new ProductItem();
-                                    _mapper.Map(processingItem.ProductTemplate, productItem);
-                                    productItem.SKU = processingItem.Sku;
-                                    productItem.ProductTemplateId = processingItem.ProductTemplate.Id;
-                                    productItem.Images.AddRange(productImages);
+                            var dbItem = _db.GetCollection<ProductItem>().FindOne(x => x.SKU == processingItem.Sku);
 
-                                    var inserted = db.GetCollection<ProductItem>().Insert(productItem);
+                            if (dbItem == null)
+                            {
+                                var productItem = new ProductItem();
+                                _mapper.Map(processingItem.ProductTemplate, productItem);
+                                productItem.SKU = processingItem.Sku;
+                                productItem.ProductTemplateId = processingItem.ProductTemplate.Id;
+                                productItem.Images.AddRange(productImages);
 
-                                    //Task.Run(() => UploadToS3(productItem));
-                                }
+                                var inserted = _db.GetCollection<ProductItem>().Insert(productItem);
+
+                                //Task.Run(() => UploadToS3(productItem));
                             }
 
                         }
@@ -395,17 +392,14 @@ namespace SmartPhotShop.ViewModels
             if (string.IsNullOrEmpty(ext) || !_supportedFiles.Contains(ext))
                 return;
 
-            using (var db = new LiteDatabase(Constants.DbPath))
-            {
-                var productTemplates = db.GetCollection<ProductTemplate>().FindAll().ToList();
-                if (!productTemplates.Any())
-                    return;
+            var productTemplates = _db.GetCollection<ProductTemplate>().FindAll().ToList();
+            if (!productTemplates.Any())
+                return;
 
-                foreach (var productTemplate in productTemplates)
-                {
-                    var processItem = new ProcessingItem(e.FullPath, productTemplate);
-                    OnUIThread(()=>Items.Add(processItem));
-                }
+            foreach (var productTemplate in productTemplates)
+            {
+                var processItem = new ProcessingItem(e.FullPath, productTemplate);
+                OnUIThread(() => Items.Add(processItem));
             }
         }
 

@@ -20,27 +20,36 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <DataGrid x:Name="ProductTemplates"
-                  AutoGenerateColumns="False"
-                  FontSize="20"
-                  RowHeight="60"
-                  Grid.Row="0">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="SKU" Binding="{Binding SKU}" />
-                <DataGridTextColumn Header="Item Name" Binding="{Binding ItemName}" />
-            </DataGrid.Columns>
-        </DataGrid>
+        <GroupBox Header="Product Templates"
+                  Margin="4">
 
-        <DataGrid Grid.Column="1"
-                  FontSize="20"
-                  RowHeight="60"
-                  AutoGenerateColumns="False"
-                  x:Name="FieldValues">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Field Name" IsReadOnly="True" Width="*" Binding="{Binding Name}" />
-                <DataGridTextColumn Header="Field Value" Binding="{Binding Value}" Width="*" />
-            </DataGrid.Columns>
-        </DataGrid>
+            <DataGrid x:Name="ProductTemplates"
+                AutoGenerateColumns="False"
+                FontSize="20"
+                RowHeight="60"
+                Grid.Row="0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="SKU" Binding="{Binding SKU}" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </GroupBox>
+        <GroupBox Grid.Column="1"
+                  Header="Properties"
+                  Margin="4">
+
+            <DataGrid
+                FontSize="20"
+                RowHeight="60"
+                AutoGenerateColumns="False"
+                x:Name="FieldValues">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Field Name" IsReadOnly="True" Width="*" Binding="{Binding Name}" />
+                    <DataGridTextColumn Header="Field Value" Binding="{Binding Value}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </GroupBox>
 
         <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right"
@@ -52,7 +61,7 @@
                     Padding="10,5">
                 <StackPanel Orientation="Horizontal">
                     <ico:PackIconBootstrapIcons Kind="Floppy" VerticalAlignment="Center"/>
-                    <Label>SAVE CHANGES</Label>
+                    <Label Content="SAVE CHANGES"/>
                 </StackPanel>
             </Button>
         </StackPanel>

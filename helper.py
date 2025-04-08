@@ -4,7 +4,7 @@ import openpyxl
 import csv
 
 input_file = "C:\\Users\\aqudei\\Downloads\\SmarkPhotShop\\LOCK_DECORATIVE_MAGNET_KEYCHAIN_BOTTLE_OPENER_SHIRT - Excel.xlsx"
-skipped = ['SKU','Item Name']
+skipped = ['SKU']
 
 if __name__ == "__main__":
     wb = openpyxl.load_workbook(input_file, read_only=True)
@@ -19,16 +19,18 @@ if __name__ == "__main__":
                 if not header:
                     break
                 
-                if '[' in header or ']' in header:
-                    continue
-                if header.strip() in skipped:
-                    continue
+
 
                 sample = ws.cell(c.row + 2, c.column).value
                 group = ws.cell(c.row - 1, c.column).value
                 if group:
                     last_group = group.strip()
 
+                if '[' in header or ']' in header:
+                    continue
+                if header.strip() in skipped:
+                    continue
+                
                 print(f"header:{header}, sample:{sample}, group:{last_group}")
                 writer.writerow((header.strip(), last_group, 'System.Object', sample))
             break

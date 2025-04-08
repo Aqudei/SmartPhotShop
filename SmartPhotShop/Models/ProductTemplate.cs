@@ -15,7 +15,6 @@ namespace SmartPhotShop.Models
     public class ProductTemplate : PropertyChangedBase
     {
         public int Id { get; set; }
-        public string ItemName { get; set; }
         public string SKU { get; set; }
 
         public List<FieldValue> FieldValues { get; set; } = new List<FieldValue>();
@@ -27,8 +26,6 @@ namespace SmartPhotShop.Models
             var itemName = System.IO.Path.GetFileNameWithoutExtension(path);
             var productTemplate = new ProductTemplate
             {
-
-                ItemName = itemName,
                 SKU = Regex.Replace(itemName.ToUpper(), @"\s+", "-"),
             };
 

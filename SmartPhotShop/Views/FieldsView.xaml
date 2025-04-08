@@ -39,7 +39,7 @@
                   Grid.Row="1"
                   CanUserAddRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Id" Binding="{Binding Id}"/>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                 <DataGridTextColumn Header="Group" Binding="{Binding Group}"/>
                 <DataGridTextColumn Header="Type" Binding="{Binding Type}"/>
