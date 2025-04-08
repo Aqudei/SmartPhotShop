@@ -14,14 +14,16 @@ namespace SmartPhotShop.Models
     {
         private bool _isSelected;
         private string _sku;
-        private BindableCollection<FieldValue> _fields;
         private BindableCollection<ProductImage> _images;
+        private string _name;
 
+        public string Name { get => _name; set => Set(ref _name , value); }
         public bool IsSelected { get => _isSelected; set => Set(ref _isSelected, value); }
         public int Id { get; set; }
 
         // Supplier Description				
         public string SKU { get => _sku; set => Set(ref _sku, value); }
+        public List<FieldValue> FieldValues { get; set; } = new List<FieldValue>();
 
         public BindableCollection<ProductImage> Images { get => _images; set => Set(ref _images, value); }
 

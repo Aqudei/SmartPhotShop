@@ -47,7 +47,8 @@ namespace SmartPhotShop.ViewModels
 
         static void UpdateOrInsertRow(ExcelPackage excel, string filePath, string sheetName, string sku, List<object> newData)
         {
-            var worksheet = excel.Workbook.Worksheets[sheetName];
+            var worksheet = excel.Workbook.Worksheets.FirstOrDefault(ws => ws.Name == sheetName);
+
             if (worksheet == null)
             {
                 Console.WriteLine($"Sheet '{sheetName}' not found.");
@@ -58,7 +59,7 @@ namespace SmartPhotShop.ViewModels
             bool found = false;
 
             // Search for SKU in Column A (Column 1)
-            for (int row = 2; row <= rowCount; row++) // Skipping header row
+            for (int row = 4; row <= rowCount; row++) // Skipping header row
             {
                 if (worksheet.Cells[row, 1].Text.Equals(sku, StringComparison.OrdinalIgnoreCase))
                 {

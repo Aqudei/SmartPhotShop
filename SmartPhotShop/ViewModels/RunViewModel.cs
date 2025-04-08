@@ -223,19 +223,29 @@ namespace SmartPhotShop.ViewModels
 
                             }
 
-                            var dbItem = _db.GetCollection<ProductItem>().FindOne(x => x.SKU == processingItem.Sku);
-
-                            if (dbItem == null)
+                            var productItem = _db.GetCollection<ProductItem>().FindOne(x => x.SKU == processingItem.Sku);
+                            
+                           
+                            if (productItem == null)
                             {
-                                var productItem = new ProductItem();
+                                productItem = new ProductItem();
+                                
                                 _mapper.Map(processingItem.ProductTemplate, productItem);
                                 productItem.SKU = processingItem.Sku;
                                 productItem.ProductTemplateId = processingItem.ProductTemplate.Id;
                                 productItem.Images.AddRange(productImages);
-
                                 var inserted = _db.GetCollection<ProductItem>().Insert(productItem);
 
                                 //Task.Run(() => UploadToS3(productItem));
+                            }
+                            else
+                            {
+                                _mapper.Map(processingItem.ProductTemplate, productItem);
+                                productItem.SKU = processingItem.Sku;
+                                productItem.ProductTemplateId = processingItem.ProductTemplate.Id;
+                                productItem.Images.Clear();
+                                productItem.Images.AddRange(productImages);
+                                var updated = _db.GetCollection<ProductItem>().Update(productItem);
                             }
 
                         }

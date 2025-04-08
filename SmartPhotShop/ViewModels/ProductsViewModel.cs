@@ -57,6 +57,7 @@ namespace SmartPhotShop.ViewModels
                 _fieldValues.Clear();
                 var collection = _db.GetCollection<Field>();
 
+                Debug.WriteLine($"Num Fields: {SelectedProductTemplate.FieldValues.Count}");
                 foreach (var item in SelectedProductTemplate.FieldValues)
                 {
                     var field = collection.FindOne(f => f.Id == item.FieldId);

@@ -14,10 +14,13 @@ namespace SmartPhotShop.Models
 {
     public class ProductTemplate : PropertyChangedBase
     {
+        private string _name;
+
         public int Id { get; set; }
         public string SKU { get; set; }
 
         public List<FieldValue> FieldValues { get; set; } = new List<FieldValue>();
+        public string Name { get => _name; set => Set(ref _name, value); }
 
         public List<ProductImage> Images { get; set; } = new List<ProductImage>();
 
