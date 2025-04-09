@@ -26,7 +26,11 @@ namespace SmartPhotShop.ViewModels
         private readonly IDialogCoordinator _dialogCoordinator;
         private readonly ILiteDatabase _db;
         private BindableCollection<Field> _fields = new BindableCollection<Field>();
+        private string _searchText;
+
         public ICollectionView FieldsCollectionView { get; set; }
+
+        public string SearchText { get => _searchText; set => Set(ref _searchText, value); }
         public FieldsViewModel(IWindowManager windowManager, IEventAggregator eventAggregator, IDialogCoordinator dialogCoordinator,
             ILiteDatabase liteDatabase)
         {
@@ -38,6 +42,25 @@ namespace SmartPhotShop.ViewModels
             _eventAggregator.SubscribeOnPublishedThread(this);
 
             FieldsCollectionView = CollectionViewSource.GetDefaultView(_fields);
+
+
+            PropertyChanged += FieldsViewModel_PropertyChanged;
+        }
+
+        private void FieldsViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (nameof(SearchText) == e.PropertyName)
+            {
+                if (!string.IsNullOrEmpty(SearchText) && SearchText.Length > 3)
+                {
+                    FieldsCollectionView.Filter = s =>
+                    {
+                        return (s as Field).Name.ToLower().Contains(SearchText.ToLower());
+                    };
+                }
+                else
+                    FieldsCollectionView.Filter = null;
+            }
         }
         protected override void OnViewAttached(object view, object context)
         {

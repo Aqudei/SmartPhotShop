@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -165,6 +166,8 @@ namespace SmartPhotShop.ViewModels
 
         private void BgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            var fields = _db.GetCollection<Field>().FindAll().AsQueryable();
+            var productItemCollection = _db.GetCollection<ProductItem>();
 
             try
             {
@@ -219,32 +222,35 @@ namespace SmartPhotShop.ViewModels
                                     logger.Error($"Error processing image '{baseImage.Name}' for SKU '{processingItem.ProductTemplate.SKU}'");
                                     logger.Error(ex, ex.Message);
                                 }
-
                             }
 
-                            var productItem = _db.GetCollection<ProductItem>().FindOne(x => x.SKU == processingItem.Sku);
-                            
-                           
-                            if (productItem == null)
-                            {
-                                productItem = new ProductItem();
-                                
-                                _mapper.Map(processingItem.ProductTemplate, productItem);
-                                productItem.SKU = processingItem.Sku;
-                                productItem.ProductTemplateId = processingItem.ProductTemplate.Id;
-                                productItem.Images.AddRange(productImages);
-                                var inserted = _db.GetCollection<ProductItem>().Insert(productItem);
+                            var mainImage = productImages.FirstOrDefault(x => x.Name.ToLower().Contains("main")) ?? productImages.First();
 
-                                //Task.Run(() => UploadToS3(productItem));
+                            var productItem = productItemCollection.FindOne(x => x.SKU == processingItem.Sku) ?? new ProductItem();
+                            _mapper.Map(processingItem.ProductTemplate, productItem);
+
+                            productItem.SKU = processingItem.Sku;
+                            productItem.ProductTemplateId = processingItem.ProductTemplate.Id;
+
+                            productItem.Images.Clear();
+                            productItem.Images.AddRange(productImages);
+
+                            productItem.FieldValues.Clear();
+                            productItem.FieldValues.AddRange(processingItem.ProductTemplate.FieldValues);
+
+                            productItem.SetFieldValue(fields, "SKU", processingItem.Sku);
+                            productItem.SetFieldValue(fields, "ItemName", processingItem.ProductTemplate.SKU);
+
+                            var key = Regex.Replace($"{processingItem.ProductTemplate.SKU}/{processingItem.ProductTemplate.SKU}-{mainImage.Name}-{Path.GetFileName(processingItem.Overlay)}".ToUpper(), @"\s+", "-");
+                            productItem.SetFieldValue(fields, "Main Image URL", $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{key}");
+                            // "thesoleengraver.s3.eu-north-1.amazonaws.com"
+                            if (productItem.Id == 0)
+                            {
+                                productItemCollection.Insert(productItem);
                             }
                             else
                             {
-                                _mapper.Map(processingItem.ProductTemplate, productItem);
-                                productItem.SKU = processingItem.Sku;
-                                productItem.ProductTemplateId = processingItem.ProductTemplate.Id;
-                                productItem.Images.Clear();
-                                productItem.Images.AddRange(productImages);
-                                var updated = _db.GetCollection<ProductItem>().Update(productItem);
+                                productItemCollection.Update(productItem);
                             }
 
                         }
@@ -293,10 +299,10 @@ namespace SmartPhotShop.ViewModels
         //        var fileTransferUtility = new TransferUtility(s3Client);
         //        foreach (var image in productItem.Images)
         //        {
-                    
+
         //        }
         //    }
-          
+
         //}
 
         private bool MoveFile(string source, string destination)

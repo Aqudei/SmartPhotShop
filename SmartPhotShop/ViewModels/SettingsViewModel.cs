@@ -97,11 +97,6 @@ namespace SmartPhotShop.ViewModels
             {
                 ImportColumns(FlatFile);
 
-
-
-
-
-
                 Properties.Settings.Default.FlatFile = FlatFile;
                 Properties.Settings.Default.Save();
             }
@@ -112,16 +107,19 @@ namespace SmartPhotShop.ViewModels
             using (var reader = new StreamReader(flatFile))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
+                // Handle group logic if it contains "Supplier Description"
+                List<string> groups = null;
+
                 while (csv.Read())
                 {
                     var row = ReadRowAsStrings(csv);
                     if (row == null || row.Count == 0) continue;
 
-                    // Handle group logic if it contains "Supplier Description"
-                    List<string> groups = null;
-                    if (row.Contains("Supplier Description"))
+
+                    if (row[0] == "Supplier Description")
                     {
                         groups = NormalizeGroups(row);
+                        continue;
                     }
 
                     // Handle header row

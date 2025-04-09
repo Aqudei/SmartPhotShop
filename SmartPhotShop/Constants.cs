@@ -10,5 +10,7 @@ namespace SmartPhotShop
     public class Constants
     {
         public static string DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartPhotoShop", "SmartPhotoShop.db");
+        public static string BucketName = "thesoleengraver";
+
     }
 }

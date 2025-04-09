@@ -14,18 +14,31 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
-            <Button Content="New Field"
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            
+            <StackPanel Orientation="Horizontal">
+                <Button Content="New Field"
                     Margin="4"
                     Width="120"
                     x:Name="NewField"/>
-            <Button Content="Save Changes"
+                <Button Content="Save Changes"
                     Margin="4"
                     Width="120"
                     x:Name="SaveChanges"/>
-        </StackPanel>
+            </StackPanel>
+            <TextBox x:Name="SearchText"
+                     Grid.Column="1"
+                     Margin="4"
+                     mah:TextBoxHelper.Watermark="Search"
+                     mah:TextBoxHelper.ClearTextButton="True"/>
+        </Grid>
         <DataGrid x:Name="FieldsCollectionView"
                   AutoGenerateColumns="False"
+                  FontSize="16"
                   Grid.Row="1"
                   CanUserAddRows="False">
             <DataGrid.Columns>
@@ -40,7 +53,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <Button Content="Delete"
                                         cal:Message.Attach="DeleteField($dataContext)"/>
-                                
+
                                 <Button Content="Move Up"
                                         cal:Message.Attach="MoveUp($dataContext)"/>
 
@@ -48,7 +61,7 @@
                                         cal:Message.Attach="MoveDown($dataContext)"/>
 
                             </StackPanel>
-                          
+
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

@@ -4,6 +4,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Caliburn.Micro;
+using ControlzEx.Standard;
 using CsvHelper;
 using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
@@ -23,9 +24,8 @@ using System.Windows.Data;
 
 namespace SmartPhotShop.ViewModels
 {
-    internal class InventoryViewModel : Screen
+    public class InventoryViewModel : Screen
     {
-        private const string BucketName = "thesoleengraver";
         //private string AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID", EnvironmentVariableTarget.User) ?? Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID", EnvironmentVariableTarget.Machine);
         //private string AWS_SECRET_ACCESS_KEY = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
 
@@ -104,7 +104,7 @@ namespace SmartPhotShop.ViewModels
                         var rowData = new List<object> { productItem.SKU };
                         var productTemplate = productTemplatesCollection.FindById(productItem.ProductTemplateId);
 
-                        var fieldValues = productTemplate.FieldValues.Where(f => f.FieldId != skuField.Id).Select(f => new
+                        var fieldValues = productItem.FieldValues.Where(f => f.FieldId != skuField.Id).Select(f => new
                         {
                             f.FieldId,
                             f.Value,
@@ -129,13 +129,16 @@ namespace SmartPhotShop.ViewModels
 
                 progress.SetMessage("Uploading output files to S3...");
                 await SyncProductItems();
-
+                await progress.CloseAsync();
             }
-            catch (Exception)
-            { }
-            finally
+            catch (Exception ex)
             {
                 await progress.CloseAsync();
+                await _dialogCoordinator.ShowMessageAsync(this, "Error", ex.Message);
+            }
+            finally
+            {
+
             }
         }
 
@@ -144,11 +147,11 @@ namespace SmartPhotShop.ViewModels
             try
             {
                 //using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
-                using (var s3Client = new AmazonS3Client(RegionEndpoint.USEast1))
+                using (var s3Client = new AmazonS3Client(RegionEndpoint.EUNorth1))
 
                 {
                     var transfer = new TransferUtility(s3Client);
-                    await transfer.UploadDirectoryAsync(Properties.Settings.Default.OutputDirectory, BucketName, "*.*", SearchOption.AllDirectories);
+                    await transfer.UploadDirectoryAsync(Properties.Settings.Default.OutputDirectory, Constants.BucketName, "*.*", SearchOption.AllDirectories);
                     Debug.WriteLine("Successfully uploaded directory to S3.");
                 }
             }
@@ -218,7 +221,7 @@ namespace SmartPhotShop.ViewModels
             //using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
             using (var s3Client = new AmazonS3Client(RegionEndpoint.USEast1))
             {
-                var result = await UploadFileAsync(s3Client, BucketName, Path.GetFileName(flatFile), flatFile);
+                var result = await UploadFileAsync(s3Client, Constants.BucketName, Path.GetFileName(flatFile), flatFile);
             }
         }
 
