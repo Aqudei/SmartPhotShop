@@ -4,6 +4,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Caliburn.Micro;
+using CsvHelper;
 using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
 using OfficeOpenXml;
@@ -12,8 +13,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -43,53 +46,26 @@ namespace SmartPhotShop.ViewModels
 
         }
 
-
-
-        static void UpdateOrInsertRow(ExcelPackage excel, string filePath, string sheetName, string sku, List<object> newData)
+        static void AppendCsvRow(CsvWriter csvWriter, string sheetName, string sku, List<object> newData)
         {
-            var worksheet = excel.Workbook.Worksheets.FirstOrDefault(ws => ws.Name == sheetName);
 
-            if (worksheet == null)
-            {
-                Console.WriteLine($"Sheet '{sheetName}' not found.");
-                return;
-            }
-
-            var rowCount = worksheet.Dimension?.Rows ?? 0;
-            bool found = false;
-
-            // Search for SKU in Column A (Column 1)
-            for (int row = 4; row <= rowCount; row++) // Skipping header row
-            {
-                if (worksheet.Cells[row, 1].Text.Equals(sku, StringComparison.OrdinalIgnoreCase))
-                {
-                    // SKU exists, update row
-                    for (int i = 0; i < newData.Count; i++)
-                    {
-                        worksheet.Cells[row, i + 1].Value = newData[i];
-                    }
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found)
-            {
-                // SKU not found, insert new row
-                int newRow = rowCount + 1;
-                for (int i = 0; i < newData.Count; i++)
-                {
-                    worksheet.Cells[newRow, i + 1].Value = newData[i];
-                }
-            }
-
-            excel.Save();
-            Debug.WriteLine($"Excel file <{filePath}> updated successfully.");
         }
+
 
         public async void UpdateFlatFile()
         {
             await Task.Run(UpdateFlatFileTask);
+        }
+
+
+        private List<string> ReadRowAsObjects(CsvReader csv)
+        {
+            var row = new List<string>();
+            for (int i = 0; csv.TryGetField(i, out string field); i++)
+            {
+                row.Add(field);
+            }
+            return row;
         }
         public async Task UpdateFlatFileTask()
         {
@@ -98,27 +74,56 @@ namespace SmartPhotShop.ViewModels
 
             try
             {
-                using (var excel = new ExcelPackage(Properties.Settings.Default.FlatFile))
+                var productTemplatesCollection = _db.GetCollection<ProductTemplate>();
+                var flatFileTemplate = Properties.Settings.Default.FlatFile;
+                var sheetName = "Template";
+                var productItems = _db.GetCollection<ProductItem>().FindAll().ToList();
+
+                var flatFileOutput = Path.Combine(Path.GetDirectoryName(flatFileTemplate), "InventoryFlatFile.csv");
+
+                var skuField = _db.GetCollection<Field>().FindOne(f => f.Name == "SKU");
+
+                using (var reader = new StreamReader(flatFileTemplate))
+                using (var writer = new StreamWriter(flatFileOutput))
+                using (var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture))
+                using (var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {
-                    var productTemplatesCollection = _db.GetCollection<ProductTemplate>().FindAll();
-                    var flatFile = Properties.Settings.Default.FlatFile;
-                    var sheetName = "Template";
-                    var productItems = _db.GetCollection<ProductItem>().FindAll().ToList();
+                    while (csvReader.Read())
+                    {
+                        var row = ReadRowAsObjects(csvReader);
+                        if (row == null || row.Count == 0) continue;
+                        foreach (var cell in row)
+                        {
+                            csvWriter.WriteField(cell);
+                        }
+                        csvWriter.NextRecord();
+                    }
 
                     foreach (var productItem in productItems)
                     {
-                        var data = new List<object> { productItem.SKU };
+                        var rowData = new List<object> { productItem.SKU };
+                        var productTemplate = productTemplatesCollection.FindById(productItem.ProductTemplateId);
 
-                        if (productItem != null)
+                        var fieldValues = productTemplate.FieldValues.Where(f => f.FieldId != skuField.Id).Select(f => new
                         {
-                            UpdateOrInsertRow(excel, flatFile, sheetName, (string)productItem.SKU, data);
+                            f.FieldId,
+                            f.Value,
+                            _db.GetCollection<Field>().FindById(f.FieldId).Order
+                        });
+
+                        foreach (var fieldValue in fieldValues.OrderBy(f => f.Order))
+                        {
+                            rowData.Add(fieldValue.Value);
                         }
 
-                        // Process.Start(Properties.Settings.Default.FlatFile);
+                        foreach (var cell in rowData)
+                        {
+                            csvWriter.WriteField(cell);
+                        }
 
+                        csvWriter.NextRecord();
                     }
                 }
-
 
                 // await UploadFlatFileAsync(Properties.Settings.Default.FlatFile);
 

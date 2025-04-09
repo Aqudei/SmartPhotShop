@@ -9,7 +9,6 @@ using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using NLog;
-using OfficeOpenXml;
 using Photoshop;
 using SmartPhotShop.Models;
 using System;

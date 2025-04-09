@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
+using CsvHelper;
 using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
+using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using SmartPhotShop.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -73,28 +77,138 @@ namespace SmartPhotShop.ViewModels
             }
         }
 
-        public void BrowseFlatFile()
+        public async void BrowseFlatFile()
         {
-            var dialog = new CommonOpenFileDialog
+            var dialog = new OpenFileDialog
             {
-                Title = "Select Flat File"
-            };
-            dialog.Filters.Add(new CommonFileDialogFilter("Excel File", "*.xlsx"));
+                Title = "Select Flat File",
+                Filter = "CSV File (*.csv)|*.csv"
 
-            if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
+            };
+
+            var result = dialog.ShowDialog();
+            if (!result.HasValue || !result.Value)
                 return;
 
+            var prompt = await _dialogCoordinator.ShowMessageAsync(this, "Confirm", "Do you also want to read columns from this file?", MessageDialogStyle.AffirmativeAndNegative);
             FlatFile = dialog.FileName;
+
+            if (prompt == MessageDialogResult.Affirmative)
+            {
+                ImportColumns(FlatFile);
+
+
+
+
+
+
+                Properties.Settings.Default.FlatFile = FlatFile;
+                Properties.Settings.Default.Save();
+            }
         }
+
+        private void ImportColumns(string flatFile)
+        {
+            using (var reader = new StreamReader(flatFile))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                while (csv.Read())
+                {
+                    var row = ReadRowAsStrings(csv);
+                    if (row == null || row.Count == 0) continue;
+
+                    // Handle group logic if it contains "Supplier Description"
+                    List<string> groups = null;
+                    if (row.Contains("Supplier Description"))
+                    {
+                        groups = NormalizeGroups(row);
+                    }
+
+                    // Handle header row
+                    if (row[0] == "SKU")
+                    {
+                        if (groups == null || groups.Count != row.Count)
+                        {
+                            groups = Enumerable.Repeat("", row.Count).ToList(); // fallback to empty groups
+                        }
+
+                        var fieldCollection = _db.GetCollection<Field>();
+                        fieldCollection.DeleteAll();
+                        var productTemplatesCollection = _db.GetCollection<ProductTemplate>();
+                        var productTemplates = productTemplatesCollection.FindAll().ToList();
+
+                        foreach (var productTemplate in productTemplates)
+                        {
+                            productTemplate.FieldValues.Clear();
+                            productTemplatesCollection.Update(productTemplate);
+                        }
+
+                        for (int i = 0; i < row.Count; i++)
+                        {
+                            var newField = new Field
+                            {
+                                Group = groups[i],
+                                Name = row[i],
+                                Type = typeof(string).ToString(),
+                                Order = i + 1
+                            };
+
+                            fieldCollection.Insert(newField);
+                            foreach (var productTemplate in productTemplates)
+                            {
+                                productTemplate.FieldValues.Add(new FieldValue
+                                {
+                                    FieldId = newField.Id,
+                                    Value = ""
+                                });
+
+                                productTemplatesCollection.Update(productTemplate);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        private List<string> ReadRowAsStrings(CsvReader csv)
+        {
+            var row = new List<string>();
+            for (int i = 0; csv.TryGetField(i, out string field); i++)
+            {
+                row.Add(field);
+            }
+            return row;
+        }
+
+        private List<string> NormalizeGroups(List<string> row)
+        {
+            var groups = new List<string>();
+            string lastGroup = "";
+
+            foreach (var cell in row)
+            {
+                if (string.IsNullOrWhiteSpace(cell))
+                {
+                    groups.Add(lastGroup);
+                }
+                else
+                {
+                    lastGroup = cell;
+                    groups.Add(cell);
+                }
+            }
+
+            return groups;
+        }
+
+
         public IEnumerable<IResult> Save()
         {
             yield return Task.Run(async () =>
             {
-                OnUIThread(() =>
-                {
-                    _mapper.Map(this, Properties.Settings.Default);
-                    Properties.Settings.Default.Save();
-                });
+                _mapper.Map(this, Properties.Settings.Default);
+                Properties.Settings.Default.Save();
 
                 if (!string.IsNullOrWhiteSpace(WorkingDirectory) && !Directory.Exists(WorkingDirectory))
                     Directory.CreateDirectory(WorkingDirectory);

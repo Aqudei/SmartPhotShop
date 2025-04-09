@@ -3,7 +3,6 @@ using CsvHelper;
 using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
-using OfficeOpenXml;
 using SmartPhotShop.Events;
 using SmartPhotShop.Models;
 using System;

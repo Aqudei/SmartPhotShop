@@ -95,7 +95,7 @@ namespace SmartPhotShop
         {
 
             logger.Info("Application Started!");
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage.License.SetNonCommercialPersonal("Archie E. Cortez");
             await DisplayRootViewForAsync<SplashViewModel>();
         }
 

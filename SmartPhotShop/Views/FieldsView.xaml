@@ -19,16 +19,6 @@
                     Margin="4"
                     Width="120"
                     x:Name="NewField"/>
-
-            <Button Content="Import Columns"
-                    Margin="4"
-                    Width="120"
-                    x:Name="ImportColumns"/>
-
-            <Button Content="Export Columns"
-                    Margin="4"
-                    Width="120"
-                    x:Name="ExportColumns"/>
             <Button Content="Save Changes"
                     Margin="4"
                     Width="120"

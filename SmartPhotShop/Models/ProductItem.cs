@@ -23,7 +23,6 @@ namespace SmartPhotShop.Models
 
         // Supplier Description				
         public string SKU { get => _sku; set => Set(ref _sku, value); }
-        public List<FieldValue> FieldValues { get; set; } = new List<FieldValue>();
 
         public BindableCollection<ProductImage> Images { get => _images; set => Set(ref _images, value); }
 

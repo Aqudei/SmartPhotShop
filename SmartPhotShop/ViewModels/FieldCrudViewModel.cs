@@ -1,6 +1,5 @@
 ﻿using Caliburn.Micro;
 using LiteDB;
-using OfficeOpenXml;
 using SmartPhotShop.Models;
 using System;
 using System.Collections.Generic;

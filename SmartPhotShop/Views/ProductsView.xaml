@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
@@ -24,10 +24,11 @@
                   Margin="4">
 
             <DataGrid x:Name="ProductTemplates"
-                AutoGenerateColumns="False"
-                FontSize="20"
-                RowHeight="60"
-                Grid.Row="0">
+                      CanUserAddRows="False"
+                      AutoGenerateColumns="False"
+                      FontSize="20"
+                      RowHeight="60"
+                      Grid.Row="0">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="SKU" Binding="{Binding SKU}" />
                 </DataGrid.Columns>
@@ -38,14 +39,19 @@
                   Header="Properties"
                   Margin="4">
 
-            <DataGrid
-                FontSize="20"
-                RowHeight="60"
-                AutoGenerateColumns="False"
-                x:Name="FieldValues">
+            <DataGrid CanUserAddRows="False"
+                      FontSize="20"
+                      RowHeight="60"
+                      AutoGenerateColumns="False"
+                      x:Name="FieldValues">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Field Name" IsReadOnly="True" Width="*" Binding="{Binding Name}" />
-                    <DataGridTextColumn Header="Field Value" Binding="{Binding Value}" Width="*" />
+                    <DataGridTextColumn Header="Order" 
+                                        IsReadOnly="True" 
+                                        Width="Auto" Binding="{Binding Order}" />
+                    <DataGridTextColumn Header="Name" 
+                                        IsReadOnly="True" 
+                                        Width="*" Binding="{Binding Name}" />
+                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="Auto" />
                 </DataGrid.Columns>
             </DataGrid>
 

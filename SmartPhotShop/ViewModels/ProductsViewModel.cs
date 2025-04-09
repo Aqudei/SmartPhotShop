@@ -4,7 +4,6 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
 using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
-using OfficeOpenXml;
 using SmartPhotShop.Models;
 using System;
 using System.Collections.Generic;
@@ -58,7 +57,10 @@ namespace SmartPhotShop.ViewModels
                 var collection = _db.GetCollection<Field>();
 
                 Debug.WriteLine($"Num Fields: {SelectedProductTemplate.FieldValues.Count}");
-                foreach (var item in SelectedProductTemplate.FieldValues)
+
+                var productTemplate = _db.GetCollection<ProductTemplate>().FindById(SelectedProductTemplate.Id);
+
+                foreach (var item in productTemplate.FieldValues)
                 {
                     var field = collection.FindOne(f => f.Id == item.FieldId);
                     var fieldValue = new FieldValueViewModel
@@ -77,13 +79,13 @@ namespace SmartPhotShop.ViewModels
             }
         }
 
-        public void SaveChanges()
+        public IEnumerable<IResult> SaveChanges()
         {
             if (_fieldValues == null || !_fieldValues.Any())
-                return;
+                yield return Task.Delay(1).AsResult();
 
             if (SelectedProductTemplate == null)
-                return;
+                yield return Task.Delay(1).AsResult();
 
             var collection = _db.GetCollection<ProductTemplate>();
             var existingProductTemplate = collection.FindById(SelectedProductTemplate.Id);
@@ -94,6 +96,8 @@ namespace SmartPhotShop.ViewModels
                 uiFieldValue.Value = fieldValue.Value;
                 collection.Update(existingProductTemplate);
             }
+
+            yield return _dialogCoordinator.ShowMessageAsync(this, "Success", "Changes saved successfully.").AsResult();
         }
 
         protected override void OnViewAttached(object view, object context)
