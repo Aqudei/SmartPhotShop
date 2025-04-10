@@ -238,11 +238,20 @@ namespace SmartPhotShop.ViewModels
                             productItem.FieldValues.Clear();
                             productItem.FieldValues.AddRange(processingItem.ProductTemplate.FieldValues);
 
-                            productItem.SetFieldValue(fields, "SKU", processingItem.Sku);
-                            productItem.SetFieldValue(fields, "ItemName", processingItem.ProductTemplate.SKU);
+                            productItem.SetFieldValues(fields, "SKU", processingItem.Sku);
+                            productItem.SetFieldValues(fields, "ItemName", processingItem.ProductTemplate.SKU);
 
                             var key = Regex.Replace($"{processingItem.ProductTemplate.SKU}/{processingItem.ProductTemplate.SKU}-{mainImage.Name}-{Path.GetFileName(processingItem.Overlay)}".ToUpper(), @"\s+", "-");
-                            productItem.SetFieldValue(fields, "Main Image URL", $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{key}");
+                            productItem.SetFieldValues(fields, "Main Image URL", $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{key}");
+                            var otherImagesUrls = productImages.Where(p => !p.Equals(mainImage))
+                                .Select(p =>
+                                {
+                                    var k = Regex.Replace($"{processingItem.ProductTemplate.SKU}/{processingItem.ProductTemplate.SKU}-{p.Name}-{Path.GetFileName(processingItem.Overlay)}".ToUpper(), @"\s+", "-");
+                                    return $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{k}";
+                                });
+                            productItem.SetFieldValues(fields, "Other Image URL", otherImagesUrls.ToArray());
+
+
                             // "thesoleengraver.s3.eu-north-1.amazonaws.com"
                             if (productItem.Id == 0)
                             {

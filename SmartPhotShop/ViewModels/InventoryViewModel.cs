@@ -128,7 +128,7 @@ namespace SmartPhotShop.ViewModels
                 // await UploadFlatFileAsync(Properties.Settings.Default.FlatFile);
 
                 progress.SetMessage("Uploading output files to S3...");
-                await SyncProductItems();
+                // await SyncProductItems();
                 await progress.CloseAsync();
             }
             catch (Exception ex)

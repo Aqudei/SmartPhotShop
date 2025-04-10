@@ -30,30 +30,28 @@ namespace SmartPhotShop.Models
 
         public int ProductTemplateId { get; internal set; }
 
-        public void SetFieldValue(IQueryable<Field> fields, string fieldValueName, string value)
+        public void SetFieldValues(IQueryable<Field> fieldsRef, string fieldValueName, params string[] values)
         {
             if (FieldValues == null || !FieldValues.Any())
                 return;
-            var field = fields.FirstOrDefault(f => f.Name == fieldValueName);
-            if (field == null)
+            var targetFields = fieldsRef.Where(f => f.Name == fieldValueName).ToArray();
+            if (targetFields == null || !targetFields.Any())
                 return;
 
-            var fieldValue = FieldValues.FirstOrDefault(f => f.FieldId == field.Id);
-
-            if (fieldValue == null)
+            for (int i = 0; i < targetFields.Length; i++)
             {
-                fieldValue = new FieldValue
-                {
-                    FieldId = field.Id,
-                    Value = value
-                };
-                FieldValues.Add(fieldValue);
-            }
-            else
-            {
-                fieldValue.Value = value;
-            }
+                var targetField = targetFields[i];
 
+                var targetFieldValue = FieldValues.FirstOrDefault(f => f.FieldId == targetField.Id);
+
+                if (targetFieldValue == null)
+                    continue;
+
+                if (i >= values.Length) 
+                    break;
+
+                targetFieldValue.Value = values?[i];
+            }
         }
     }
 }
