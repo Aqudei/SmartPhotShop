@@ -18,11 +18,15 @@ namespace SmartPhotShop.Models
 
         public int Order { get => _order; set => Set(ref _order, value); }
 
+        public override string ToString()
+        {
+            return $"{Name}::{Group}";
+        }
+
     }
 
-    public class FieldValue : IEquatable<FieldValue>        
+    public class FieldValue : IEquatable<FieldValue>
     {
-
         public int FieldId { get; set; }
         public object Value { get; set; }
 
@@ -45,6 +49,11 @@ namespace SmartPhotShop.Models
             hash = hash * 23 + FieldId.GetHashCode();
             hash = hash * 23 + (Value != null ? Value.GetHashCode() : 0);
             return hash;
+        }
+
+        public override string ToString()
+        {
+            return $"{FieldId}::{Value}";
         }
     }
 }

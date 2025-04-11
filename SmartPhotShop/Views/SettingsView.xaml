@@ -45,8 +45,11 @@
         </Grid.ColumnDefinitions>
 
         <!-- Working Directory -->
-        <TextBlock Text="Working Directory:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"/>
-        <TextBox x:Name="WorkingDirectory" Margin="4,4,4,4" Grid.Row="0" Grid.Column="1" Height="40" VerticalContentAlignment="Center"/>
+        <TextBlock Text="Working Directory:"
+                   VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"/>
+        <TextBox x:Name="WorkingDirectory" 
+                 IsReadOnly="True"
+                 Margin="4,4,4,4" Grid.Row="0" Grid.Column="1" Height="40" VerticalContentAlignment="Center"/>
         <Button Width="75" Margin="4,4,4,4" x:Name="BrowseWorkingDirectory" Grid.Row="0" Grid.Column="2">
             <StackPanel Orientation="Horizontal">
                 <ico:PackIconBootstrapIcons Kind="Folder" VerticalAlignment="Center"/>
@@ -90,7 +93,8 @@
 
         <!-- Action Set -->
         <TextBlock Text="Action Set:" VerticalAlignment="Center" Grid.Row="6" Grid.Column="0"/>
-        <TextBox x:Name="ActionSet" IsReadOnly="True" Grid.Row="6" Grid.Column="1" Margin="4,4,4,4" Height="40" VerticalContentAlignment="Center"/>
+        <TextBox x:Name="ActionSet" 
+                 Grid.Row="6" Grid.Column="1" Margin="4,4,4,4" Height="40" VerticalContentAlignment="Center"/>
         
         <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0,20,0,0" Orientation="Horizontal" Grid.Row="7">
             <Button x:Name="Save" Width="80" Height="37" Margin="8">

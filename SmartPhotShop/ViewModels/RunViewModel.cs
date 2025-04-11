@@ -206,8 +206,11 @@ namespace SmartPhotShop.ViewModels
                             {
                                 try
                                 {
-                                    var outputFileName = $"{processingItem.ProductTemplate.SKU.ToUpper()}-{baseImage.Name}-{Path.GetFileNameWithoutExtension(processingItem.Overlay)}.png".Replace(" ", "-");
-                                    var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, processingItem.ProductTemplate.SKU, outputFileName).ToUpper();
+                                    var outputFileName = $"{processingItem.ProductTemplate.Name} {baseImage.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}";
+                                    outputFileName = Regex.Replace(outputFileName, @"\s+", " ");
+                                    outputFileName = Path.ChangeExtension(outputFileName, ".jpg");
+
+                                    var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, processingItem.ProductTemplate.Name, outputFileName);
                                     Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 
                                     ProcessImage(photoshop, processingItem, baseImage.Path, outputFilePath);
@@ -239,14 +242,20 @@ namespace SmartPhotShop.ViewModels
                             productItem.FieldValues.AddRange(processingItem.ProductTemplate.FieldValues);
 
                             productItem.SetFieldValues(fields, "SKU", processingItem.Sku);
-                            productItem.SetFieldValues(fields, "ItemName", processingItem.ProductTemplate.SKU);
 
-                            var key = Regex.Replace($"{processingItem.ProductTemplate.SKU}/{processingItem.ProductTemplate.SKU}-{mainImage.Name}-{Path.GetFileName(processingItem.Overlay)}".ToUpper(), @"\s+", "-");
+                            var itemName = $"{processingItem.ProductTemplate.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}";
+
+                            productItem.SetFieldValues(fields, "Item Name", itemName);
+
+                            var key = $"{processingItem.ProductTemplate.Name}/{processingItem.ProductTemplate.SKU} {mainImage.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}".ToLower();
+                            key = Path.ChangeExtension(Regex.Replace(key.Replace("-", " "), @"\s+", "-"), ".jpg");
+
                             productItem.SetFieldValues(fields, "Main Image URL", $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{key}");
                             var otherImagesUrls = productImages.Where(p => !p.Equals(mainImage))
                                 .Select(p =>
                                 {
-                                    var k = Regex.Replace($"{processingItem.ProductTemplate.SKU}/{processingItem.ProductTemplate.SKU}-{p.Name}-{Path.GetFileName(processingItem.Overlay)}".ToUpper(), @"\s+", "-");
+                                    var k = $"{processingItem.ProductTemplate.Name}/{processingItem.ProductTemplate.SKU} {p.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}".ToLower();
+                                    k = Path.ChangeExtension(Regex.Replace(k.Replace("-", " "), @"\s+", "-"), ".jpg");
                                     return $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{k}";
                                 });
                             productItem.SetFieldValues(fields, "Other Image URL", otherImagesUrls.ToArray());
@@ -360,7 +369,7 @@ namespace SmartPhotShop.ViewModels
 
 
                 // Create an instance of PNG save options
-                PNGSaveOptions pngOptions = new PNGSaveOptions();
+                JPEGSaveOptions pngOptions = new JPEGSaveOptions();
 
                 // Save the active document as PNG
                 imageDoc.SaveAs(outputFilePath, pngOptions, true);

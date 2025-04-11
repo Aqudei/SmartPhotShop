@@ -29,10 +29,9 @@ namespace SmartPhotShop.Models
             var itemName = System.IO.Path.GetFileNameWithoutExtension(path);
             var productTemplate = new ProductTemplate
             {
-                SKU = Regex.Replace(itemName.ToUpper(), @"\s+", "-"),
+                SKU = Regex.Replace(Regex.Replace(itemName.ToUpper(), @"\s+", "-"), @"-+", "-"),
+                Name = itemName,
             };
-
-
 
             foreach (var image in Directory.GetFiles(path, "*.*"))
             {
@@ -45,10 +44,27 @@ namespace SmartPhotShop.Models
 
             foreach (var field in fields)
             {
-                productTemplate.FieldValues.Add(new FieldValue
+
+                var newField = new FieldValue
                 {
                     FieldId = field.Id
-                });
+                };
+
+                if (field.Name == "SKU")
+                    newField.Value = productTemplate.SKU;
+
+                if (field.Name == "Item Name")
+                    newField.Value = productTemplate.Name;
+
+                var fvExisting = productTemplate.FieldValues.FirstOrDefault(fv => fv.FieldId == field.Id);
+
+                if (fvExisting != null)
+                {
+                    fvExisting.Value = newField.Value;
+                    fvExisting.FieldId = newField.FieldId;
+                }
+                else
+                    productTemplate.FieldValues.Add(newField);
             }
 
             return productTemplate;

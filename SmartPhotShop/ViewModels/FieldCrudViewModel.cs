@@ -29,11 +29,13 @@ namespace SmartPhotShop.ViewModels
 
         public FieldCrudViewModel(IEventAggregator eventAggregator, ILiteDatabase liteDatabase)
         {
+            Types.Add(typeof(string));
             Types.Add(typeof(int));
             Types.Add(typeof(decimal));
-            Types.Add(typeof(string));
             _eventAggregator = eventAggregator;
             _db = liteDatabase;
+
+            SelectedType = Types.First();
         }
 
         public async void Close()
@@ -41,18 +43,38 @@ namespace SmartPhotShop.ViewModels
             await TryCloseAsync();
         }
 
-        
+
 
         public async void Save()
         {
+            var fieldCollection = _db.GetCollection<Field>();
+            var templateCollection = _db.GetCollection<ProductTemplate>();
+            var itemCollection = _db.GetCollection<ProductItem>();
+            var maxOrder = fieldCollection.Max(f => f.Order);
             var newField = new Field
             {
                 Group = Group,
                 Name = Name,
+                Order = maxOrder + 1,
                 Type = SelectedType.ToString(),
             };
-            _db.GetCollection<Field>()
-                .Insert(newField);
+            fieldCollection.Insert(newField);
+
+            foreach (var template in templateCollection.FindAll())
+            {
+                template.FieldValues.Add(new FieldValue
+                {
+                    FieldId = newField.Id,
+                });
+            }
+
+            foreach (var item in itemCollection.FindAll())
+            {
+                item.FieldValues.Add(new FieldValue
+                {
+                    FieldId = newField.Id,
+                });
+            }
 
             await _eventAggregator.PublishOnUIThreadAsync(new Events.CrudEvent<Field>
             {

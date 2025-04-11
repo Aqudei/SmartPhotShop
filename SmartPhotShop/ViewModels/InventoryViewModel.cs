@@ -19,6 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
@@ -144,24 +145,36 @@ namespace SmartPhotShop.ViewModels
 
         private async Task SyncProductItems()
         {
+            //var k = $"{processingItem.ProductTemplate.Name}/{processingItem.ProductTemplate.SKU} {p.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}".ToLower();
+            //k = Path.ChangeExtension(Regex.Replace(k.Replace("-", " "), @"\s+", "-"), ".jpg");
+            //return $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{k}";
+
             try
             {
                 //using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
                 using (var s3Client = new AmazonS3Client(RegionEndpoint.EUNorth1))
-
                 {
-                    var transfer = new TransferUtility(s3Client);
-                    await transfer.UploadDirectoryAsync(Properties.Settings.Default.OutputDirectory, Constants.BucketName, "*.*", SearchOption.AllDirectories);
-                    Debug.WriteLine("Successfully uploaded directory to S3.");
+                    var files = Directory.EnumerateFiles(Properties.Settings.Default.OutputDirectory, "*.jpg", SearchOption.AllDirectories);
+
+                    foreach (var file in files)
+                    {
+                        var key = Regex.Replace(file.Replace(Properties.Settings.Default.OutputDirectory, "").Replace("-", " ").ToLower(), @"^\\", "");
+                        key = Regex.Replace(Regex.Replace(key, @"\s+", "-"), @"\\", "/");
+                        await UploadFileAsync(s3Client, Constants.BucketName, key, file);
+                    }
+
+                    //var transfer = new TransferUtility(s3Client);
+                    //await transfer.UploadDirectoryAsync(Properties.Settings.Default.OutputDirectory, Constants.BucketName, "*.*", SearchOption.AllDirectories);
+                    //Debug.WriteLine("Successfully uploaded directory to S3.");
                 }
             }
             catch (AmazonS3Exception e)
             {
-                Console.WriteLine($"Error encountered on server. Message:'{e.Message}' when writing an object");
+                Debug.WriteLine($"Error encountered on server. Message:'{e.Message}' when writing an object");
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Unknown encountered on server. Message:'{e.Message}' when writing an object");
+                Debug.WriteLine($"Unknown encountered on server. Message:'{e.Message}' when writing an object");
             }
         }
 

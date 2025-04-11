@@ -41,6 +41,11 @@ namespace SmartPhotShop.ViewModels
                     var dbProduct = productTemplateCollection.FindOne(v => v.SKU == product.SKU);
                     if (dbProduct == null)
                         productTemplateCollection.Insert(product);
+                    else
+                    {
+                        product.Id = dbProduct.Id;
+                        productTemplateCollection.Update(product);
+                    }
                 }
             });
         }
