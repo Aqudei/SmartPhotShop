@@ -157,7 +157,22 @@ namespace SmartPhotShop.ViewModels
             NotifyOfPropertyChange(nameof(CanStart));
             NotifyOfPropertyChange(nameof(CanStop));
         }
+        static string ParseGenericKeywords(string input)
+        {
+            var stopwords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "a", "an", "and", "the", "is", "in", "of", "on", "this", "with", "some"
+                // Add more stopwords as needed
+            };
 
+            var words = input.Split(new[] { ' ', '.', ',', ';', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var filtered = words
+                .Where(word => !stopwords.Contains(word))
+                .ToArray();
+
+            return string.Join(",", filtered);
+        }
         private bool CanRun()
         {
             return !string.IsNullOrEmpty(Properties.Settings.Default.FlatFile) && !string.IsNullOrEmpty(Properties.Settings.Default.WorkingDirectory);
@@ -243,22 +258,27 @@ namespace SmartPhotShop.ViewModels
 
                             productItem.SetFieldValues(fields, "SKU", processingItem.Sku);
 
-                            var itemName = $"{processingItem.ProductTemplate.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}";
+                            var overlayName = Path.GetFileNameWithoutExtension(processingItem.Overlay);
+                            var itemName = $"{processingItem.ProductTemplate.Name} {overlayName}";
 
                             productItem.SetFieldValues(fields, "Item Name", itemName);
+
+                            var genericKeywords = ParseGenericKeywords(overlayName);
+
+                            productItem.SetFieldValues(fields, "Generic Keywords", genericKeywords);
 
                             var key = $"{processingItem.ProductTemplate.Name}/{processingItem.ProductTemplate.SKU} {mainImage.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}".ToLower();
                             key = Path.ChangeExtension(Regex.Replace(key.Replace("-", " "), @"\s+", "-"), ".jpg");
 
                             productItem.SetFieldValues(fields, "Main Image URL", $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{key}");
-                            var otherImagesUrls = productImages.Where(p => !p.Equals(mainImage))
+                            var otherImagesUrlList = productImages.Where(p => !p.Equals(mainImage))
                                 .Select(p =>
                                 {
                                     var k = $"{processingItem.ProductTemplate.Name}/{processingItem.ProductTemplate.SKU} {p.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}".ToLower();
                                     k = Path.ChangeExtension(Regex.Replace(k.Replace("-", " "), @"\s+", "-"), ".jpg");
                                     return $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{k}";
                                 });
-                            productItem.SetFieldValues(fields, "Other Image URL", otherImagesUrls.ToArray());
+                            productItem.SetFieldValues(fields, "Other Image URL", otherImagesUrlList.ToArray());
 
 
                             // "thesoleengraver.s3.eu-north-1.amazonaws.com"
@@ -305,23 +325,6 @@ namespace SmartPhotShop.ViewModels
                 NotifyOfPropertyChange(nameof(CanStop));
             }
         }
-
-        //private async Task UploadToS3(ProductItem productItem)
-        //{
-        //    var bucketName = "thesoleengraver";
-        //    var accessId = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
-        //    var accessSecret = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
-
-        //    using (var s3Client = new AmazonS3Client(accessId, accessSecret, RegionEndpoint.SAEast1))
-        //    {
-        //        var fileTransferUtility = new TransferUtility(s3Client);
-        //        foreach (var image in productItem.Images)
-        //        {
-
-        //        }
-        //    }
-
-        //}
 
         private bool MoveFile(string source, string destination)
         {

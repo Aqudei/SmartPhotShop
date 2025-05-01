@@ -24,7 +24,6 @@ namespace SmartPhotShop.ViewModels
         public string Name { get => name; set => Set(ref name, value); }
         public Type SelectedType { get => _selectedType; set => Set(ref _selectedType, value); }
 
-
         public BindableCollection<Type> Types { get; set; } = new BindableCollection<Type>();
 
         public FieldCrudViewModel(IEventAggregator eventAggregator, ILiteDatabase liteDatabase)
@@ -42,8 +41,6 @@ namespace SmartPhotShop.ViewModels
         {
             await TryCloseAsync();
         }
-
-
 
         public async void Save()
         {
