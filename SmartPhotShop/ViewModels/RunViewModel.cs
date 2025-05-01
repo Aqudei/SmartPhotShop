@@ -157,7 +157,7 @@ namespace SmartPhotShop.ViewModels
             NotifyOfPropertyChange(nameof(CanStart));
             NotifyOfPropertyChange(nameof(CanStop));
         }
-        static string ParseGenericKeywords(string input)
+        static IEnumerable<string> ParseGenericKeywords(string input)
         {
             var stopwords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -171,8 +171,9 @@ namespace SmartPhotShop.ViewModels
                 .Where(word => !stopwords.Contains(word))
                 .ToArray();
 
-            return string.Join(",", filtered);
+            return filtered;
         }
+
         private bool CanRun()
         {
             return !string.IsNullOrEmpty(Properties.Settings.Default.FlatFile) && !string.IsNullOrEmpty(Properties.Settings.Default.WorkingDirectory);
@@ -265,7 +266,15 @@ namespace SmartPhotShop.ViewModels
 
                             var genericKeywords = ParseGenericKeywords(overlayName);
 
-                            productItem.SetFieldValues(fields, "Generic Keywords", genericKeywords);
+                            var existingGenericKeywords = productItem.GetFieldValues(fields, "Generic Keywords").FirstOrDefault();
+
+                            if (existingGenericKeywords != null)
+                            {
+                                var concatKeywords = existingGenericKeywords.Split(",".ToCharArray()).Concat(genericKeywords).Distinct();
+                                productItem.SetFieldValues(fields, "Generic Keywords", string.Join(",", concatKeywords));
+                            }
+                            else
+                                productItem.SetFieldValues(fields, "Generic Keywords", string.Join(",", genericKeywords));
 
                             var key = $"{processingItem.ProductTemplate.Name}/{processingItem.ProductTemplate.SKU} {mainImage.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}".ToLower();
                             key = Path.ChangeExtension(Regex.Replace(key.Replace("-", " "), @"\s+", "-"), ".jpg");
