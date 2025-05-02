@@ -52,23 +52,7 @@ namespace SmartPhotShop.ViewModels
 
         }
 
-
         public async void UpdateFlatFile()
-        {
-            await Task.Run(UpdateFlatFileTask);
-        }
-
-
-        private List<string> ReadRowAsObjects(CsvReader csv)
-        {
-            var row = new List<string>();
-            for (int i = 0; csv.TryGetField(i, out string field); i++)
-            {
-                row.Add(field);
-            }
-            return row;
-        }
-        public async Task UpdateFlatFileTask()
         {
             var progress = await _dialogCoordinator.ShowProgressAsync(this, "Please wait", "Updating Flat File...");
             progress.SetIndeterminate();
@@ -77,7 +61,6 @@ namespace SmartPhotShop.ViewModels
             {
                 var productTemplatesCollection = _db.GetCollection<ProductTemplate>();
                 var flatFileTemplate = Properties.Settings.Default.FlatFile;
-                var sheetName = "Template";
                 var productItems = _db.GetCollection<ProductItem>().FindAll().ToList();
 
                 var flatFileOutput = Path.Combine(Path.GetDirectoryName(flatFileTemplate), "InventoryFlatFile.csv");
@@ -127,9 +110,6 @@ namespace SmartPhotShop.ViewModels
                 }
 
                 // await UploadFlatFileAsync(Properties.Settings.Default.FlatFile);
-
-                progress.SetMessage("Uploading output files to S3...");
-                await SyncProductItems();
                 await progress.CloseAsync();
             }
             catch (Exception ex)
@@ -141,6 +121,38 @@ namespace SmartPhotShop.ViewModels
             {
 
             }
+        }
+
+        public async void SyncToS3()
+        {
+            var progress = await _dialogCoordinator.ShowProgressAsync(this, "Please wait", "Uploading Files to S3...");
+
+            try
+            {
+                await Task.Run(SyncToS3Task);
+            }
+            catch (Exception ex)
+            {
+                await _dialogCoordinator.ShowMessageAsync(this, "Error", $"Error uploading files to S3\n{ex.Message}");
+            }
+            finally
+            {
+                await progress.CloseAsync();
+            }
+        }
+
+        private List<string> ReadRowAsObjects(CsvReader csv)
+        {
+            var row = new List<string>();
+            for (int i = 0; csv.TryGetField(i, out string field); i++)
+            {
+                row.Add(field);
+            }
+            return row;
+        }
+        public async Task SyncToS3Task()
+        {
+            await SyncProductItems();
         }
 
         private async Task SyncProductItems()

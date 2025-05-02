@@ -25,7 +25,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal">
-            <Button Width="100"
+            <Button Width="200"
                     Margin="5"
                     FontSize="16"
                     x:Name="Delete">
@@ -33,10 +33,10 @@
                     <ico:PackIconMaterial Kind="Delete" VerticalAlignment="Center"/>
                     <Label Content="Delete"/>
                 </StackPanel>
-
             </Button>
 
-            <Button x:Name="UpdateFlatFile" 
+            <Button x:Name="SyncToS3" 
+                    Width="200"
                     Margin="5" 
                     FontSize="16"
                     Padding="10,5">
@@ -45,6 +45,20 @@
                     <Label  Content="SYNC TO S3"/>
                 </StackPanel>
             </Button>
+
+
+            <Button x:Name="UpdateFlatFile" 
+                    Margin="5" 
+                    Width="200"
+                    FontSize="16"
+                    Padding="10,5">
+                <StackPanel Orientation="Horizontal">
+                    <ico:PackIconMaterial Kind="Sync" 
+                                          VerticalAlignment="Center"/>
+                    <Label  Content="Update Flat File"/>
+                </StackPanel>
+            </Button>
+
         </StackPanel>
 
         <ScrollViewer Grid.Column="1" 
@@ -70,6 +84,7 @@
             Grid.Row="1">
 
             <DataGrid x:Name="Items" 
+                      Margin="5"
                       FontSize="20" 
                       RowHeight="60" 
                       Grid.Row="0" 
