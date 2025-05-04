@@ -295,12 +295,30 @@ namespace SmartPhotShop.ViewModels
 
         public async void Delete()
         {
+            var selected = Items.Where(i => i.IsSelected).ToList();
+            int displayNum = 10;
+
+            var namesToShow = selected.Select(i => i.Name).Take(displayNum);
+            string message = "Are you sure you want to delete the following items?\n\n";
+            message += string.Join("\n", namesToShow);
+
+            int remaining = selected.Count - displayNum;
+            if (remaining > 0)
+            {
+                message += $"\n\tand {remaining} more...";
+            }
+
+            var prompt = await _dialogCoordinator.ShowMessageAsync(this, "Confirm Delete", message, MessageDialogStyle.AffirmativeAndNegative);
+            if (prompt == MessageDialogResult.Negative)
+            {
+                return;
+            }
+
             var progress = await _dialogCoordinator.ShowProgressAsync(this, "Deleting Items", "Please wait...");
 
             try
             {
                 var itemsCollection = _db.GetCollection<ProductItem>();
-                var selected = Items.Where(i => i.IsSelected).ToList();
 
 
                 for (int i = selected.Count - 1; i >= 0; i--)
