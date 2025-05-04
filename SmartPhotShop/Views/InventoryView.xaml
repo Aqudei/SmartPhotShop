@@ -92,7 +92,22 @@
                       AutoGenerateColumns="False">
                 
                 <DataGrid.Columns>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.Header>
+                            <CheckBox IsChecked="{Binding DataContext.IsAllSelected, ElementName=Items, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      HorizontalAlignment="Center"/>
+                        </DataGridTemplateColumn.Header>
 
+                        <DataGridTemplateColumn.CellTemplate>
+                          
+                            <DataTemplate>
+                                <CheckBox 
+                                    IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="SKU" Binding="{Binding SKU}" />
 
                 </DataGrid.Columns>

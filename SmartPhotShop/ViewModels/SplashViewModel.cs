@@ -43,8 +43,8 @@ namespace SmartPhotShop.ViewModels
                         productTemplateCollection.Insert(product);
                     else
                     {
-                        product.Id = dbProduct.Id;
-                        productTemplateCollection.Update(product);
+                        //product.Id = dbProduct.Id;
+                        //productTemplateCollection.Update(product);
                     }
                 }
             });

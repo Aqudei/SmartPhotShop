@@ -26,6 +26,13 @@ namespace SmartPhotShop.ViewModels
 
         private BindableCollection<ProductTemplate> _productTemplates = new BindableCollection<ProductTemplate>();
         private BindableCollection<FieldValueViewModel> _fieldValues = new BindableCollection<FieldValueViewModel>();
+        private string _searchText;
+
+        public string SearchText
+        {
+            get { return _searchText; }
+            set { Set(ref _searchText, value); }
+        }
 
         private readonly IMapper _mapper;
         private readonly IDialogCoordinator _dialogCoordinator;
@@ -77,6 +84,27 @@ namespace SmartPhotShop.ViewModels
                     _fieldValues.Add(fieldValue);
                 }
             }
+
+            if (nameof(SearchText).Equals(e.PropertyName))
+            {
+                if (!string.IsNullOrWhiteSpace(SearchText) && SearchText.Length >= 3)
+                {
+
+                    FieldValues.Filter = field =>
+                    {
+                        if (field is FieldValueViewModel obj)
+                        {
+                            return obj.Name.ToLower().Contains(SearchText.ToLower());
+                        }
+
+                        return true;
+                    };
+                }
+                else
+                {
+                    FieldValues.Filter = null;
+                }
+            }
         }
 
         public IEnumerable<IResult> SaveChanges()
@@ -114,26 +142,5 @@ namespace SmartPhotShop.ViewModels
             });
 
         }
-
-        //public void SaveItem(DataRowView item, object header)
-        //{
-        //    using (var db = new LiteDatabase(Constants.DbPath))
-        //    {
-        //        var sku = item.Row.Field<string>("SKU");
-
-        //        var collection = db.GetCollection<ProductTemplate>();
-        //        var dbProject = collection.FindOne(p => p.SKU == sku);
-
-        //        if (dbProject != null)
-        //        {
-        //            var incomingValue = item.Row.Field<object>(header.ToString());
-        //            var field = db.GetCollection<Field>().FindOne(f => f.Name == header.ToString());
-
-        //            var fieldValue = dbProject.FieldValues.FirstOrDefault(f => f.FieldId == field.Id);
-        //            fieldValue.Value = incomingValue;
-        //            collection.Update(dbProject.Id, dbProject);
-        //        }
-        //    }
-        //}
     }
 }

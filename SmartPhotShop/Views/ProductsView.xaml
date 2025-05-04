@@ -41,21 +41,32 @@
                   Header="Properties"
                   Margin="4">
 
-            <DataGrid CanUserAddRows="False"
-                      FontSize="20"
-                      RowHeight="60"
-                      AutoGenerateColumns="False"
-                      x:Name="FieldValues">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Order" 
-                                        IsReadOnly="True" 
-                                        Width="Auto" Binding="{Binding Order}" />
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBox x:Name="SearchText"
+                         mah:TextBoxHelper.Watermark="Search Field"
+                         mah:TextBoxHelper.ClearTextButton="True" Margin="0,2,0,2"/>
+                <DataGrid CanUserAddRows="False"
+                          Grid.Row="1"
+                            FontSize="20"
+                            RowHeight="60"
+                            AutoGenerateColumns="False"
+                            x:Name="FieldValues">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Order" 
+                            IsReadOnly="True" 
+                            Width="Auto" Binding="{Binding Order}" />
                     <DataGridTextColumn Header="Name" 
-                                        IsReadOnly="True" 
-                                        Width="*" Binding="{Binding Name}" />
+                            IsReadOnly="True" 
+                            Width="*" Binding="{Binding Name}" />
                     <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*" />
-                </DataGrid.Columns>
-            </DataGrid>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+            </Grid>
 
         </GroupBox>
 

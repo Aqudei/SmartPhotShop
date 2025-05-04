@@ -199,15 +199,15 @@ namespace SmartPhotShop.ViewModels
 
                 while (continueRunning)
                 {
-                    var processingItem = Items.FirstOrDefault(i => i.Status == "Pending");
+                    var processingItemContext = Items.FirstOrDefault(i => i.Status == "Pending");
 
-                    if (processingItem != null)
+                    if (processingItemContext != null)
                     {
                         try
                         {
-                            WaitUntilFileIsReady(processingItem.Overlay);
+                            WaitUntilFileIsReady(processingItemContext.Overlay);
 
-                            OnUIThread(() => processingItem.Status = "Processing");
+                            OnUIThread(() => processingItemContext.Status = "Processing");
 
 
                             if (photoshop == null)
@@ -218,18 +218,18 @@ namespace SmartPhotShop.ViewModels
 
                             var productImages = new List<ProductImage>();
 
-                            foreach (var baseImage in processingItem.ProductTemplate.Images)
+                            foreach (var baseImage in processingItemContext.ProductTemplate.Images)
                             {
                                 try
                                 {
-                                    var outputFileName = $"{processingItem.ProductTemplate.Name} {baseImage.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}";
+                                    var outputFileName = $"{processingItemContext.ProductTemplate.Name} {baseImage.Name} {Path.GetFileNameWithoutExtension(processingItemContext.Overlay)}";
                                     outputFileName = Regex.Replace(outputFileName, @"\s+", " ");
                                     outputFileName = Path.ChangeExtension(outputFileName, ".jpg");
 
-                                    var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, processingItem.ProductTemplate.Name, outputFileName);
+                                    var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, processingItemContext.ProductTemplate.Name, outputFileName);
                                     Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
 
-                                    ProcessImage(photoshop, processingItem, baseImage.Path, outputFilePath);
+                                    ProcessImage(photoshop, processingItemContext, baseImage.Path, outputFilePath);
                                     productImages.Add(new ProductImage
                                     {
                                         Name = baseImage.Name,
@@ -238,29 +238,29 @@ namespace SmartPhotShop.ViewModels
                                 }
                                 catch (Exception ex)
                                 {
-                                    logger.Error($"Error processing image '{baseImage.Name}' for SKU '{processingItem.ProductTemplate.SKU}'");
+                                    logger.Error($"Error processing image '{baseImage.Name}' for SKU '{processingItemContext.ProductTemplate.SKU}'");
                                     logger.Error(ex, ex.Message);
                                 }
                             }
 
                             var mainImage = productImages.FirstOrDefault(x => x.Name.ToLower().Contains("main")) ?? productImages.First();
 
-                            var productItem = productItemCollection.FindOne(x => x.SKU == processingItem.Sku) ?? new ProductItem();
-                            _mapper.Map(processingItem.ProductTemplate, productItem);
+                            var productItem = productItemCollection.FindOne(x => x.SKU == processingItemContext.Sku) ?? new ProductItem();
+                            _mapper.Map(processingItemContext.ProductTemplate, productItem);
 
-                            productItem.SKU = processingItem.Sku;
-                            productItem.ProductTemplateId = processingItem.ProductTemplate.Id;
+                            productItem.SKU = processingItemContext.Sku;
+                            productItem.ProductTemplateId = processingItemContext.ProductTemplate.Id;
 
                             productItem.Images.Clear();
                             productItem.Images.AddRange(productImages);
 
                             productItem.FieldValues.Clear();
-                            productItem.FieldValues.AddRange(processingItem.ProductTemplate.FieldValues);
+                            productItem.FieldValues.AddRange(processingItemContext.ProductTemplate.FieldValues);
 
-                            productItem.SetFieldValues(fields, "SKU", processingItem.Sku);
+                            productItem.SetFieldValues(fields, "SKU", processingItemContext.Sku);
 
-                            var overlayName = Path.GetFileNameWithoutExtension(processingItem.Overlay);
-                            var itemName = $"{processingItem.ProductTemplate.Name} {overlayName}";
+                            var overlayName = Path.GetFileNameWithoutExtension(processingItemContext.Overlay);
+                            var itemName = $"{processingItemContext.ProductTemplate.Name} {overlayName}";
 
                             productItem.SetFieldValues(fields, "Item Name", itemName);
 
@@ -270,27 +270,25 @@ namespace SmartPhotShop.ViewModels
 
                             if (existingGenericKeywords != null)
                             {
-                                var concatKeywords = existingGenericKeywords.Split(",".ToCharArray()).Concat(genericKeywords).Distinct();
+                                var concatKeywords = genericKeywords.Concat(existingGenericKeywords.Split(",".ToCharArray())).Distinct();
                                 productItem.SetFieldValues(fields, "Generic Keywords", string.Join(",", concatKeywords));
                             }
                             else
                                 productItem.SetFieldValues(fields, "Generic Keywords", string.Join(",", genericKeywords));
 
-                            var key = $"{processingItem.ProductTemplate.Name}/{processingItem.ProductTemplate.SKU} {mainImage.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}".ToLower();
+                            var key = $"{processingItemContext.ProductTemplate.Name}/{processingItemContext.ProductTemplate.SKU} {mainImage.Name} {Path.GetFileNameWithoutExtension(processingItemContext.Overlay)}".ToLower();
                             key = Path.ChangeExtension(Regex.Replace(key.Replace("-", " "), @"\s+", "-"), ".jpg");
 
                             productItem.SetFieldValues(fields, "Main Image URL", $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{key}");
                             var otherImagesUrlList = productImages.Where(p => !p.Equals(mainImage))
                                 .Select(p =>
                                 {
-                                    var k = $"{processingItem.ProductTemplate.Name}/{processingItem.ProductTemplate.SKU} {p.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}".ToLower();
+                                    var k = $"{processingItemContext.ProductTemplate.Name}/{processingItemContext.ProductTemplate.SKU} {p.Name} {Path.GetFileNameWithoutExtension(processingItemContext.Overlay)}".ToLower();
                                     k = Path.ChangeExtension(Regex.Replace(k.Replace("-", " "), @"\s+", "-"), ".jpg");
                                     return $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{k}";
                                 });
                             productItem.SetFieldValues(fields, "Other Image URL", otherImagesUrlList.ToArray());
 
-
-                            // "thesoleengraver.s3.eu-north-1.amazonaws.com"
                             if (productItem.Id == 0)
                             {
                                 productItemCollection.Insert(productItem);
@@ -309,7 +307,7 @@ namespace SmartPhotShop.ViewModels
                         {
 
                             // MoveFile(uiItem, Properties.Settings.Default.DoneDirectory);
-                            OnUIThread(() => processingItem.Status = "Done");
+                            OnUIThread(() => processingItemContext.Status = "Done");
                         }
                     }
                     else

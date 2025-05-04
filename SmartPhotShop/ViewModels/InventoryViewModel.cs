@@ -47,11 +47,6 @@ namespace SmartPhotShop.ViewModels
 
         }
 
-        static void AppendCsvRow(CsvWriter csvWriter, string sheetName, string sku, List<object> newData)
-        {
-
-        }
-
         public async void UpdateFlatFile()
         {
             var progress = await _dialogCoordinator.ShowProgressAsync(this, "Please wait", "Updating Flat File...");
