@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using DocumentFormat.OpenXml.VariantTypes;
 using LiteDB;
 using SmartPhotShop.Models;
@@ -15,14 +16,16 @@ namespace SmartPhotShop.ViewModels
     {
         private readonly IWindowManager _windowManager;
         private readonly ILiteDatabase _db;
+        private readonly IMapper _mapper;
 
-        public SplashViewModel(IWindowManager windowManager, ILiteDatabase liteDatabase)
+        public SplashViewModel(IWindowManager windowManager, ILiteDatabase liteDatabase, IMapper mapper)
         {
             _windowManager = windowManager;
             _db = liteDatabase;
+            _mapper = mapper;
         }
 
-        private Task ImportProductsAsync()
+        private Task ImportNewProductsAsync()
         {
             return Task.Run(() =>
             {
@@ -36,16 +39,21 @@ namespace SmartPhotShop.ViewModels
                     .Select(d => ProductTemplate.CreateFromPath(d, fields));
 
                 var productTemplateCollection = _db.GetCollection<ProductTemplate>();
-                foreach (var product in products)
+
+                var skuComparer = new ProductTemplateComparer();
+
+                var ignored = products.Intersect(productTemplateCollection.FindAll(), skuComparer);
+                var newProducts = products.Except(ignored, skuComparer).ToList();
+                var deletedProducts = productTemplateCollection.FindAll().Except(ignored, skuComparer).ToList();
+
+                foreach (var newProduct in newProducts)
                 {
-                    var dbProduct = productTemplateCollection.FindOne(v => v.SKU == product.SKU);
-                    if (dbProduct == null)
-                        productTemplateCollection.Insert(product);
-                    else
-                    {
-                        //product.Id = dbProduct.Id;
-                        //productTemplateCollection.Update(product);
-                    }
+                    productTemplateCollection.Insert(newProduct);
+                }
+
+                foreach (var deletedProduct in deletedProducts)
+                {
+                    productTemplateCollection.Delete(deletedProduct.Id);
                 }
             });
         }
@@ -55,8 +63,7 @@ namespace SmartPhotShop.ViewModels
             base.OnViewLoaded(view);
 
             // Simulate loading delay
-            await ImportProductsAsync();
-
+            await ImportNewProductsAsync();
 
             var mainViewModel = IoC.Get<MainViewModel>();
             await _windowManager.ShowWindowAsync(mainViewModel);
@@ -64,5 +71,7 @@ namespace SmartPhotShop.ViewModels
             // Close splash screen and open main window
             await TryCloseAsync();
         }
+
+
     }
 }

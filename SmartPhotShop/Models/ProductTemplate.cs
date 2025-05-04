@@ -12,10 +12,29 @@ using System.Threading.Tasks;
 
 namespace SmartPhotShop.Models
 {
+    public class ProductTemplateComparer : IEqualityComparer<ProductTemplate>
+    {
+        public bool Equals(ProductTemplate x, ProductTemplate y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (x is null || y is null) return false;
+
+            return string.Equals(x.SKU, y.SKU, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public int GetHashCode(ProductTemplate obj)
+        {
+            if (obj is null || obj.SKU is null)
+                return 0;
+
+            return StringComparer.OrdinalIgnoreCase.GetHashCode(obj.SKU);
+        }
+    }
+
     public class ProductTemplate : PropertyChangedBase
     {
         private string _name;
-
+        public string LocalPath { get; set; }
         public int Id { get; set; }
         public string SKU { get; set; }
 
@@ -24,16 +43,17 @@ namespace SmartPhotShop.Models
 
         public List<ProductImage> Images { get; set; } = new List<ProductImage>();
 
-        public static ProductTemplate CreateFromPath(string path, ICollection<Field> fields)
+        public static ProductTemplate CreateFromPath(string localPath, ICollection<Field> fields)
         {
-            var itemName = System.IO.Path.GetFileNameWithoutExtension(path);
+            var itemName = System.IO.Path.GetFileNameWithoutExtension(localPath);
             var productTemplate = new ProductTemplate
             {
                 SKU = Regex.Replace(Regex.Replace(itemName.ToUpper(), @"\s+", "-"), @"-+", "-"),
                 Name = itemName,
+                LocalPath = localPath
             };
 
-            foreach (var image in Directory.GetFiles(path, "*.*"))
+            foreach (var image in Directory.GetFiles(localPath, "*.*"))
             {
                 productTemplate.Images.Add(new ProductImage
                 {
