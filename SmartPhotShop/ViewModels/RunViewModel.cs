@@ -209,39 +209,12 @@ namespace SmartPhotShop.ViewModels
 
                             OnUIThread(() => processingItemContext.Status = "Processing");
 
-
                             if (photoshop == null)
                             {
                                 photoshop = new Photoshop.Application { Visible = true };
-
                             }
 
-                            var productImages = new List<ProductImage>();
-
-                            foreach (var baseImage in processingItemContext.ProductTemplate.Images)
-                            {
-                                try
-                                {
-                                    var outputFileName = $"{processingItemContext.ProductTemplate.Name} {baseImage.Name} {Path.GetFileNameWithoutExtension(processingItemContext.Overlay)}";
-                                    outputFileName = Regex.Replace(outputFileName, @"\s+", " ");
-                                    outputFileName = Path.ChangeExtension(outputFileName, ".jpg");
-
-                                    var outputFilePath = System.IO.Path.Combine(Properties.Settings.Default.OutputDirectory, processingItemContext.ProductTemplate.Name, outputFileName);
-                                    Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
-
-                                    ProcessImage(photoshop, processingItemContext, baseImage.Path, outputFilePath);
-                                    productImages.Add(new ProductImage
-                                    {
-                                        Name = baseImage.Name,
-                                        Path = outputFilePath
-                                    });
-                                }
-                                catch (Exception ex)
-                                {
-                                    logger.Error($"Error processing image '{baseImage.Name}' for SKU '{processingItemContext.ProductTemplate.SKU}'");
-                                    logger.Error(ex, ex.Message);
-                                }
-                            }
+                            var productImages = ProcessImages(photoshop, processingItemContext);
 
                             var mainImage = productImages.FirstOrDefault(x => x.Name.ToLower().Contains("main")) ?? productImages.First();
 
@@ -330,6 +303,28 @@ namespace SmartPhotShop.ViewModels
                 continueRunning = false;
                 NotifyOfPropertyChange(nameof(CanStart));
                 NotifyOfPropertyChange(nameof(CanStop));
+            }
+        }
+
+        private IEnumerable<ProductImage> ProcessImages(Application photoshop, ProcessingItem processingItemContext)
+        {
+            foreach (var baseImage in processingItemContext.ProductTemplate.Images)
+            {
+                var outputFileName = $"{processingItemContext.ProductTemplate.Name} {baseImage.Name} {Path.GetFileNameWithoutExtension(processingItemContext.Overlay)}";
+                outputFileName = Regex.Replace(outputFileName, @"\s+", " ");
+                outputFileName = Path.ChangeExtension(outputFileName, ".jpg");
+
+                var outputFilePath = Path.Combine(Properties.Settings.Default.OutputDirectory, processingItemContext.ProductTemplate.Name, outputFileName);
+
+                Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
+
+                ProcessImage(photoshop, processingItemContext, baseImage.Path, outputFilePath);
+
+                yield return new ProductImage
+                {
+                    Name = baseImage.Name,
+                    Path = outputFilePath
+                };
             }
         }
 
@@ -441,8 +436,8 @@ namespace SmartPhotShop.ViewModels
 
             foreach (var productTemplate in productTemplates)
             {
-                var processItem = new ProcessingItem(e.FullPath, productTemplate);
-                OnUIThread(() => Items.Add(processItem));
+                var processingItemContext = new ProcessingItem(e.FullPath, productTemplate);
+                OnUIThread(() => Items.Add(processingItemContext));
             }
         }
 

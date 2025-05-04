@@ -120,8 +120,6 @@ namespace SmartPhotShop.ViewModels
 
         public async void SyncToS3()
         {
-            var progress = await _dialogCoordinator.ShowProgressAsync(this, "Please wait", "Uploading Files to S3...");
-
             try
             {
                 await Task.Run(SyncToS3Task);
@@ -129,10 +127,6 @@ namespace SmartPhotShop.ViewModels
             catch (Exception ex)
             {
                 await _dialogCoordinator.ShowMessageAsync(this, "Error", $"Error uploading files to S3\n{ex.Message}");
-            }
-            finally
-            {
-                await progress.CloseAsync();
             }
         }
 
@@ -147,44 +141,52 @@ namespace SmartPhotShop.ViewModels
         }
         public async Task SyncToS3Task()
         {
-            await SyncProductItems();
-        }
-
-        private async Task SyncProductItems()
-        {
-            //var k = $"{processingItem.ProductTemplate.Name}/{processingItem.ProductTemplate.SKU} {p.Name} {Path.GetFileNameWithoutExtension(processingItem.Overlay)}".ToLower();
-            //k = Path.ChangeExtension(Regex.Replace(k.Replace("-", " "), @"\s+", "-"), ".jpg");
-            //return $"https://{Constants.BucketName}.s3.eu-north-1.amazonaws.com/{k}";
+            var progress = await _dialogCoordinator.ShowProgressAsync(this, "Uploading Files", "Please wait...");
 
             try
             {
-                //using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
+                var outputDir = Properties.Settings.Default.OutputDirectory.TrimEnd(Path.DirectorySeparatorChar);
+                var files = Directory.EnumerateFiles(outputDir, "*.jpg", SearchOption.AllDirectories).ToList();
+                int totalFiles = files.Count;
+
                 using (var s3Client = new AmazonS3Client(RegionEndpoint.EUNorth1))
                 {
-                    var files = Directory.EnumerateFiles(Properties.Settings.Default.OutputDirectory, "*.jpg", SearchOption.AllDirectories);
-
-                    foreach (var file in files)
+                    for (int i = 0; i < totalFiles; i++)
                     {
-                        var key = Regex.Replace(file.Replace(Properties.Settings.Default.OutputDirectory, "").Replace("-", " ").ToLower(), @"^\\", "");
-                        key = Regex.Replace(Regex.Replace(key, @"\s+", "-"), @"\\", "/");
+                        var file = files[i];
+                        string key = GenerateS3Key(outputDir, file);
+
+                        progress.SetMessage($"Uploading {Path.GetFileName(file)} -> {Constants.BucketName}::{key}...");
+                        progress.SetProgress((double)i / totalFiles);
+
                         await UploadFileAsync(s3Client, Constants.BucketName, key, file);
                     }
-
-                    //var transfer = new TransferUtility(s3Client);
-                    //await transfer.UploadDirectoryAsync(Properties.Settings.Default.OutputDirectory, Constants.BucketName, "*.*", SearchOption.AllDirectories);
-                    //Debug.WriteLine("Successfully uploaded directory to S3.");
                 }
             }
             catch (AmazonS3Exception e)
             {
-                Debug.WriteLine($"Error encountered on server. Message:'{e.Message}' when writing an object");
+                Debug.WriteLine($"Amazon S3 error: {e.Message}");
             }
             catch (Exception e)
             {
-                Debug.WriteLine($"Unknown encountered on server. Message:'{e.Message}' when writing an object");
+                Debug.WriteLine($"Unexpected error: {e.Message}");
+            }
+            finally
+            {
+                await progress.CloseAsync();
             }
         }
 
+        private string GenerateS3Key(string baseDir, string fullPath)
+        {
+            // Manually get relative path (no Path.GetRelativePath in .NET Framework 4.8)
+            string relativePath = fullPath.Substring(baseDir.Length).TrimStart(Path.DirectorySeparatorChar);
+
+            // Normalize key
+            string normalized = relativePath.Replace("-", " ").ToLowerInvariant();
+            normalized = Regex.Replace(normalized, @"\s+", "-");
+            return normalized.Replace("\\", "/");
+        }
 
 
         /// <summary>
@@ -296,13 +298,20 @@ namespace SmartPhotShop.ViewModels
         public async void Delete()
         {
             var selected = Items.Where(i => i.IsSelected).ToList();
-            int displayNum = 10;
+
+            if (!selected.Any())
+            {
+                await _dialogCoordinator.ShowMessageAsync(this, "Nothing to do.", "No items selected for deletion.");
+                return;
+            }
+
+            var displayNum = 10;
 
             var namesToShow = selected.Select(i => i.Name).Take(displayNum);
-            string message = "Are you sure you want to delete the following items?\n\n";
+            var message = "Are you sure you want to delete the following items?\n\n";
             message += string.Join("\n", namesToShow);
 
-            int remaining = selected.Count - displayNum;
+            var remaining = selected.Count - displayNum;
             if (remaining > 0)
             {
                 message += $"\n\tand {remaining} more...";
@@ -321,12 +330,12 @@ namespace SmartPhotShop.ViewModels
                 var itemsCollection = _db.GetCollection<ProductItem>();
 
 
-                for (int i = selected.Count - 1; i >= 0; i--)
+                for (var i = selected.Count - 1; i >= 0; i--)
                 {
                     progress.SetMessage($"Deleting {selected[i].SKU}...");
                     progress.SetProgress((double)(selected.Count - i - 1) / selected.Count);
 
-                    for (int j = selected[i].Images.Count - 1; j >= 0; j--)
+                    for (var j = selected[i].Images.Count - 1; j >= 0; j--)
                     {
                         if (File.Exists(selected[i].Images[j].Path))
                         {
@@ -334,7 +343,7 @@ namespace SmartPhotShop.ViewModels
                         }
                     }
 
-                    ProductItem item = selected[i];
+                    var item = selected[i];
                     itemsCollection.Delete(item.Id);
                     Items.Remove(item);
                 }
