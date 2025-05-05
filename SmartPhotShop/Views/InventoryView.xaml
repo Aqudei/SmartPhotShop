@@ -42,7 +42,7 @@
                     Padding="10,5">
                 <StackPanel Orientation="Horizontal">
                     <ico:PackIconMaterial Kind="Sync" VerticalAlignment="Center"/>
-                    <Label  Content="SYNC TO S3"/>
+                    <Label  Content="Sync to S3"/>
                 </StackPanel>
             </Button>
 
