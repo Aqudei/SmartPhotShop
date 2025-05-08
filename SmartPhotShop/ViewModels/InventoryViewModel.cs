@@ -49,9 +49,6 @@ namespace SmartPhotShop.ViewModels
 
         public async void UpdateFlatFile()
         {
-            var progress = await _dialogCoordinator.ShowProgressAsync(this, "Please wait", "Updating Flat File...");
-            progress.SetIndeterminate();
-
             try
             {
                 var productTemplatesCollection = _db.GetCollection<ProductTemplate>();
@@ -105,16 +102,15 @@ namespace SmartPhotShop.ViewModels
                 }
 
                 // await UploadFlatFileAsync(Properties.Settings.Default.FlatFile);
-                await progress.CloseAsync();
+                await _dialogCoordinator.ShowMessageAsync(this, "Success", "Amazon flat file was updated successfully.");
             }
             catch (Exception ex)
             {
-                await progress.CloseAsync();
                 await _dialogCoordinator.ShowMessageAsync(this, "Error", ex.Message);
             }
             finally
             {
-
+                
             }
         }
 
