@@ -162,6 +162,7 @@ namespace SmartPhotShop.ViewModels
                 {
                     for (int i = 0; i < totalFiles; i++)
                     {
+                        // Do not re-upload files already uploaded based on hash
                         var file = files[i];
                         var computedHash = ComputeFileHash(file);
 
