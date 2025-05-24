@@ -51,21 +51,30 @@
                          mah:TextBoxHelper.ClearTextButton="True" Margin="0,2,0,2"/>
                 <DataGrid CanUserAddRows="False"
                           Grid.Row="1"
-                            FontSize="20"
-                            RowHeight="60"
-                            AutoGenerateColumns="False"
-                            x:Name="FieldValues">
+                          FontSize="20"
+                          RowHeight="80"
+                          AutoGenerateColumns="False"
+                          x:Name="FieldValues">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Order" 
-                            IsReadOnly="True" 
-                            Width="Auto" Binding="{Binding Order}" />
-                    <DataGridTextColumn Header="Name" 
-                            IsReadOnly="True" 
-                            Width="*" Binding="{Binding Name}" />
-                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*" />
+                                            IsReadOnly="True" 
+                                            Width="Auto" 
+                                            Binding="{Binding Order}" />
+                        <DataGridTemplateColumn Header="Name" 
+                                        IsReadOnly="True" 
+                                        Width="*" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" 
+                                               TextWrapping="Wrap"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Value" 
+                                        Binding="{Binding Value}" 
+                                        Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
-
             </Grid>
 
         </GroupBox>
@@ -79,7 +88,8 @@
                     FontSize="14"
                     Padding="10,5">
                 <StackPanel Orientation="Horizontal">
-                    <ico:PackIconBootstrapIcons Kind="Floppy" VerticalAlignment="Center"/>
+                    <ico:PackIconBootstrapIcons Kind="Floppy" 
+                                                VerticalAlignment="Center"/>
                     <Label Content="SAVE CHANGES"/>
                 </StackPanel>
             </Button>
