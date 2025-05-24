@@ -378,6 +378,7 @@
     <Compile Include="Models\Processor.cs" />
     <Compile Include="Models\ProductItem.cs" />
     <Compile Include="Models\ProductTemplate.cs" />
+    <Compile Include="Models\Uploaded.cs" />
     <Compile Include="SimpleBootstrapper.cs" />
     <Compile Include="ViewModels\FieldCrudViewModel.cs" />
     <Compile Include="ViewModels\FieldsViewModel.cs" />

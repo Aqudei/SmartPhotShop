@@ -18,6 +18,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -110,7 +111,7 @@ namespace SmartPhotShop.ViewModels
             }
             finally
             {
-                
+
             }
         }
 
@@ -135,9 +136,21 @@ namespace SmartPhotShop.ViewModels
             }
             return row;
         }
+
+        static string ComputeFileHash(string filePath)
+        {
+            using (var sha256 = SHA256.Create())
+            using (var stream = File.OpenRead(filePath))
+            {
+                byte[] hashBytes = sha256.ComputeHash(stream);
+                return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+            }
+        }
         public async Task SyncToS3Task()
         {
             var progress = await _dialogCoordinator.ShowProgressAsync(this, "Uploading Files", "Please wait...");
+
+            var uploadedCollection = _db.GetCollection<Uploaded>();
 
             try
             {
@@ -150,6 +163,27 @@ namespace SmartPhotShop.ViewModels
                     for (int i = 0; i < totalFiles; i++)
                     {
                         var file = files[i];
+                        var computedHash = ComputeFileHash(file);
+
+                        var exist = uploadedCollection.FindOne(u => u.Path == file);
+                        if (exist != null)
+                        {
+                            if (exist.Hash == computedHash)
+                                continue;
+
+                            exist.Hash = computedHash;
+                            uploadedCollection.Update(exist);
+                        }
+                        else
+                        {
+                            uploadedCollection.Insert(new Uploaded
+                            {
+                                Path = file,
+                                Hash = computedHash,
+                            });
+                        }
+
+
                         string key = GenerateS3Key(outputDir, file);
 
                         progress.SetMessage($"Uploading {Path.GetFileName(file)} -> {Constants.BucketName}::{key}...");
@@ -233,16 +267,6 @@ namespace SmartPhotShop.ViewModels
                 return false;
             }
         }
-
-        private async Task UploadFlatFileAsync(string flatFile)
-        {
-            //using (var s3Client = new AmazonS3Client(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, RegionEndpoint.USEast1))
-            using (var s3Client = new AmazonS3Client(RegionEndpoint.USEast1))
-            {
-                var result = await UploadFileAsync(s3Client, Constants.BucketName, Path.GetFileName(flatFile), flatFile);
-            }
-        }
-
 
         private void InventoryViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
