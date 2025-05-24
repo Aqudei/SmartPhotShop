@@ -167,27 +167,29 @@ namespace SmartPhotShop.ViewModels
                         var computedHash = ComputeFileHash(file);
 
                         var exist = uploadedCollection.FindOne(u => u.Path == file);
-                        if (exist != null)
-                        {
-                            if (exist.Hash == computedHash)
-                                continue;
+                        if (exist != null && exist.Hash == computedHash)
+                            continue;
 
-                            exist.Hash = computedHash;
-                            uploadedCollection.Update(exist);
-                        }
-
-
-                        string key = GenerateS3Key(outputDir, file);
+                        var key = GenerateS3Key(outputDir, file);
 
                         progress.SetMessage($"Uploading {Path.GetFileName(file)} -> {Constants.BucketName}::{key}...");
                         progress.SetProgress((double)i / totalFiles);
 
                         await UploadFileAsync(s3Client, Constants.BucketName, key, file);
-                        uploadedCollection.Insert(new Uploaded
+
+                        if (exist != null)
                         {
-                            Path = file,
-                            Hash = computedHash,
-                        });
+                            exist.Hash = computedHash;
+                            uploadedCollection.Update(exist);
+                        }
+                        else
+                        {
+                            uploadedCollection.Insert(new Uploaded
+                            {
+                                Path = file,
+                                Hash = computedHash,
+                            });
+                        }
                     }
                 }
             }
